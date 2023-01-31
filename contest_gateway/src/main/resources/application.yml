@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: contest-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: contest-user
+          uri: lb://contest-user
+          predicates:
+            - Path=/login/**,/register/**,/modify/**
+        - id: contest-filesys
+          uri: lb://contest-filesys
+          predicates:
+            - Path=/filesys/**
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        group: dev
+        namespace: dev
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+uri:
+  auth:
+    skipping:
+      - /login
+      - /register
+      - /modify
+      - /filesys/public

@@ -1,0 +1,16 @@
+package com.contest.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+public class ModifyPwdDto {
+    private String userEmail;
+    private String userPwd;
+    private String emailCode;
+}
