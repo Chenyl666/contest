@@ -2,9 +2,11 @@ package com.contest.service.impl;
 
 import com.contest.result.ResultModel;
 import com.contest.service.UploadService;
+import com.contest.util.Md5Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.InputStream;
 
 @Service
@@ -22,6 +24,8 @@ public class UploadServiceImpl implements UploadService {
      * */
     @Override
     public ResultModel<String> uploadSimpleFile(InputStream in) {
+        String fileMd5 = Md5Utils.getFileMd5(in);
+        File file = new File(filePath.concat(fileMd5));
 
         return null;
     }
