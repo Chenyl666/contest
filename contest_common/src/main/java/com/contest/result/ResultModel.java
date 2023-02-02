@@ -46,4 +46,19 @@ public class ResultModel<T> {
                 .message(message)
                 .build();
     }
+
+    public static ResultModel<String> buildContinueResultModel(){
+        return ResultModel.<String>builder()
+                .resultFlag(ResultFlag.CONTINUE)
+                .resultCode(ResultFlag.CONTINUE.code)
+                .build();
+    }
+
+    public static ResultModel<String> buildContinueResultModel(String message){
+        return ResultModel.<String>builder()
+                .resultFlag(ResultFlag.CONTINUE)
+                .resultCode(ResultFlag.CONTINUE.code)
+                .message(message)
+                .build();
+    }
 }

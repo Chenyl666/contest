@@ -5,7 +5,8 @@ public enum ResultFlag {
     TIMEOUT(2000,"Request Timeout!"),
     FAIL(3000,"Request Fail!"),
     EXCEPTION(4000,"Server Exception!"),
-    SERVICE_BREAKER(5000,"Service Breaker!");
+    SERVICE_BREAKER(5000,"Service Breaker!"),
+    CONTINUE(6000,"Continue receive data!");
 
     public final Integer code;
 

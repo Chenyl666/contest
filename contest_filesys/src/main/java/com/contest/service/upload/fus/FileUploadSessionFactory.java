@@ -1,22 +1,21 @@
-package com.contest.pojo.file;
+package com.contest.service.upload.fus;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * FileUploadSession单例工厂（懒汉模式）
  * */
+@Component
 public class FileUploadSessionFactory {
-
     private static volatile FileUploadSessionFactory fileUploadSessionFactory;
 
-    private final Map<String,FileUploadSession> fileUploadSessionExclusiveMap = new ConcurrentHashMap<>();
-
-    private final Map<String, BlockingQueue<FileUploadSession>> fileUploadSessionWaitingList = new ConcurrentHashMap<>();
+    @Value("${filesys.path}")
+    private String filePath;
 
     private FileUploadSessionFactory(){}
 
@@ -38,8 +37,8 @@ public class FileUploadSessionFactory {
     /**
      * 创建FileUploadSession对象
      * */
-    public FileUploadSession buildFileUploadSession(File file, InputStream in){
-        return new FileUploadSession(file,in,fileUploadSessionExclusiveMap,fileUploadSessionWaitingList);
+    public FileUploadSession createFileUploadSessionIfFileNotExist(File targetFile, InputStream sourceInputStream){
+        return null;
     }
 
 }

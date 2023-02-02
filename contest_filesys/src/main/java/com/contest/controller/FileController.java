@@ -1,7 +1,7 @@
 package com.contest.controller;
 
 import com.contest.result.ResultModel;
-import com.contest.service.UploadService;
+import com.contest.service.upload.UploadService;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;

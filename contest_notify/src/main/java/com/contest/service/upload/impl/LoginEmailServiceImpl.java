@@ -1,7 +1,7 @@
-package com.contest.service.impl;
+package com.contest.service.upload.impl;
 
 import com.contest.dto.notify.EmailCodeMessageDto;
-import com.contest.service.ModifyEmailService;
+import com.contest.service.LoginEmailService;
 import com.contest.smtp.SmtpMailSender;
 import com.contest.template.EmailCodeTemplate;
 import com.contest.template.EmailSubject;
@@ -10,20 +10,20 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 
 @Service
-public class ModifyEmailServiceImpl implements ModifyEmailService {
+public class LoginEmailServiceImpl implements LoginEmailService {
 
     @Resource
     SmtpMailSender smtpMailSender;
 
     /**
-     * 修改密码邮箱验证码服务
+     * 登录邮箱验证码服务
      * */
     @Override
-    public void sendModifyEmailCode(EmailCodeMessageDto emailCodeMessageDto) {
+    public void sendLoginEmailCode(EmailCodeMessageDto emailCodeMessageDto) {
         smtpMailSender.sendSimpleEmail(
                 EmailSubject.EMAIL_CODE_SUBJECT
                 , EmailCodeTemplate.buildEmailCodeMessageContent(
-                        EmailCodeTemplate.Operation.OPERATION_MODIFY,emailCodeMessageDto.getCode()
-                ), emailCodeMessageDto.getUserEmail());
+                        EmailCodeTemplate.Operation.OPERATION_LOGIN,emailCodeMessageDto.getCode())
+                , emailCodeMessageDto.getUserEmail());
     }
 }
