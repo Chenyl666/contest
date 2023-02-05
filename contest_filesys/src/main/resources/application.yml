@@ -3,3 +3,19 @@ spring:
     active: dev
   application:
     name: contest-filesys
+
+filesys:
+  env: windows
+  windows:
+    path-prefix: C:\Users\55403\Desktop\毕业设计\开发环境\file
+    path-split: \
+  linux:
+    path-prefix: /root/file
+    path-split: /
+
+thread-pool:
+  core-pool-size: 4
+  max-pool-size: 8
+  keep-alive-time: 3
+  time-unit: SECONDS
+  blocking-queue-capacity: 100000

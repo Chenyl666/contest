@@ -2,7 +2,7 @@ package com.contest.service.modify;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.contest.async.provider.sender.ModifyCodeProvider;
-import com.contest.config.redis.RedisUtil;
+import com.contest.util.RedisUtil;
 import com.contest.dto.ModifyPwdDto;
 import com.contest.dto.notify.EmailCodeMessageDto;
 import com.contest.entity.user.UserEntity;

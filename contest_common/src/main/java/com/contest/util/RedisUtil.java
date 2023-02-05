@@ -1,19 +1,26 @@
-package com.contest.config.redis;
+package com.contest.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Redis读写工具类
  * */
-@Component
 public class RedisUtil {
 
-    @Autowired
     private RedisTemplate<String,Object> redisTemplate;
+
+    public RedisTemplate<String, Object> getRedisTemplate() {
+        return redisTemplate;
+    }
+
+    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     public String get(String key){
         Object value = redisTemplate.opsForValue().get(key);
@@ -23,14 +30,19 @@ public class RedisUtil {
         return value.toString();
     }
 
-    public void set(String key,String value){
+    public Object getForObject(String key){
+        Optional<Object> valueOptional = Optional.ofNullable(redisTemplate.opsForValue().get(key));
+        return valueOptional.orElse(null);
+    }
+
+    public void set(String key,Object value){
         if(value == null){
             return;
         }
         redisTemplate.opsForValue().set(key,value);
     }
 
-    public void set(String key, String value, long timeout, TimeUnit timeUnit){
+    public void set(String key, Object value, long timeout, TimeUnit timeUnit){
         if(value == null){
             return;
         }

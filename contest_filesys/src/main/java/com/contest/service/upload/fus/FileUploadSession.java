@@ -1,14 +1,16 @@
 package com.contest.service.upload.fus;
 
+import com.contest.dto.user.UserDto;
+import com.contest.util.FileUtils;
 import com.contest.util.Md5Utils;
-import lombok.Builder;
-import lombok.Data;
-import lombok.SneakyThrows;
+import lombok.*;
+
 import javax.servlet.ServletInputStream;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
@@ -17,20 +19,22 @@ import java.util.concurrent.locks.LockSupport;
  * 文件上传会话session
  * */
 @Data
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FileUploadSession implements Serializable{
 
     private static final Map<String,Lock> md5LocksMap = new ConcurrentHashMap<>();
 
-    /**
-     * 将要上传的文件
-     * */
-    private final File targetFile;
+    public static class FileUploadException extends RuntimeException{
+        public FileUploadException(String message) {
+            super(message);
+        }
+    }
 
     /**
-     * 文件流
+     * 会话id
      * */
-    private final InputStream sourceInputStream;
+    private String sessionId;
 
     /**
      * 文件的MD5标识码
@@ -38,27 +42,59 @@ public class FileUploadSession implements Serializable{
     private String fileMd5;
 
     /**
-     * 文件保存路径
+     * 临时文件路径
      * */
-    private String savePath;
+    private String swapFilePath;
 
     /**
-     * 并发传输是否完成
+     * 最终文件路径
+     * */
+    private String realFilePath;
+
+    /**
+     * 是否完成传输标志位
      * */
     private Boolean isComplete;
 
-    protected FileUploadSession(File targetFile,InputStream sourceInputStream) {
-        this.targetFile = targetFile;
-        this.sourceInputStream = sourceInputStream;
-        this.fileMd5 = Md5Utils.getFileMd5(sourceInputStream);
-        this.isComplete = false;
-    }
+    /**
+     * 总分片数
+     * */
+    private Integer sumPiece;
 
     /**
-     * 保存文件
+     * 分片大小
      * */
-    public int concurrentSaveFile(){
-        return 0;
+    private Long pieceSize;
+
+    /**
+     * 文件名
+     * */
+    private String filename;
+
+    /**
+     * 文件所属用户
+     * */
+    private String userId;
+
+    public FileUploadSession(
+            String sessionId,
+            String fileMd5,
+            String swapFilePath,
+            String realFilePath,
+            Integer sumPiece,
+            Long pieceSize,
+            String filename,
+            String userId
+    ) {
+        this.sessionId = sessionId;
+        this.fileMd5 = fileMd5;
+        this.swapFilePath = swapFilePath;
+        this.realFilePath = realFilePath;
+        this.isComplete = false;
+        this.sumPiece = sumPiece;
+        this.pieceSize = pieceSize;
+        this.filename = filename;
+        this.userId = userId;
     }
 
 }

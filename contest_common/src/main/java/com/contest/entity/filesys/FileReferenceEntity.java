@@ -23,7 +23,7 @@ public class FileReferenceEntity {
     @TableField("file_name")
     private String fileName;
     @TableField("created_date")
-    private Date createdDate;
+    private Date createdDate = new Date();
     @TableField("updated_date")
     private Date updatedDate;
     @TableField("created_by")

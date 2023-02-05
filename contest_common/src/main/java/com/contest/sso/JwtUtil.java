@@ -41,6 +41,12 @@ public class JwtUtil {
         }
     }
 
+    public static UserDto getUserByToken(String token){
+        return JSON.parseObject(
+                JWT.decode(token).getClaims().get("current_user").asString(), TokenPayload.class
+        ).getUserDto();
+    }
+
     /**
      * JWT token验证
      * */

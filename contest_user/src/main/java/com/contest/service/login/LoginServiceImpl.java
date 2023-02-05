@@ -2,7 +2,7 @@ package com.contest.service.login;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.contest.async.provider.sender.LoginCodeProvider;
-import com.contest.config.redis.RedisUtil;
+import com.contest.util.RedisUtil;
 import com.contest.dto.notify.EmailCodeMessageDto;
 import com.contest.dto.user.UserLoginDto;
 import com.contest.entity.user.UserEntity;

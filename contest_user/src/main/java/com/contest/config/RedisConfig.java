@@ -1,5 +1,6 @@
-package com.contest.config.redis;
+package com.contest.config;
 
+import com.contest.util.RedisUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,13 @@ public class RedisConfig {
 
     @Value("${spring.redis.database}")
     Integer database;
+
+    @Bean
+    public RedisUtil redisUtil(RedisTemplate<String,Object> redisTemplate){
+        com.contest.util.RedisUtil redisUtil = new RedisUtil();
+        redisUtil.setRedisTemplate(redisTemplate);
+        return redisUtil;
+    }
 
     @Bean
     public JedisPoolConfig jedisPoolConfig(){
