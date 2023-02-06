@@ -31,6 +31,15 @@ public class ResultModel<T> {
                 .build();
     }
 
+    public static <T> ResultModel<T> buildSuccessResultModel(String message,T data){
+        return ResultModel.<T>builder()
+                .resultFlag(ResultFlag.SUCCESS)
+                .resultCode(ResultFlag.SUCCESS.code)
+                .message(ResultFlag.SUCCESS.msg)
+                .data(data)
+                .build();
+    }
+
     public static ResultModel<String> buildFailResultModel(){
         return ResultModel.<String>builder()
                 .resultFlag(ResultFlag.FAIL)
@@ -44,6 +53,15 @@ public class ResultModel<T> {
                 .resultFlag(ResultFlag.FAIL)
                 .resultCode(ResultFlag.FAIL.code)
                 .message(message)
+                .build();
+    }
+
+    public static <T> ResultModel<T> buildFailResultModel(String message,T data){
+        return ResultModel.<T>builder()
+                .resultFlag(ResultFlag.FAIL)
+                .resultCode(ResultFlag.FAIL.code)
+                .message(ResultFlag.FAIL.msg)
+                .data(data)
                 .build();
     }
 

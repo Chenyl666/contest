@@ -15,9 +15,6 @@ import java.util.UUID;
 @Component
 public class FileUploadSessionFactory {
 
-    @Value("${filesys.path}")
-    private String filePath;
-
     @Resource
     private FileSystemEnvInfo fileSystemEnvInfo;
 

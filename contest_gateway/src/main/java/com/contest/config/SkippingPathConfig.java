@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+/**
+ * 请求中无需验证的URL前缀
+ * */
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "uri.auth")

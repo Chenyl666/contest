@@ -28,6 +28,7 @@ public class FilePieceHandlerMethodArgumentResolver implements HandlerMethodArgu
                 .pieceInputStream(request.getInputStream())
                 .seqId(Integer.parseInt(request.getHeader("seqId")))
                 .sessionId(request.getHeader("sessionId"))
+                .isLast(Boolean.parseBoolean(request.getHeader("isLast")))
                 .build();
     }
 }

@@ -32,4 +32,8 @@ public class FileInstanceEntity {
     private String createdBy;
     @TableField("updated_by")
     private String updatedBy;
+
+    public void incrementReferenceNum(){
+        this.referenceNum++;
+    }
 }

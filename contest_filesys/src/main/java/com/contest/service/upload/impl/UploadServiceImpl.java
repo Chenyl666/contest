@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Service
 public class UploadServiceImpl implements UploadService {
 
     @Value("${filesys.path}")
@@ -115,7 +114,7 @@ public class UploadServiceImpl implements UploadService {
         // 判断是否已经有别的session上传完成
         assert fileUploadSessionList != null;
         if(fileUploadSessionList.isComplete()){
-            saveFileData(buildFileEntity(fileUploadSession));
+            saveFileData(buildFileDto(fileUploadSession));
             FileUtils.deleteFile(swapFile);
             return ResultModel.buildSuccessResultModel("文件上传完成！");
         }
@@ -138,7 +137,7 @@ public class UploadServiceImpl implements UploadService {
         // 判断文件是否存在
         if(FileUtils.fileExists(realFile)){
             FileUtils.deleteFile(swapFile);
-            saveFileData(buildFileEntity(fileUploadSession));
+            saveFileData(buildFileDto(fileUploadSession));
             return ResultModel.buildSuccessResultModel("文件上传完成!");
         }
 
@@ -152,14 +151,14 @@ public class UploadServiceImpl implements UploadService {
             md5Lock.lock();
             if(FileUtils.fileExists(realFile)){
                 FileUtils.deleteFile(swapFile);
-                saveFileData(buildFileEntity(fileUploadSession));
+                saveFileData(buildFileDto(fileUploadSession));
                 return ResultModel.buildSuccessResultModel("文件上传完成！");
             }
             fileUploadSessionList = getFileUploadSessionIdListFromCache(fileMd5);
             assert fileUploadSessionList != null;
             fileUploadSessionList.setComplete(true);
             setFileUploadSessionIdListIntoCache(fileUploadSessionList);
-            saveFileData(buildFileEntity(fileUploadSession));
+            saveFileData(buildFileDto(fileUploadSession));
             swapFile.renameTo(realFile);
             ThreadPoolExecutor threadPoolExecutor = threadPoolFactory.getThreadPoolExecutor();
             threadPoolExecutor.submit(() -> {
@@ -182,12 +181,12 @@ public class UploadServiceImpl implements UploadService {
                 .build();
     }
 
-    public FileDto buildFileEntity(FileUploadSession fileUploadSession){
+    public FileDto buildFileDto(FileUploadSession fileUploadSession){
         return FileDto
                 .builder()
                 .fileId(snowMaker.nextId())
                 .fileName(fileUploadSession.getFilename())
-                .fileSize(0L)
+//                .fileSize(fileUploadSession.get)
                 .filePath(fileUploadSession.getRealFilePath())
                 .fileMd5(fileUploadSession.getFileMd5())
                 .createdBy(fileUploadSession.getUserId())
