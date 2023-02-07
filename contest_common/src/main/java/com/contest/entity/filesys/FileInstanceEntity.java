@@ -36,4 +36,8 @@ public class FileInstanceEntity {
     public void incrementReferenceNum(){
         this.referenceNum++;
     }
+
+    public void decrementReferenceNum(){
+        this.referenceNum--;
+    }
 }

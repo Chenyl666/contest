@@ -1,4 +1,4 @@
-package com.contest.service.upload;
+package com.contest.service;
 
 import com.contest.dto.filesys.FileUploadDto;
 import com.contest.dto.user.UserDto;

@@ -22,8 +22,10 @@ public class FileReferenceEntity {
     private String fileMd5;
     @TableField("file_name")
     private String fileName;
+    @TableField("is_public")
+    private boolean isPublic;
     @TableField("created_date")
-    private Date createdDate = new Date();
+    private Date createdDate;
     @TableField("updated_date")
     private Date updatedDate;
     @TableField("created_by")

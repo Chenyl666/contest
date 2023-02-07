@@ -20,10 +20,6 @@ public class FileUploadDto {
      * */
     private InputStream pieceInputStream;
     /**
-     * 序列号
-     * */
-    private Integer seqId;
-    /**
      * 是否为最后一片
      * */
     private boolean isLast;

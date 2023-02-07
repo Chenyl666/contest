@@ -1,4 +1,4 @@
-package com.contest.service.upload.impl;
+package com.contest.service.impl;
 
 import com.contest.config.filesys.FileSystemEnvInfo;
 import com.contest.dto.filesys.FileUploadDto;
@@ -7,13 +7,15 @@ import com.contest.entity.filesys.FileInstanceEntity;
 import com.contest.entity.filesys.FileReferenceEntity;
 import com.contest.mapper.FileInstanceMapper;
 import com.contest.mapper.FileReferenceMapper;
-import com.contest.pojo.filesys.FileUploadSessionObj;
+import com.contest.pojo.filesys.FileUploadSession;
 import com.contest.result.ResultModel;
-import com.contest.service.upload.UploadService;
+import com.contest.service.UploadService;
+import com.contest.service.md5lock.Md5Lock;
 import com.contest.util.FileUtils;
 import com.contest.util.RedisUtil;
 import com.contest.util.SnowMaker;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -26,7 +28,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
-public class UploadServiceImplBk implements UploadService{
+public class UploadServiceImpl implements UploadService{
 
     @Resource
     private FileSystemEnvInfo fileSystemEnvInfo;
@@ -40,13 +42,16 @@ public class UploadServiceImplBk implements UploadService{
     @Resource
     private RedisUtil redisUtil;
 
+    @Resource
+    private Md5Lock md5Lock;
+
     public static final Map<String, Lock> md5LocksMap = new ConcurrentHashMap<>();
 
     private static final SnowMaker snowMaker = new SnowMaker(1);
 
     @Override
+    @Transactional
     public ResultModel<String> requestConcurrentUpload(FileUploadRequest fileUploadRequest) {
-        System.out.println("BK IMPL");
         // 判断文件是否存在
         File targetFile = new File(fileSystemEnvInfo.buildFilePath(fileUploadRequest.getFileMd5()));
         if(targetFile.exists()){
@@ -57,6 +62,7 @@ public class UploadServiceImplBk implements UploadService{
                     .fileId(snowMaker.nextId())
                     .createdDate(new Date())
                     .createdBy(fileUploadRequest.getUserId())
+                    .isPublic(fileUploadRequest.isPublicPerm())
                     .build();
             fileReferenceMapper.insert(fileReferenceEntity);
             fileInstanceMapper.incrReferenceNum(fileUploadRequest.getFileMd5());
@@ -64,14 +70,15 @@ public class UploadServiceImplBk implements UploadService{
         }
         // 创建session
         String sessionId = UUID.randomUUID().toString();
-        FileUploadSessionObj fileUploadSessionObj = new FileUploadSessionObj(
+        FileUploadSession fileUploadSession = new FileUploadSession(
                 sessionId,
                 fileUploadRequest.getFileMd5(),
                 fileUploadRequest.getFileName(),
                 fileSystemEnvInfo.buildFilePath(sessionId),
-                fileUploadRequest.getUserId()
+                fileUploadRequest.getUserId(),
+                fileUploadRequest.isPublicPerm()
         );
-        setFileUploadSessionIntoCache(fileUploadSessionObj);
+        setFileUploadSessionIntoCache(fileUploadSession);
         // 返回SessionID
         ResultModel<String> resultModel = ResultModel.buildContinueResultModel("请求成功！");
         resultModel.setData(sessionId);
@@ -79,8 +86,9 @@ public class UploadServiceImplBk implements UploadService{
     }
 
     @Override
+    @Transactional
     public ResultModel<String> uploadFilePiece(FileUploadDto fileUploadDto) {
-        FileUploadSessionObj fileUploadSession = getFileUploadSessionFromCache(fileUploadDto.getSessionId());
+        FileUploadSession fileUploadSession = getFileUploadSessionFromCache(fileUploadDto.getSessionId());
         // 保存文件分片
         try {
             saveFile(fileUploadSession,fileUploadDto.getPieceInputStream());
@@ -96,7 +104,6 @@ public class UploadServiceImplBk implements UploadService{
         deleteFileUploadSessionFromCache(fileUploadSession.getSessionId());
         try{
             lockMd5(fileUploadSession.getFileMd5());
-            Thread.sleep(5000);
             File targetFile = new File(fileSystemEnvInfo.buildFilePath(fileUploadSession.getFileMd5()));
             File sessionFile = new File(fileUploadSession.getFilePath());
             if(!targetFile.exists()){
@@ -115,9 +122,10 @@ public class UploadServiceImplBk implements UploadService{
                         .build();
                 saveFileInstance(fileInstanceEntity);
             }else{
+                fileInstanceMapper.incrReferenceNum(fileUploadSession.getFileMd5());
                 FileUtils.deleteFile(sessionFile);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             unlockMd5(fileUploadSession.getFileMd5());
@@ -130,12 +138,13 @@ public class UploadServiceImplBk implements UploadService{
                         .fileName(fileUploadSession.getFileName())
                         .createdDate(new Date())
                         .createdBy(fileUploadSession.getUserId())
+                        .isPublic(fileUploadSession.isPublic())
                         .build()
         );
         return ResultModel.buildSuccessResultModel("上传成功！");
     }
 
-    public void saveFile(FileUploadSessionObj fileUploadSession,InputStream in) throws IOException {
+    public void saveFile(FileUploadSession fileUploadSession, InputStream in) throws IOException {
         File file = new File(fileUploadSession.getFilePath());
         File parentFile = file.getParentFile();
         boolean parentFileExists = parentFile.exists() || parentFile.mkdirs();
@@ -148,7 +157,7 @@ public class UploadServiceImplBk implements UploadService{
         }
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file,true));
         byte[] buf = new byte[1024];
-        int byteCnt = -1;
+        int byteCnt;
         while((byteCnt = in.read(buf)) != -1){
             out.write(buf,0,byteCnt);
             out.flush();
@@ -174,27 +183,23 @@ public class UploadServiceImplBk implements UploadService{
     }
 
     public void lockMd5(String fileMd5){
-        Optional<Lock> lockOptional = Optional.ofNullable(md5LocksMap.putIfAbsent(fileMd5, new ReentrantLock()));
-        Lock lock = lockOptional.orElse(md5LocksMap.get(fileMd5));
-        lock.lock();
+        md5Lock.lock(fileMd5);
     }
 
     public void unlockMd5(String fileMd5){
-        Optional<Lock> lockOptional = Optional.ofNullable(md5LocksMap.putIfAbsent(fileMd5, new ReentrantLock()));
-        lockOptional.ifPresent(Lock::unlock);
+        md5Lock.unlock(fileMd5);
     }
 
-    public FileUploadSessionObj getFileUploadSessionFromCache(String sessionId){
-        FileUploadSessionObj fileUploadSession = redisUtil.getForObject(sessionId, FileUploadSessionObj.class);
+    public FileUploadSession getFileUploadSessionFromCache(String sessionId){
         Object value = redisUtil.getForObject("FILE_UPLOAD_SESSION_".concat(sessionId));
         if(value == null){
             return null;
         }
-        return (FileUploadSessionObj) value;
+        return (FileUploadSession) value;
     }
 
-    public void setFileUploadSessionIntoCache(FileUploadSessionObj fileUploadSessionObj){
-        redisUtil.set("FILE_UPLOAD_SESSION_".concat(fileUploadSessionObj.getSessionId()), fileUploadSessionObj);
+    public void setFileUploadSessionIntoCache(FileUploadSession fileUploadSession){
+        redisUtil.set("FILE_UPLOAD_SESSION_".concat(fileUploadSession.getSessionId()), fileUploadSession);
     }
 
     public void deleteFileUploadSessionFromCache(String sessionId){

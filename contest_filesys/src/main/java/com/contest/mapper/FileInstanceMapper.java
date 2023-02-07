@@ -8,6 +8,9 @@ import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface FileInstanceMapper extends BaseMapper<FileInstanceEntity> {
-    @Update("update file_instance set ref_num=ref_num+1 where file_md5 = #{fileMd5}")
+    @Update("update file_instance set ref_num = ref_num + 1,updated_date = now(),updated_by = 'system' where file_md5 = #{fileMd5}")
     public void incrReferenceNum(@Param("fileMd5") String fileMd5);
+
+    @Update("update file_instance set ref_num = ref_num - 1,updated_date = now(),updated_by = 'system' where file_md5 = #{fileMd5}")
+    public void decrReferenceNum(@Param("fileMd5") String fileMd5);
 }

@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class FileUploadRequest {
     private String fileMd5;
-    private Integer sumPiece;
-    private Long pieceSize;
     private String fileName;
     private String userId;
+    private boolean publicPerm;
 }

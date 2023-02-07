@@ -1,4 +1,4 @@
-package com.contest.service.upload.impl;
+package com.contest.service.impl;
 
 import com.contest.dto.notify.EmailCodeMessageDto;
 import com.contest.service.RegisterEmailService;

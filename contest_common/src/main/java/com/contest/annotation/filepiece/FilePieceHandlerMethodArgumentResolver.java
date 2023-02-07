@@ -26,7 +26,6 @@ public class FilePieceHandlerMethodArgumentResolver implements HandlerMethodArgu
         }
         return FileUploadDto.builder()
                 .pieceInputStream(request.getInputStream())
-                .seqId(Integer.parseInt(request.getHeader("seqId")))
                 .sessionId(request.getHeader("sessionId"))
                 .isLast(Boolean.parseBoolean(request.getHeader("isLast")))
                 .build();

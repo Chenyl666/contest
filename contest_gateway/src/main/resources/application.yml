@@ -20,6 +20,10 @@ spring:
           uri: lb://contest-filesys
           predicates:
             - Path=/filesys/**
+
+
+
+
     nacos:
       discovery:
         server-addr: localhost:8848
@@ -38,4 +42,4 @@ uri:
       - /login
       - /register
       - /modify
-      - /filesys/public
+      - /filesys/download
