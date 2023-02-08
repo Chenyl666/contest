@@ -2,8 +2,10 @@ package com.contest.controller;
 
 import com.contest.annotation.currentuser.CurrentUser;
 import com.contest.annotation.filepiece.FilePiece;
+import com.contest.annotation.simplefile.SimpleFileUploadRequest;
 import com.contest.annotation.uploadrequest.UploadRequest;
 import com.contest.dto.filesys.FileUploadDto;
+import com.contest.dto.filesys.SimpleFileUploadDto;
 import com.contest.dto.user.UserDto;
 import com.contest.result.ResultModel;
 import com.contest.service.DeleteService;
@@ -13,7 +15,9 @@ import com.contest.dto.filesys.FileUploadRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/filesys")
@@ -75,6 +79,5 @@ public class FileController {
     public ResultModel<String> deleteFile(@PathVariable("file_id") String fileId, @CurrentUser UserDto userDto){
         return deleteService.requestDeleteFile(fileId, userDto);
     }
-
 
 }

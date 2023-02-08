@@ -1,14 +1,8 @@
 package com.contest.service.md5lock;
 
-import com.contest.config.thread.ThreadPoolConfig;
 import org.mockito.internal.util.concurrent.WeakConcurrentMap;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,14 +21,16 @@ public class ConcurrentHashMapMd5Lock implements Md5Lock{
             md5Lock.lock();
             return;
         }
-        md5LocksMap.put(fileMd5,new ReentrantLock()).lock();
+        md5LocksMap.put(fileMd5, new ReentrantLock());
+        md5LocksMap.get(fileMd5).lock();
     }
 
     @Override
     public void unlock(String fileMd5) {
         Optional<Lock> lockOptional = Optional.ofNullable(md5LocksMap.get(fileMd5));
-        lockOptional.ifPresent(Lock::unlock);
+        if(lockOptional.isPresent()){
+            Lock lock = lockOptional.get();
+            lock.unlock();
+        }
     }
-
-
 }

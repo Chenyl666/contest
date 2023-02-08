@@ -3,6 +3,7 @@ package com.contest.service.impl;
 import com.contest.config.filesys.FileSystemEnvInfo;
 import com.contest.dto.filesys.FileUploadDto;
 import com.contest.dto.filesys.FileUploadRequest;
+import com.contest.dto.filesys.SimpleFileUploadDto;
 import com.contest.entity.filesys.FileInstanceEntity;
 import com.contest.entity.filesys.FileReferenceEntity;
 import com.contest.mapper.FileInstanceMapper;
@@ -12,17 +13,16 @@ import com.contest.result.ResultModel;
 import com.contest.service.UploadService;
 import com.contest.service.md5lock.Md5Lock;
 import com.contest.util.FileUtils;
+import com.contest.util.Md5Utils;
 import com.contest.util.RedisUtil;
 import com.contest.util.SnowMaker;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -45,8 +45,6 @@ public class UploadServiceImpl implements UploadService{
     @Resource
     private Md5Lock md5Lock;
 
-    public static final Map<String, Lock> md5LocksMap = new ConcurrentHashMap<>();
-
     private static final SnowMaker snowMaker = new SnowMaker(1);
 
     @Override
@@ -66,7 +64,7 @@ public class UploadServiceImpl implements UploadService{
                     .build();
             fileReferenceMapper.insert(fileReferenceEntity);
             fileInstanceMapper.incrReferenceNum(fileUploadRequest.getFileMd5());
-            return ResultModel.buildSuccessResultModel("上传成功！");
+            return ResultModel.buildSuccessResultModel(fileReferenceEntity.getFileId().toString());
         }
         // 创建session
         String sessionId = UUID.randomUUID().toString();
@@ -125,44 +123,28 @@ public class UploadServiceImpl implements UploadService{
                 fileInstanceMapper.incrReferenceNum(fileUploadSession.getFileMd5());
                 FileUtils.deleteFile(sessionFile);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             unlockMd5(fileUploadSession.getFileMd5());
         }
-        saveFileReference(
-                FileReferenceEntity
-                        .builder()
-                        .fileId(snowMaker.nextId())
-                        .fileMd5(fileUploadSession.getFileMd5())
-                        .fileName(fileUploadSession.getFileName())
-                        .createdDate(new Date())
-                        .createdBy(fileUploadSession.getUserId())
-                        .isPublic(fileUploadSession.isPublic())
-                        .build()
-        );
-        return ResultModel.buildSuccessResultModel("上传成功！");
+        FileReferenceEntity fileReferenceEntity = FileReferenceEntity
+                .builder()
+                .fileId(snowMaker.nextId())
+                .fileMd5(fileUploadSession.getFileMd5())
+                .fileName(fileUploadSession.getFileName())
+                .createdDate(new Date())
+                .createdBy(fileUploadSession.getUserId())
+                .isPublic(fileUploadSession.isPublic())
+                .build();
+        saveFileReference(fileReferenceEntity);
+        return ResultModel.buildSuccessResultModel(fileReferenceEntity.getFileId().toString());
     }
+
 
     public void saveFile(FileUploadSession fileUploadSession, InputStream in) throws IOException {
         File file = new File(fileUploadSession.getFilePath());
-        File parentFile = file.getParentFile();
-        boolean parentFileExists = parentFile.exists() || parentFile.mkdirs();
-        if(!parentFileExists){
-            throw new IOException("目录创建失败！");
-        }
-        boolean fileExists = file.exists() || file.createNewFile();
-        if(!fileExists){
-            throw new IOException("文件创建失败！");
-        }
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file,true));
-        byte[] buf = new byte[1024];
-        int byteCnt;
-        while((byteCnt = in.read(buf)) != -1){
-            out.write(buf,0,byteCnt);
-            out.flush();
-        }
-        out.close();
+        FileUtils.writeFile(in,file);
     }
 
     public void saveFileInstance(FileInstanceEntity fileInstanceEntity){

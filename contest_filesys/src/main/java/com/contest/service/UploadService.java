@@ -1,6 +1,7 @@
 package com.contest.service;
 
 import com.contest.dto.filesys.FileUploadDto;
+import com.contest.dto.filesys.SimpleFileUploadDto;
 import com.contest.dto.user.UserDto;
 import com.contest.result.ResultModel;
 import com.contest.dto.filesys.FileUploadRequest;

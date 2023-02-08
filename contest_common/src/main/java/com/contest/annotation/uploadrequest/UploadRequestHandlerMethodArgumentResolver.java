@@ -39,7 +39,9 @@ public class UploadRequestHandlerMethodArgumentResolver implements HandlerMethod
         FileUploadRequest fileUploadRequest = JSON.parseObject(json, FileUploadRequest.class);
         String token = request.getHeader("token");
         UserDto userDto = JwtUtil.getUserByToken(token);
-        fileUploadRequest.setUserId(userDto.getUserId());
+        if(userDto != null){
+            fileUploadRequest.setUserId(userDto.getUserId());
+        }
         return fileUploadRequest;
     }
 }

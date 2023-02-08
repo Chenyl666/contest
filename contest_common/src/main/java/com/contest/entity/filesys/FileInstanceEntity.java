@@ -27,7 +27,8 @@ public class FileInstanceEntity {
     @TableField("created_date")
     private Date createdDate;
     @TableField("updated_date")
-    private Date updatedDate;
+    @Builder.Default
+    private Date updatedDate = new Date();
     @TableField("created_by")
     private String createdBy;
     @TableField("updated_by")
