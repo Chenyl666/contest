@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginController {
 
     @Resource
-    LoginService loginService;
+    private LoginService loginService;
 
     /**
      * 发送邮箱登录验证码
@@ -31,5 +31,12 @@ public class LoginController {
         return loginService.login(userLoginDto,request.getRemoteHost());
     }
 
+    /**
+     * token登录
+     * */
+    @PostMapping("/auth/token")
+    public ResultModel<String> authToken(@RequestHeader("token") String token,HttpServletRequest request){
+        return loginService.authToken(token,request.getRemoteHost());
+    }
 
 }

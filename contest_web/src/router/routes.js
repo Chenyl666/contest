@@ -5,6 +5,10 @@ import UsrBoard from '@/page/usr/UsrBoard'
 import PasswordModifyForm from "@/page/usr/component/PasswordModifyForm";
 import RegisterForm from '@/page/usr/component/RegisterForm'
 import OperationSuccess from "@/page/usr/component/OperationSuccess";
+import MainPage from "@/page/main/MainPage";
+import {store} from "@/store";
+import {mutationName} from "@/store/mutation/const.name";
+import {style} from "@/const/style";
 
 export const routes = [
     {
@@ -23,5 +27,12 @@ export const routes = [
             {path: 'modify', component: PasswordModifyForm},
             {path: 'success', component: OperationSuccess}
         ]
+    },
+    {
+        path: '/main',
+        component: MainPage,
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.MAIN_PAGE)
+        }
     }
 ]

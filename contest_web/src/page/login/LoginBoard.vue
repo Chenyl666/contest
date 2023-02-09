@@ -13,6 +13,7 @@
         <router-view
             @to-register="$emit('to-register')"
             @to-modify="$emit('to-modify')"
+            @to-email="setEmailCodeHighLight"
             style="margin-left: 4em;margin-top: 2em"/>
       </div>
       <div style="margin-left: 29em;margin-top: -20em;border-left: 2px solid #f6f5f7;height: 22em">
@@ -59,6 +60,10 @@ export default {
       this.passwordMethodBtnHighLight = true
       this.emailCodeMethodBtnHighLight = false
     },
+    setEmailCodeHighLight(){
+      this.emailCodeMethodBtnHighLight = true
+      this.passwordMethodBtnHighLight = false
+    }
   },
   computed: {
     isEmailCodeMethodBtnHighLight(){

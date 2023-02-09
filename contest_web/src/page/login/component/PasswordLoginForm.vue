@@ -32,7 +32,7 @@
   </div>
 </template>
 <script setup>
-import { reactive } from 'vue';
+import {reactive} from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { DesktopIcon, LockOnIcon } from 'tdesign-icons-vue-next';
 import {StringUtil} from "@/util/string.util";
@@ -40,6 +40,11 @@ import {result} from "@/const/request.result";
 import {loginParam} from "@/const/login.param";
 import {request} from "@/util/request";
 import {saveToken} from "@/common/login/token.store";
+import router from "@/router/router";
+import {onBeforeRouteLeave} from "vue-router/dist/vue-router";
+import {defineEmits} from "vue";
+
+const emits = defineEmits(['to-email'])
 
 const formData = reactive({
   userId: '',
@@ -105,8 +110,8 @@ const onSubmit = () => {
   }
   request.post('/login/submit',userLoginDto).then(resp => {
     if(resp.data['resultCode'] === result.code.SUCCESS){
-      MessagePlugin.success('登录成功！')
       saveToken(resp.data['data'])
+      router.push('/main')
     }
     if(resp.data['resultCode'] === result.code.FAIL){
       MessagePlugin.error('密码错误！')
@@ -115,4 +120,8 @@ const onSubmit = () => {
     MessagePlugin.error('系统繁忙！')
   })
 };
+
+onBeforeRouteLeave(() => {
+  emits('to-email')
+})
 </script>

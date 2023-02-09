@@ -29,6 +29,14 @@ public class JwtUtil {
         return jwtCreatorBuilder.sign(Algorithm.HMAC256(SIGNATURE));
     }
 
+    public static String generateToken(String token,String ipAddress){
+        UserDto userDto = getUserByToken(token);
+        if(userDto != null){
+            return generateToken(userDto,ipAddress);
+        }
+        return null;
+    }
+
     /**
      * 验证token是否有效
      * */

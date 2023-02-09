@@ -43,6 +43,7 @@ import {loginParam} from "@/const/login.param";
 import {result} from "@/const/request.result";
 import {StringUtil} from "@/util/string.util";
 import {saveToken} from "@/common/login/token.store";
+import router from "@/router/router";
 
 const formData = reactive({
   userEmail: '',
@@ -101,8 +102,8 @@ const onSubmit = () => {
   request.post('/login/submit',userLoginDto).then(resp => {
     if(resp.status === 200){
       if(resp.data['resultCode'] === result.code.SUCCESS){
-        MessagePlugin.success('登录成功！')
         saveToken(resp.data['data'])
+        router.push('/main')
       }
       if(resp.data['resultCode'] === result.code.FAIL){
         MessagePlugin.error('验证码输入有误')

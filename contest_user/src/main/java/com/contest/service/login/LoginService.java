@@ -7,4 +7,6 @@ public interface LoginService {
     public ResultModel<String> sendUserLoginEmailCode(String userEmail);
 
     public ResultModel<String> login(UserLoginDto userLoginDto,String ip);
+
+    public ResultModel<String> authToken(String token,String ipAddr);
 }

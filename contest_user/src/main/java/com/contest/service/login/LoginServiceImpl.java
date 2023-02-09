@@ -2,6 +2,7 @@ package com.contest.service.login;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.contest.async.provider.sender.LoginCodeProvider;
+import com.contest.sso.JwtUtil;
 import com.contest.util.RedisUtil;
 import com.contest.dto.notify.EmailCodeMessageDto;
 import com.contest.dto.user.UserLoginDto;
@@ -60,6 +61,20 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public ResultModel<String> login(UserLoginDto userLoginDto,String ip) {
         return loginServiceMap.get(userLoginDto.getLoginOperation()).login(userLoginDto,ip);
+    }
+
+    /**
+     * 鉴定token
+     * */
+    @Override
+    public ResultModel<String> authToken(String token,String ipAddr) {
+        if(JwtUtil.verify(token)){
+            token = JwtUtil.generateToken(token, ipAddr);
+            if(token != null){
+                return ResultModel.buildSuccessResultModel("",token);
+            }
+        }
+        return ResultModel.buildFailResultModel("鉴定失败！");
     }
 
     /**

@@ -17,9 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 public class PictureServiceImpl implements PictureService{
 
     @Resource
-    private RestTemplate restTemplate;
-
-    @Resource
     private UserMapper userMapper;
 
     /**

@@ -4,6 +4,7 @@
       @to-register="toRegister"
       @to-login="toLogin"
       @to-modify="toModify"
+      @to-index="toIndex"
       ref="page"/>
 </template>
 
@@ -11,6 +12,13 @@
 
 import HeaderDirection from "@/page/header/HeaderNav";
 import router from "@/router/router";
+import cookies from "js-cookie";
+import {request} from "@/util/request";
+import {result} from "@/const/request.result";
+import {saveToken} from "@/common/login/token.store";
+import {store} from "@/store";
+import {mutationName} from "@/store/mutation/const.name";
+
 export default {
   name: 'App',
   components: {
@@ -30,10 +38,26 @@ export default {
     },
     toModify: () => {
       router.push("/usr/modify")
+    },
+    toIndex: () => {
+      router.push("/contest")
     }
   },
   mounted() {
-    router.push("/login")
+    let token = cookies.get('token');
+    if(token != null){
+      store.commit(mutationName.SET_TOKEN,token)
+      request.post('/login/auth/token').then(resp => {
+        if(resp.data['resultCode'] === result.code.SUCCESS){
+          saveToken(resp.data['data'])
+          router.push('/main')
+        }else{
+          router.push("/login")
+        }
+      })
+    }else{
+      router.push("/login")
+    }
   }
 }
 </script>
