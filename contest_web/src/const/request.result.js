@@ -4,6 +4,7 @@ export const result = {
         TIMEOUT: 2000,
         FAIL: 3000,
         EXCEPTION: 4000,
-        SERVICE_BREAKER: 5000
+        SERVICE_BREAKER: 5000,
+        CONTINUE: 6000
     }
 }

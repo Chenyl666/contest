@@ -1,15 +1,14 @@
 <template>
   <SwiperFrame style="margin-top: -0.7em" :picture-list="swiperPictureLinks"/>
-  <template>
-    <t-upload action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo" />
-  </template>
+  <UploadFile/>
 </template>
 
 <script>
 import SwiperFrame from "@/page/component/swiper/SwiperFrame";
+import UploadFile from "@/page/component/upload/UploadFile";
 export default {
   name: "MainPage",
-  components: {SwiperFrame},
+  components: {UploadFile, SwiperFrame},
   data() {
     return {
       swiperPictureLinks: [

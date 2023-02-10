@@ -13,17 +13,38 @@ export class request {
             baseURL: globalConfig.requestConfig.baseURL,
             responseType: "json",
             headers: {'token': store.state.token}
-        });
+        })
     }
-    static post(url, data, usingToken = false){
+    static post(url, data, usingToken = false,header = null){
         if(usingToken === true && (store.state.token === null || store.state.token === 'none')){
             router.push('/login').then()
             return;
         }
+        if(header == null){
+            header = {}
+        }
+        header['token'] = store.state.token
         return axios.post(url, data,{
             baseURL: globalConfig.requestConfig.baseURL,
             responseType: "json",
-            headers: {'token': store.state.token}
-        });
+            headers: header,
+        })
+    }
+
+    static postWithForm(url, data, usingToken = false, header = null){
+        if(usingToken === true && (store.state.token === null || store.state.token === 'none')){
+            router.push('/login').then()
+            return;
+        }
+        if(header == null){
+            header = {}
+        }
+        header['Content-Type'] = 'multipart/form-data'
+        header['token'] = store.state.token
+        return axios.post(url, data,{
+            baseURL: globalConfig.requestConfig.baseURL,
+            responseType: "json",
+            headers: header,
+        })
     }
 }

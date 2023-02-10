@@ -3,7 +3,6 @@ package com.contest.service.impl;
 import com.contest.config.filesys.FileSystemEnvInfo;
 import com.contest.dto.filesys.FileUploadDto;
 import com.contest.dto.filesys.FileUploadRequest;
-import com.contest.dto.filesys.SimpleFileUploadDto;
 import com.contest.entity.filesys.FileInstanceEntity;
 import com.contest.entity.filesys.FileReferenceEntity;
 import com.contest.mapper.FileInstanceMapper;
@@ -12,20 +11,15 @@ import com.contest.pojo.filesys.FileUploadSession;
 import com.contest.result.ResultModel;
 import com.contest.service.UploadService;
 import com.contest.service.md5lock.Md5Lock;
-import com.contest.util.FileUtils;
-import com.contest.util.Md5Utils;
-import com.contest.util.RedisUtil;
-import com.contest.util.SnowMaker;
-import lombok.SneakyThrows;
+import com.contest.result.util.FileUtils;
+import com.contest.result.util.RedisUtil;
+import com.contest.result.util.SnowMaker;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class UploadServiceImpl implements UploadService{

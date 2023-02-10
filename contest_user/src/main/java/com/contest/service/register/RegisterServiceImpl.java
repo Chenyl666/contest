@@ -2,14 +2,14 @@ package com.contest.service.register;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.contest.async.provider.sender.RegisterCodeProvider;
-import com.contest.util.RedisUtil;
+import com.contest.result.util.RedisUtil;
 import com.contest.dto.notify.EmailCodeMessageDto;
 import com.contest.dto.user.UserRegisterDto;
 import com.contest.entity.user.UserEntity;
 import com.contest.mapper.UserMapper;
 import com.contest.result.ResultFlag;
 import com.contest.result.ResultModel;
-import com.contest.util.RandomGenerator;
+import com.contest.result.util.RandomGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;

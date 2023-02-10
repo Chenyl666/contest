@@ -1,4 +1,4 @@
-package com.contest.util;
+package com.contest.result.util;
 
 import com.alibaba.fastjson2.JSON;
 import org.springframework.data.redis.core.RedisTemplate;

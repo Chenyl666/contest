@@ -12,12 +12,16 @@ import com.contest.service.DeleteService;
 import com.contest.service.DownloadService;
 import com.contest.service.UploadService;
 import com.contest.dto.filesys.FileUploadRequest;
+import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/filesys")

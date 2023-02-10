@@ -1,4 +1,4 @@
-package com.contest.util;
+package com.contest.result.util;
 
 import org.apache.commons.codec.digest.DigestUtils;
 

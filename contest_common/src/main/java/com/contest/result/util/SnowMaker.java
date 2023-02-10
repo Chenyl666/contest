@@ -1,4 +1,4 @@
-package com.contest.util;
+package com.contest.result.util;
 
 
 public class SnowMaker {
