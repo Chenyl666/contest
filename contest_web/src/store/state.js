@@ -1,6 +1,7 @@
 export const state = () => {
     return {
         token: 'none',
-        page: 'none'
+        page: 'none',
+        userDto: undefined
     }
 }

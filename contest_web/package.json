@@ -12,6 +12,7 @@
     "core-js": "^3.8.3",
     "js-cookie": "^3.0.1",
     "lottie-web": "^5.10.1",
+    "spark-md5": "^3.0.2",
     "tdesign-icons-vue-next": "^0.1.7",
     "tdesign-vue-next": "^1.0.4",
     "vue": "^3.2.13",

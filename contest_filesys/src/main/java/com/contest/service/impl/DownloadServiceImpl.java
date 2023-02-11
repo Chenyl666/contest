@@ -33,7 +33,7 @@ public class DownloadServiceImpl implements DownloadService {
     @Override
     public void download(String fileId, HttpServletResponse response, UserDto userDto, boolean isOnline) {
         FileReferenceEntity fileReferenceEntity = fileReferenceMapper.selectById(fileId);
-        if(!fileReferenceEntity.isPublic() && (
+        if( fileReferenceEntity == null || !fileReferenceEntity.isPublic() && (
                 userDto == null || !userDto.getUserId().equals(fileReferenceEntity.getCreatedBy()))
         ){
             return;

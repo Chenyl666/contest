@@ -1,6 +1,9 @@
 package com.contest.controller;
 
+import com.contest.annotation.currentuser.CurrentUser;
+import com.contest.dto.user.UserDto;
 import com.contest.dto.user.UserLoginDto;
+import com.contest.result.ResultFlag;
 import com.contest.result.ResultModel;
 import com.contest.service.login.LoginService;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +40,19 @@ public class LoginController {
     @PostMapping("/auth/token")
     public ResultModel<String> authToken(@RequestHeader("token") String token,HttpServletRequest request){
         return loginService.authToken(token,request.getRemoteHost());
+    }
+
+    /**
+     * 通过token获取当前用户
+     * */
+    @GetMapping("/token/user/get")
+    public ResultModel<UserDto> getUserByToken(@CurrentUser UserDto userDto){
+        return ResultModel
+                .<UserDto>builder()
+                .data(userDto)
+                .resultCode(ResultFlag.SUCCESS.code)
+                .resultFlag(ResultFlag.SUCCESS)
+                .build();
     }
 
 }

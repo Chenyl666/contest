@@ -31,20 +31,18 @@ export class request {
         })
     }
 
-    static postWithForm(url, data, usingToken = false, header = null){
+    static postFile(url, data, usingToken = false){
         if(usingToken === true && (store.state.token === null || store.state.token === 'none')){
             router.push('/login').then()
             return;
         }
-        if(header == null){
-            header = {}
-        }
-        header['Content-Type'] = 'multipart/form-data'
-        header['token'] = store.state.token
         return axios.post(url, data,{
             baseURL: globalConfig.requestConfig.baseURL,
             responseType: "json",
-            headers: header,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'token': store.state.token
+            },
         })
     }
 }

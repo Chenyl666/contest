@@ -1,13 +1,10 @@
 package com.contest.dto.user;
 
-import com.contest.entity.user.UnitEntity;
 import com.contest.entity.user.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 @Data
 @NoArgsConstructor

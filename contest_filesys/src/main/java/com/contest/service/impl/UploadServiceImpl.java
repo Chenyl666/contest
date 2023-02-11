@@ -58,7 +58,9 @@ public class UploadServiceImpl implements UploadService{
                     .build();
             fileReferenceMapper.insert(fileReferenceEntity);
             fileInstanceMapper.incrReferenceNum(fileUploadRequest.getFileMd5());
-            return ResultModel.buildSuccessResultModel(fileReferenceEntity.getFileId().toString());
+            ResultModel<String> resultModel = ResultModel.buildSuccessResultModel();
+            resultModel.setData(fileReferenceEntity.getFileId().toString());
+            return resultModel;
         }
         // 创建session
         String sessionId = UUID.randomUUID().toString();
@@ -72,7 +74,7 @@ public class UploadServiceImpl implements UploadService{
         );
         setFileUploadSessionIntoCache(fileUploadSession);
         // 返回SessionID
-        ResultModel<String> resultModel = ResultModel.buildContinueResultModel("请求成功！");
+        ResultModel<String> resultModel = ResultModel.buildContinueResultModel();
         resultModel.setData(sessionId);
         return resultModel;
     }
@@ -132,13 +134,15 @@ public class UploadServiceImpl implements UploadService{
                 .isPublic(fileUploadSession.isPublic())
                 .build();
         saveFileReference(fileReferenceEntity);
-        return ResultModel.buildSuccessResultModel(fileReferenceEntity.getFileId().toString());
+        ResultModel<String> resultModel = ResultModel.buildSuccessResultModel();
+        resultModel.setData(fileReferenceEntity.getFileId().toString());
+        return resultModel;
     }
 
 
     public void saveFile(FileUploadSession fileUploadSession, InputStream in) throws IOException {
         File file = new File(fileUploadSession.getFilePath());
-        FileUtils.writeFile(in,file);
+        FileUtils.writeFileByAppend(in,file);
     }
 
     public void saveFileInstance(FileInstanceEntity fileInstanceEntity){

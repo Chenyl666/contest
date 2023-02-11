@@ -4,5 +4,8 @@ export const mutations = {
     },
     setPage(state,page){
         state.page = page
+    },
+    setUser(state,userDto){
+        state.userDto = userDto
     }
 }

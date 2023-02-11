@@ -15,48 +15,38 @@
 <script setup>
 import { ref } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
-import {request} from "@/util/request";
-import {result} from "@/const/request.result";
+import {upload} from '@/util/upload.util'
+// import {request} from "@/util/request";
+// import {result} from "@/const/request.result";
+// import {result} from "@/const/request.result";
 
 const files = ref([]);
-
-const data = {
-  fileName: '',
-  fileMd5: '',
-  publicPerm: true
-}
 
 const handleFail = ({ file }) => {
 
   MessagePlugin.error(`文件 ${file.name} 上传失败`);
 };
 
-const requestMethod = async (file) => {
-  data.fileName = file.name
-  data.fileMd5 = 'test'
-  data.publicPerm = true
-  let resultCode
-  let sessionId
-  await request.post('/filesys/upload/request', data, true).then(resp => {
-    resultCode = resp.data['resultCode']
-    if(resultCode === result.code.CONTINUE){
-      sessionId = resp.data['data']
-    }
-  })
-  if(resultCode === result.code.SUCCESS){
-    await MessagePlugin.success('上传成功！')
-  }else if(resultCode === result.code.CONTINUE){
-    let data = {
-      sessionId: sessionId,
-      isLast: true,
-      filePiece: file.raw
-    }
-    await request.postWithForm('/filesys/upload/file',data,true).then(async resp => {
-      if (resp.data['resultCode'] === result.code.SUCCESS) {
-        await MessagePlugin.success('上传成功！')
-      }
-    })
-  }
+const requestMethod = async (file,publicPerm) => {
+  await upload(file.raw, file.name, publicPerm)
+  console.log('dddd')
+  // console.log(Object.keys(file.raw))
+  // data.fileName = file.name
+  // data.fileMd5 = 'test'
+  // data.publicPerm = true
+  // let resultCode
+  // let sessionId
+  // await request.post('/filesys/upload/request', data, true).then(resp => {
+  //   resultCode = resp.data['resultCode']
+  //   if(resultCode === result.code.CONTINUE){
+  //     sessionId = resp.data['data']
+  //   }
+  // })
+  // if(resultCode === result.code.SUCCESS){
+  //   await MessagePlugin.success('上传成功！')
+  // }else if(resultCode === result.code.CONTINUE){
+  //   await splitUpload(file.raw, sessionId)
+  // }
 
 }
 </script>

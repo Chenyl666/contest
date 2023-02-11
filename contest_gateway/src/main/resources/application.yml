@@ -15,15 +15,11 @@ spring:
         - id: contest-user
           uri: lb://contest-user
           predicates:
-            - Path=/login/**,/register/**,/modify/**
+            - Path=/login/**,/register/**,/modify/**,/user/**
         - id: contest-filesys
           uri: lb://contest-filesys
           predicates:
             - Path=/filesys/**
-
-
-
-
     nacos:
       discovery:
         server-addr: localhost:8848
@@ -43,3 +39,4 @@ uri:
       - /register
       - /modify
       - /filesys/download
+      - /user/pic/get

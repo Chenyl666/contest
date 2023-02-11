@@ -1,14 +1,12 @@
 <template>
   <SwiperFrame style="margin-top: -0.7em" :picture-list="swiperPictureLinks"/>
-  <UploadFile/>
 </template>
 
 <script>
 import SwiperFrame from "@/page/component/swiper/SwiperFrame";
-import UploadFile from "@/page/component/upload/UploadFile";
 export default {
   name: "MainPage",
-  components: {UploadFile, SwiperFrame},
+  components: {SwiperFrame},
   data() {
     return {
       swiperPictureLinks: [

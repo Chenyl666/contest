@@ -9,6 +9,10 @@ import MainPage from "@/page/main/MainPage";
 import {store} from "@/store";
 import {mutationName} from "@/store/mutation/const.name";
 import {style} from "@/const/style";
+import ContestPage from "@/page/main/ContestPage";
+import QuestionRepoPage from "@/page/main/QuestionRepoPage";
+import CoursePage from "@/page/main/CoursePage";
+import BookPage from "@/page/main/BookPage";
 
 export const routes = [
     {
@@ -33,6 +37,34 @@ export const routes = [
         component: MainPage,
         beforeEnter: () => {
             store.commit(mutationName.SET_PAGE, style.HEADER_MENU.MAIN_PAGE)
+        }
+    },
+    {
+        path: '/contest',
+        component: ContestPage,
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.CONTEST_PAGE)
+        }
+    },
+    {
+        path: '/ques',
+        component: QuestionRepoPage,
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.QUESTION_REPO)
+        }
+    },
+    {
+        path: '/course',
+        component: CoursePage,
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.COURSE_PAGE)
+        }
+    },
+    {
+        path: '/book',
+        component: BookPage,
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.BOOK_PAGE)
         }
     }
 ]

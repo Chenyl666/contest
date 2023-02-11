@@ -5,28 +5,28 @@
       <div style="margin-left: 28em;position: fixed">
         <ul style="display: flex;list-style-type:none;margin-top: -3em">
           <li class="dir-item">
-            <t-badge :count="menu.tag.mainPage.hot" class="txt">
-              <span :style="{fontWeight: isMainPage,textDecoration: isMainPage==='bold'?'underline':null}">首页</span>
+            <t-badge @click="changePage('mainPage')" @mouseenter="menu.tag.mainPage.select = true" @mouseleave="menu.tag.mainPage.select = false" :count="menu.tag.mainPage.hot" class="txt">
+              <span :class="{selected: isMainPage, selecting: menu.tag.mainPage.select}" :style="{fontWeight: isMainPage?'bold':'underline'}">首页</span>
             </t-badge>
           </li>
           <li class="dir-item">
-            <t-badge :count="menu.tag.contestPage.hot" class="txt">
-              <span :style="{fontWeight: isContestPage,textDecoration: isContestPage==='bold'?'underline':null}">竞赛</span>
+            <t-badge @click="changePage('contestPage')" @mouseenter="menu.tag.contestPage.select = true" @mouseleave="menu.tag.contestPage.select = false" :count="menu.tag.contestPage.hot" class="txt">
+              <span :class="{selected: isContestPage, selecting: menu.tag.contestPage.select}" :style="{fontWeight: isContestPage?'bold':'underline'}">竞赛</span>
             </t-badge>
           </li>
           <li class="dir-item">
-            <t-badge :count="menu.tag.questionRepo.hot" class="txt">
-              <span :style="{fontWeight: isQuestionPage,textDecoration: isQuestionPage==='bold'?'underline':null}">题库</span>
+            <t-badge @click="changePage('questionRepo')" @mouseenter="menu.tag.questionRepo.select = true" @mouseleave="menu.tag.questionRepo.select = false" :count="menu.tag.questionRepo.hot" class="txt">
+              <span :class="{selected: isQuestionPage, selecting: menu.tag.questionRepo.select}" :style="{fontWeight: isQuestionPage?'bold':'underline'}">题库</span>
             </t-badge>
           </li>
           <li class="dir-item">
-            <t-badge :count="menu.tag.coursePage.hot" class="txt">
-              <span :style="{fontWeight: isCoursePage,textDecoration: isCoursePage==='bold'?'underline':null}">课程</span>
+            <t-badge @click="changePage('coursePage')" @mouseenter="menu.tag.coursePage.select = true" @mouseleave="menu.tag.coursePage.select = false" :count="menu.tag.coursePage.hot" class="txt">
+              <span :class="{selected: isCoursePage, selecting: menu.tag.coursePage.select}" :style="{fontWeight: isCoursePage?'bold':'underline'}">课程</span>
             </t-badge>
           </li>
           <li class="dir-item">
-            <t-badge :count="menu.tag.bookPage.hot" class="txt">
-              <span :style="{fontWeight: isBookPage,textDecoration: isBookPage==='bold'?'underline':null}">图书</span>
+            <t-badge @click="changePage('bookPage')" @mouseenter="menu.tag.bookPage.select = true" @mouseleave="menu.tag.bookPage.select = false" :count="menu.tag.bookPage.hot" class="txt">
+              <span :class="{selected: isBookPage, selecting: menu.tag.bookPage.select}" :style="{fontWeight: isBookPage?'bold':'underline'}">图书</span>
             </t-badge>
           </li>
         </ul>
@@ -53,6 +53,38 @@
 
         </div>
         <div v-if="token!==null && token!== `none`">
+          <t-popup content="举办比赛"
+                   trigger="hover"
+                   placement="bottom"
+                   v-if="user.userType === 'ORGANIZER'">
+            <FlagIcon
+                @mouseenter="btn.organized = '#2c9fe5'"
+                @mouseleave="btn.organized = '#B5C0CA'"
+                :style="{marginLeft: '0.7em',color: btn.organized,cursor: 'pointer'}"
+                size="1.95em"/>
+          </t-popup>
+
+          <t-popup content="参加比赛"
+                   trigger="hover"
+                   placement="bottom"
+                   v-if="user.userType === 'PARTICIPANT'">
+            <AddRectangleIcon
+                @mouseenter="btn.notification = '#2c9fe5'"
+                @mouseleave="btn.notification = '#B5C0CA'"
+                :style="{marginLeft: '0.7em',color: btn.notification,cursor: 'pointer'}"
+                size="1.95em"/>
+          </t-popup>
+
+          <t-popup content="消息通知"
+                   trigger="hover"
+                   placement="bottom">
+            <NotificationFilledIcon
+                @mouseenter="btn.takePartIn = '#2c9fe5'"
+                @mouseleave="btn.takePartIn = '#B5C0CA'"
+                :style="{marginLeft: '0.4em',color: btn.takePartIn,cursor: 'pointer'}"
+                size="1.95em"/>
+          </t-popup>
+
           <t-dropdown :options="user.menu" @click="userMenuHandler">
             <template #1>
               <ArrowRightIcon/>
@@ -69,15 +101,15 @@
             <template #5>
               <StarFilledIcon />
             </template>
-            <t-space style="cursor: pointer" :size="100">
-              <t-avatar shape="circle" :image="user.userPic" :hide-on-load-failed="false" />
-            </t-space>
+            <div style="margin-left: 7.2em;margin-top: -2em;">
+              <t-space style="cursor: pointer;" :size="100">
+                <t-avatar shape="circle" :image="user.userPic" :hide-on-load-failed="false" />
+              </t-space>
+              <div style="margin-left: 2.5em;margin-top: -1.7em">
+                <span style="cursor: pointer">{{user.userName}}</span>
+              </div>
+            </div>
           </t-dropdown>
-          <NotificationFilledIcon
-              @mouseenter="btn.notification = '#2c9fe5'"
-              @mouseleave="btn.notification = '#B5C0CA'"
-              :style="{marginLeft: '0.7em',color: btn.notification,cursor: 'pointer'}"
-              size="1.8em"/>
         </div>
       </div>
     </div>
@@ -88,56 +120,77 @@
       :is-visible="this.dialog.ensureLogout"
       title="提示"
       content="确定要退出登录吗？"/>
+
 </template>
 
 <script>
 import {mapState} from "vuex";
-import {ArrowRightIcon,LockOnIcon,UserIcon,ShopIcon,StarFilledIcon,NotificationFilledIcon} from "tdesign-icons-vue-next";
+import {
+  ArrowRightIcon,
+  LockOnIcon,
+  UserIcon,
+  ShopIcon,
+  StarFilledIcon,
+  NotificationFilledIcon, AddRectangleIcon, FlagIcon,
+} from "tdesign-icons-vue-next";
 import ConfirmDialog from "@/page/component/dialog/ConfirmDialog";
 import {removeToken} from "@/common/login/token.store";
 import {style} from "@/const/style";
 import {store} from "@/store";
+import {DEV_CONFIG} from "@/config/dev.config";
+import router from "@/router/router";
 
 export default {
   name: "HeaderDirection",
-  components: {ConfirmDialog, ArrowRightIcon,LockOnIcon,UserIcon,ShopIcon,StarFilledIcon,NotificationFilledIcon},
+  components: {
+    FlagIcon,
+    AddRectangleIcon,
+    ConfirmDialog, ArrowRightIcon,LockOnIcon,UserIcon,ShopIcon,StarFilledIcon,NotificationFilledIcon},
   data() {
     return {
-      userName: '',
       registerBtn: {
         ghost: true
       },
       btn: {
-        notification: '#B5C0CA'
+        notification: '#B5C0CA',
+        takePartIn: '#B5C0CA',
+        organized: '#B5C0CA'
       },
       menu: {
         tag: {
           mainPage: {
-            hot: ''
+            hot: '',
+            select: false
           },
           contestPage: {
-            hot: 'hot'
+            hot: 'hot',
+            select: false
           },
           questionRepo: {
-            hot: ''
+            hot: '',
+            select: false
           },
           coursePage: {
-            hot: ''
+            hot: '',
+            select: false
           },
           bookPage: {
-            hot: ''
+            hot: '',
+            select: false
           }
         }
       },
       user: {
-        userPic: 'http://127.0.0.1:8080/filesys/download/inline/421432667465060352',
+        operation: '参赛',
+        userName: '',
+        userPic: '',
+        userType: '',
         menu: [
-            { content: <div style="text-align: center">臭崽崽</div>,   value: 1, divider: true,  prefixIcon: '' },
-            { content: '我的竞赛', value: 2, divider: false, prefixIcon: <StarFilledIcon /> },
-            { content: '我的订单', value: 3, divider: false, prefixIcon: <ShopIcon/> },
-            { content: '个人信息', value: 4, divider: false, prefixIcon: <UserIcon /> },
-            { content: '修改密码', value: 5, divider: false, prefixIcon: <LockOnIcon /> },
-            { content: '退出登录', value: 6, divider: false, prefixIcon: <ArrowRightIcon /> }
+            { content: '我的竞赛', value: 1, divider: false, prefixIcon: <StarFilledIcon /> },
+            { content: '我的订单', value: 2, divider: false, prefixIcon: <ShopIcon/> },
+            { content: '个人信息', value: 3, divider: false, prefixIcon: <UserIcon /> },
+            { content: '修改密码', value: 4, divider: false, prefixIcon: <LockOnIcon /> },
+            { content: '退出登录', value: 5, divider: false, prefixIcon: <ArrowRightIcon /> }
         ]
       },
       dialog: {
@@ -148,7 +201,7 @@ export default {
   methods: {
     userMenuHandler: function(item) {
       // MessagePlugin.info("选中" + item.value + ": " + item.content)
-      if(item.value === 6){
+      if(item.value === 5){
         this.confirmLogout()
       }
     },
@@ -163,7 +216,31 @@ export default {
     },
     onCloseLogout: function () {
       this.dialog.ensureLogout = false
+    },
+    changePage: (page) => {
+      switch (page) {
+        case style.HEADER_MENU.MAIN_PAGE: {
+          router.push('/main')
+          break
+        }
+        case style.HEADER_MENU.CONTEST_PAGE: {
+          router.push('/contest')
+          break
+        }
+        case style.HEADER_MENU.QUESTION_REPO: {
+          router.push('/ques')
+          break
+        }
+        case style.HEADER_MENU.COURSE_PAGE: {
+          router.push('/course')
+          break
+        }
+        case style.HEADER_MENU.BOOK_PAGE: {
+          router.push('/book')
+          break
+        }
     }
+  }
   },
   computed: {
     ...mapState({
@@ -171,23 +248,32 @@ export default {
       page: 'page'
     }),
     isMainPage: function () {
-      return store.state.page === style.HEADER_MENU.MAIN_PAGE?'bold':'initial'
+      return store.state.page === style.HEADER_MENU.MAIN_PAGE
     },
     isContestPage: function () {
-      return store.state.page === style.HEADER_MENU.CONTEST_PAGE?'bold':'initial'
+      return store.state.page === style.HEADER_MENU.CONTEST_PAGE
     },
     isQuestionPage: function () {
-      return store.state.page === style.HEADER_MENU.QUESTION_REPO?'bold':'initial'
+      return store.state.page === style.HEADER_MENU.QUESTION_REPO
     },
     isCoursePage: function () {
-      return store.state.page === style.HEADER_MENU.COURSE_PAGE?'bold':'initial'
+      return store.state.page === style.HEADER_MENU.COURSE_PAGE
     },
     isBookPage: function () {
-      return store.state.page === style.HEADER_MENU.BOOK_PAGE?'bold':'initial'
+      return store.state.page === style.HEADER_MENU.BOOK_PAGE
     }
   },
   watch: {
-
+    "$store.state.userDto":{
+      handler:function(newVal){
+        if(newVal !== undefined){
+          this.user.userName = store.state.userDto.userName
+          this.user.userPic = DEV_CONFIG.BASE_URL.concat('/user/pic/get/').concat(store.state.userDto.userId)
+          this.user.userType = store.state.userDto.userType
+        }
+        console.log(store.state.userDto)
+      }
+    }
   }
 }
 </script>
@@ -208,6 +294,15 @@ export default {
   }
   t-button{
     white-space:nowrap
+  }
+  .selected{
+    color: deepskyblue;
+    border-bottom: 3px solid deepskyblue;
+    font-weight: bold;
+  }
+
+  .selecting{
+    color: deepskyblue;
   }
 
 </style>

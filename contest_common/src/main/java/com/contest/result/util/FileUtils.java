@@ -2,7 +2,6 @@ package com.contest.result.util;
 
 import lombok.SneakyThrows;
 
-import javax.servlet.ServletInputStream;
 import java.io.*;
 import java.nio.file.Files;
 
@@ -35,10 +34,10 @@ public class FileUtils {
     }
 
     @SneakyThrows
-    public static void writeFile(InputStream in, File targetFile){
+    public static void writeFileByAppend(InputStream in, File targetFile){
         createFile(targetFile);
         byte[] buf = new byte[1024];
-        OutputStream out = new BufferedOutputStream(Files.newOutputStream(targetFile.toPath()));
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(targetFile,true));
         int bufCnt;
         while((bufCnt = in.read(buf))!=-1){
             out.write(buf,0,bufCnt);
@@ -46,5 +45,7 @@ public class FileUtils {
         out.flush();
         out.close();
     }
+
+
 
 }
