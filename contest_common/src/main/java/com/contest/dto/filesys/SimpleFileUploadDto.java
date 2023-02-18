@@ -14,7 +14,6 @@ import java.io.InputStream;
 public class SimpleFileUploadDto {
     private String fileName;
     private boolean publicPerm;
-    private InputStream in;
-    private String userId;
-    private String fileMd5;
+    private byte[] fileBytes;
+    private boolean timeLimit;
 }

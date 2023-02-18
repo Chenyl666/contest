@@ -1,17 +1,22 @@
 import {request} from "@/util/request";
 import SparkMD5 from "spark-md5"
-import {result} from "@/const/request.result";
+import {result} from "@/common/request.result";
+import {store} from "@/store";
+import {mutationName} from "@/store/mutations/const.name";
 
 
 export const upload = async (file,fileName,publicPerm) => {
-    generateMd5(file, async (fileMd5) => {
-        console.log('md5: ' + fileMd5)
+    await generateMd5(file, async (fileMd5) => {
         let resultCode
         let sessionId
         await request.post('/filesys/upload/request', {
             fileName, fileMd5, publicPerm
         }, true).then(resp => {
             resultCode = resp.data['resultCode']
+            if(resultCode === result.code.SUCCESS){
+                // todo
+                return
+            }
             if (resultCode === result.code.CONTINUE) {
                 sessionId = resp.data['data']
             }
@@ -33,11 +38,10 @@ export const splitUpload = async (file, sessionId) => {
             const fileChunks = await splitFile(file, eachSize, chunks);
             let currentChunk = 0;
             for (let i = 0; i < fileChunks.length; i++) {
-                console.log(currentChunk, i);
                 if (Number(currentChunk) === i) {
                     let isLast = (i === fileChunks.length-1)
                     await postFile(
-                        fileChunks[i],isLast,sessionId
+                        fileChunks[i],isLast,sessionId,false
                     );
                     currentChunk++
                 }
@@ -72,7 +76,11 @@ const postFile = async (filePiece,isLast,sessionId,usingToken = false) => {
         filePiece: filePiece,
         isLast: isLast,
         sessionId: sessionId,
-    }, usingToken)
+    }, usingToken).then(resp => {
+        if(isLast){
+            store.commit(mutationName.SET_FILE_URL,resp.data.data)
+        }
+    })
 }
 
 const generateMd5 = (f,callback) => {
@@ -85,7 +93,6 @@ const generateMd5 = (f,callback) => {
         chunks = Math.ceil(file.size / chunkSize),
         currentChunk = 0,
         spark = new SparkMD5();
-
     fileReader.onload = function(e) {
         console.log("read chunk nr", currentChunk + 1, "of", chunks);
         spark.appendBinary(e.target.result); // append binary string

@@ -2,13 +2,13 @@ package com.contest.service.modify;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.contest.async.provider.sender.ModifyCodeProvider;
-import com.contest.result.util.RedisUtil;
+import com.contest.util.RedisUtil;
 import com.contest.dto.ModifyPwdDto;
 import com.contest.dto.notify.EmailCodeMessageDto;
 import com.contest.entity.user.UserEntity;
 import com.contest.mapper.UserMapper;
 import com.contest.result.ResultModel;
-import com.contest.result.util.RandomGenerator;
+import com.contest.util.RandomGenerator;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

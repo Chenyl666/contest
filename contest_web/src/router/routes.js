@@ -7,12 +7,18 @@ import RegisterForm from '@/page/usr/component/RegisterForm'
 import OperationSuccess from "@/page/usr/component/OperationSuccess";
 import MainPage from "@/page/main/MainPage";
 import {store} from "@/store";
-import {mutationName} from "@/store/mutation/const.name";
-import {style} from "@/const/style";
+import {mutationName} from "@/store/mutations/const.name";
+import {style} from "@/common/style";
 import ContestPage from "@/page/main/ContestPage";
 import QuestionRepoPage from "@/page/main/QuestionRepoPage";
 import CoursePage from "@/page/main/CoursePage";
 import BookPage from "@/page/main/BookPage";
+import CreatedContestPage from "@/page/contest/CreatedContestPage";
+import ContestMessage from '@/page/contest/component/ContestMessage'
+import EnrollMessage from "@/page/contest/component/EnrollMessage";
+import ContestChecking from "@/page/contest/component/ContestChecking";
+import ContestList from "@/page/contest/ContestListPage";
+import ContestDetailPage from "@/page/contest/ContestDetailPage";
 
 export const routes = [
     {
@@ -65,6 +71,57 @@ export const routes = [
         component: BookPage,
         beforeEnter: () => {
             store.commit(mutationName.SET_PAGE, style.HEADER_MENU.BOOK_PAGE)
+        }
+    },
+    {
+        path: '/contest/create',
+        component: CreatedContestPage,
+        redirect: '/contest/create/first',
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.CONTEST_PAGE)
+        },
+        children: [
+            {
+                path: '/contest/create/first',
+                component: ContestMessage,
+                beforeEnter: () => {
+                    if(store.state.createdContestPage.createContestStep !== 0){
+                        store.commit(mutationName.SET_CREATE_CONTEST_STEP,0)
+                    }
+                }
+            },
+            {
+                path: '/contest/create/second',
+                component: EnrollMessage,
+                beforeEnter: () => {
+                    if(store.state.createdContestPage.createContestStep !== 1){
+                        store.commit(mutationName.SET_CREATE_CONTEST_STEP,1)
+                    }
+                }
+            },
+            {
+                path: '/contest/create/third',
+                component: ContestChecking,
+                beforeEnter: () => {
+                    if(store.state.createdContestPage.createContestStep !== 2){
+                        store.commit(mutationName.SET_CREATE_CONTEST_STEP,2)
+                    }
+                }
+            }
+        ]
+    },
+    {
+        path: '/contest/list',
+        component: ContestList,
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.CONTEST_PAGE)
+        }
+    },
+    {
+        path: '/contest/detail/:contestId',
+        component: ContestDetailPage,
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.CONTEST_PAGE)
         }
     }
 ]

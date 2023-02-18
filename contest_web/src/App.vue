@@ -1,5 +1,8 @@
 <template>
-  <HeaderDirection @to-login="toLogin" @to-register="toRegister" ref="test"/>
+  <HeaderDirection
+      @to-login="toLogin"
+      @to-register="toRegister"
+      @to-contest-list="toContestList" ref="test"/>
   <router-view
       @to-register="toRegister"
       @to-login="toLogin"
@@ -14,10 +17,10 @@ import HeaderDirection from "@/page/header/HeaderNav";
 import router from "@/router/router";
 import cookies from "js-cookie";
 import {request} from "@/util/request";
-import {result} from "@/const/request.result";
-import {saveToken} from "@/common/login/token.store";
+import {result} from "@/common/request.result";
+import {saveToken} from "@/common/token.store";
 import {store} from "@/store";
-import {mutationName} from "@/store/mutation/const.name";
+import {mutationName} from "@/store/mutations/const.name";
 
 export default {
   name: 'App',
@@ -26,7 +29,6 @@ export default {
   },
   data() {
     return {
-
     }
   },
   methods: {
@@ -41,6 +43,9 @@ export default {
     },
     toIndex: () => {
       router.push("/contest")
+    },
+    toContestList: () => {
+      router.push('/contest/list')
     }
   },
   mounted() {
@@ -50,7 +55,8 @@ export default {
       request.post('/login/auth/token').then(resp => {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
-          router.push('/main')
+          // router.push('/main')
+          router.push('/contest/create/first')
         }else{
           router.push("/login")
         }

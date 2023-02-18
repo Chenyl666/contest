@@ -2,7 +2,7 @@ package com.contest.config;
 
 import com.contest.annotation.currentuser.CurrentUserHandlerMethodArgumentResolver;
 import com.contest.annotation.filepiece.FilePieceHandlerMethodArgumentResolver;
-import com.contest.annotation.simplefile.SimpleFileUploadRequestMethodArgumentResolver;
+import com.contest.annotation.simplefile.SimpleFileRequestBodyMethodArgumentResolver;
 import com.contest.annotation.uploadrequest.UploadRequestHandlerMethodArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -18,6 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(new CurrentUserHandlerMethodArgumentResolver());
         resolvers.add(new FilePieceHandlerMethodArgumentResolver());
         resolvers.add(new UploadRequestHandlerMethodArgumentResolver());
-        resolvers.add(new SimpleFileUploadRequestMethodArgumentResolver());
+        resolvers.add(new SimpleFileRequestBodyMethodArgumentResolver());
     }
 }

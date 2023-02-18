@@ -1,5 +1,5 @@
 server:
-  port: 6186
+  port: 6182
 
 spring:
   cloud:

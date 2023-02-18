@@ -39,10 +39,10 @@ import { reactive } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import {CheckCircleIcon, MailIcon} from 'tdesign-icons-vue-next';
 import {request} from "@/util/request";
-import {loginParam} from "@/const/login.param";
-import {result} from "@/const/request.result";
+import {loginParam} from "@/common/login.param";
+import {result} from "@/common/request.result";
 import {StringUtil} from "@/util/string.util";
-import {saveToken} from "@/common/login/token.store";
+import {saveToken} from "@/common/token.store";
 import router from "@/router/router";
 
 const formData = reactive({

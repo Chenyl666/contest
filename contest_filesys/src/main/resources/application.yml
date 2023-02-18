@@ -7,3 +7,8 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 100MB
+
+filesys:
+  download-url-prefix:
+    inline: http://127.0.0.1:8080/filesys/download/inline/
+    attachment: http://127.0.0.1:8080/filesys/download/attachment/

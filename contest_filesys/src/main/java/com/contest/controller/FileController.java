@@ -2,11 +2,12 @@ package com.contest.controller;
 
 import com.contest.annotation.currentuser.CurrentUser;
 import com.contest.annotation.filepiece.FilePiece;
-import com.contest.annotation.simplefile.SimpleFileUploadRequest;
+import com.contest.annotation.simplefile.SimpleFileRequestBody;
 import com.contest.annotation.uploadrequest.UploadRequest;
 import com.contest.dto.filesys.FileUploadDto;
 import com.contest.dto.filesys.SimpleFileUploadDto;
 import com.contest.dto.user.UserDto;
+import com.contest.result.FullAdapterResult;
 import com.contest.result.ResultModel;
 import com.contest.service.DeleteService;
 import com.contest.service.DownloadService;
@@ -14,14 +15,15 @@ import com.contest.service.UploadService;
 import com.contest.dto.filesys.FileUploadRequest;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/filesys")
@@ -50,6 +52,29 @@ public class FileController {
     @PostMapping("/upload/file")
     public ResultModel<String> uploadFilePiece(@FilePiece FileUploadDto fileUploadDto){
         return uploadService.uploadFilePiece(fileUploadDto);
+    }
+
+    /**
+     * 上传简单文件
+     * */
+    @PostMapping("/upload/simple")
+    public ResultModel<String> uploadSimpleFile(
+            @CurrentUser UserDto userDto,
+            @SimpleFileRequestBody SimpleFileUploadDto simpleFileUploadDto
+    ){
+        return uploadService.uploadSimpleFile(userDto, simpleFileUploadDto);
+    }
+
+    /**
+     * 上传富文本编辑器文件
+     * */
+    @SneakyThrows
+    @PostMapping("/upload/fulltext")
+    public FullAdapterResult uploadFullTextFile(
+            @CurrentUser UserDto userDto,
+            @SimpleFileRequestBody SimpleFileUploadDto simpleFileUploadDto
+    ){
+        return new FullAdapterResult(uploadSimpleFile(userDto, simpleFileUploadDto));
     }
 
     /**

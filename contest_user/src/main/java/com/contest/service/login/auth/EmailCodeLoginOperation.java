@@ -1,7 +1,7 @@
 package com.contest.service.login.auth;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.contest.result.util.RedisUtil;
+import com.contest.util.RedisUtil;
 import com.contest.dto.user.UserLoginDto;
 import com.contest.entity.user.UserEntity;
 import com.contest.exception.UserNotFoundException;

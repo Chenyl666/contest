@@ -1,5 +1,5 @@
 import {request} from "@/util/request";
-import {result} from "@/const/request.result";
+import {result} from "@/common/request.result";
 
 export const checkingEmailRegisteredOrNot = async (userEmail) => {
     let checkingResult = false

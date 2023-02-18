@@ -20,6 +20,14 @@ spring:
           uri: lb://contest-filesys
           predicates:
             - Path=/filesys/**
+        - id: contest-online
+          uri: lb://contest-online
+          predicates:
+            - Path=/contest/online/**
+        - id: contest-enroll
+          uri: lb://contest-enroll
+          predicates:
+            - Path=/contest/enroll/**
     nacos:
       discovery:
         server-addr: localhost:8848

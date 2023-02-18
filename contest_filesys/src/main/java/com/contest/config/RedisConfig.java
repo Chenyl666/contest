@@ -1,6 +1,6 @@
 package com.contest.config;
 
-import com.contest.result.util.RedisUtil;
+import com.contest.util.RedisUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -2,37 +2,37 @@
   <t-header>
     <div style="background-color: white;width: 100%;height: 4em;margin-bottom: -0.5em;border-bottom: 2px solid #f6f5f7">
       <img src="../../assets/logo.png" style="width:13.44em;height: 4em;margin-left: 10em;" alt="LOGO">
-      <div style="margin-left: 28em;position: fixed">
+      <div style="margin-left: 28em;">
         <ul style="display: flex;list-style-type:none;margin-top: -3em">
           <li class="dir-item">
             <t-badge @click="changePage('mainPage')" @mouseenter="menu.tag.mainPage.select = true" @mouseleave="menu.tag.mainPage.select = false" :count="menu.tag.mainPage.hot" class="txt">
-              <span :class="{selected: isMainPage, selecting: menu.tag.mainPage.select}" :style="{fontWeight: isMainPage?'bold':'underline'}">首页</span>
+              <span :class="{selected: isMainPage, selecting: menu.tag.mainPage.select}">首页</span>
             </t-badge>
           </li>
           <li class="dir-item">
             <t-badge @click="changePage('contestPage')" @mouseenter="menu.tag.contestPage.select = true" @mouseleave="menu.tag.contestPage.select = false" :count="menu.tag.contestPage.hot" class="txt">
-              <span :class="{selected: isContestPage, selecting: menu.tag.contestPage.select}" :style="{fontWeight: isContestPage?'bold':'underline'}">竞赛</span>
+              <span :class="{selected: isContestPage, selecting: menu.tag.contestPage.select}">竞赛</span>
             </t-badge>
           </li>
           <li class="dir-item">
             <t-badge @click="changePage('questionRepo')" @mouseenter="menu.tag.questionRepo.select = true" @mouseleave="menu.tag.questionRepo.select = false" :count="menu.tag.questionRepo.hot" class="txt">
-              <span :class="{selected: isQuestionPage, selecting: menu.tag.questionRepo.select}" :style="{fontWeight: isQuestionPage?'bold':'underline'}">题库</span>
+              <span :class="{selected: isQuestionPage, selecting: menu.tag.questionRepo.select}">题库</span>
             </t-badge>
           </li>
           <li class="dir-item">
             <t-badge @click="changePage('coursePage')" @mouseenter="menu.tag.coursePage.select = true" @mouseleave="menu.tag.coursePage.select = false" :count="menu.tag.coursePage.hot" class="txt">
-              <span :class="{selected: isCoursePage, selecting: menu.tag.coursePage.select}" :style="{fontWeight: isCoursePage?'bold':'underline'}">课程</span>
+              <span :class="{selected: isCoursePage, selecting: menu.tag.coursePage.select}">课程</span>
             </t-badge>
           </li>
           <li class="dir-item">
             <t-badge @click="changePage('bookPage')" @mouseenter="menu.tag.bookPage.select = true" @mouseleave="menu.tag.bookPage.select = false" :count="menu.tag.bookPage.hot" class="txt">
-              <span :class="{selected: isBookPage, selecting: menu.tag.bookPage.select}" :style="{fontWeight: isBookPage?'bold':'underline'}">图书</span>
+              <span :class="{selected: isBookPage, selecting: menu.tag.bookPage.select}">图书</span>
             </t-badge>
           </li>
         </ul>
       </div>
 
-      <div style="margin-left: 73.5em;margin-top: -3.3em;display: flex">
+      <div style="margin-left: 73.5em;margin-top: -2.7em;display: flex">
         <div v-if="token===null || token === `none`">
           <t-button
               @click="this.$emit('to-login')"
@@ -58,6 +58,7 @@
                    placement="bottom"
                    v-if="user.userType === 'ORGANIZER'">
             <FlagIcon
+                @click="toCreatedContest"
                 @mouseenter="btn.organized = '#2c9fe5'"
                 @mouseleave="btn.organized = '#B5C0CA'"
                 :style="{marginLeft: '0.7em',color: btn.organized,cursor: 'pointer'}"
@@ -101,11 +102,11 @@
             <template #5>
               <StarFilledIcon />
             </template>
-            <div style="margin-left: 7.2em;margin-top: -2em;">
-              <t-space style="cursor: pointer;" :size="100">
+            <div style="margin-left: 7.2em;margin-top: -2.1em;">
+              <t-space style="cursor: pointer;border: solid white 3px;border-radius: 50%;" :size="100">
                 <t-avatar shape="circle" :image="user.userPic" :hide-on-load-failed="false" />
               </t-space>
-              <div style="margin-left: 2.5em;margin-top: -1.7em">
+              <div style="margin-left: 2.5em;margin-top: -1.8em">
                 <span style="cursor: pointer">{{user.userName}}</span>
               </div>
             </div>
@@ -134,8 +135,8 @@ import {
   NotificationFilledIcon, AddRectangleIcon, FlagIcon,
 } from "tdesign-icons-vue-next";
 import ConfirmDialog from "@/page/component/dialog/ConfirmDialog";
-import {removeToken} from "@/common/login/token.store";
-import {style} from "@/const/style";
+import {removeToken} from "@/common/token.store";
+import {style} from "@/common/style";
 import {store} from "@/store";
 import {DEV_CONFIG} from "@/config/dev.config";
 import router from "@/router/router";
@@ -201,9 +202,15 @@ export default {
   methods: {
     userMenuHandler: function(item) {
       // MessagePlugin.info("选中" + item.value + ": " + item.content)
+      if(item.value === 1){
+        this.toContestList()
+      }
       if(item.value === 5){
         this.confirmLogout()
       }
+    },
+    toContestList: function () {
+      this.$emit('to-contest-list')
     },
     confirmLogout: function () {
       this.dialog.ensureLogout = true
@@ -218,29 +225,32 @@ export default {
       this.dialog.ensureLogout = false
     },
     changePage: (page) => {
-      switch (page) {
-        case style.HEADER_MENU.MAIN_PAGE: {
-          router.push('/main')
-          break
-        }
-        case style.HEADER_MENU.CONTEST_PAGE: {
-          router.push('/contest')
-          break
-        }
-        case style.HEADER_MENU.QUESTION_REPO: {
-          router.push('/ques')
-          break
-        }
-        case style.HEADER_MENU.COURSE_PAGE: {
-          router.push('/course')
-          break
-        }
-        case style.HEADER_MENU.BOOK_PAGE: {
-          router.push('/book')
-          break
-        }
+        switch (page) {
+          case style.HEADER_MENU.MAIN_PAGE: {
+            router.push('/main')
+            break
+          }
+          case style.HEADER_MENU.CONTEST_PAGE: {
+            router.push('/contest')
+            break
+          }
+          case style.HEADER_MENU.QUESTION_REPO: {
+            router.push('/ques')
+            break
+          }
+          case style.HEADER_MENU.COURSE_PAGE: {
+            router.push('/course')
+            break
+          }
+          case style.HEADER_MENU.BOOK_PAGE: {
+            router.push('/book')
+            break
+          }
+      }
+    },
+    toCreatedContest: () => {
+      router.push('/contest/create')
     }
-  }
   },
   computed: {
     ...mapState({
@@ -271,7 +281,6 @@ export default {
           this.user.userPic = DEV_CONFIG.BASE_URL.concat('/user/pic/get/').concat(store.state.userDto.userId)
           this.user.userType = store.state.userDto.userType
         }
-        console.log(store.state.userDto)
       }
     }
   }

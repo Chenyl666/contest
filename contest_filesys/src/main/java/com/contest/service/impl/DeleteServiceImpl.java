@@ -9,7 +9,7 @@ import com.contest.mapper.FileReferenceMapper;
 import com.contest.result.ResultModel;
 import com.contest.service.DeleteService;
 import com.contest.service.md5lock.Md5Lock;
-import com.contest.result.util.FileUtils;
+import com.contest.util.FileUtils;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

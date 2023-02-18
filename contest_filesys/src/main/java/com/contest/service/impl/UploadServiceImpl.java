@@ -3,22 +3,29 @@ package com.contest.service.impl;
 import com.contest.config.filesys.FileSystemEnvInfo;
 import com.contest.dto.filesys.FileUploadDto;
 import com.contest.dto.filesys.FileUploadRequest;
+import com.contest.dto.filesys.SimpleFileUploadDto;
+import com.contest.dto.user.UserDto;
 import com.contest.entity.filesys.FileInstanceEntity;
 import com.contest.entity.filesys.FileReferenceEntity;
 import com.contest.mapper.FileInstanceMapper;
 import com.contest.mapper.FileReferenceMapper;
 import com.contest.pojo.filesys.FileUploadSession;
+import com.contest.result.ResultFlag;
 import com.contest.result.ResultModel;
+import com.contest.util.Md5Utils;
 import com.contest.service.UploadService;
 import com.contest.service.md5lock.Md5Lock;
-import com.contest.result.util.FileUtils;
-import com.contest.result.util.RedisUtil;
-import com.contest.result.util.SnowMaker;
+import com.contest.util.FileUtils;
+import com.contest.util.RedisUtil;
+import com.contest.util.SnowMaker;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 @Service
@@ -38,6 +45,12 @@ public class UploadServiceImpl implements UploadService{
 
     @Resource
     private Md5Lock md5Lock;
+
+    @Value("${filesys.download-url-prefix.inline}")
+    private String inlineDownloadUrlPrefix;
+
+    @Value("${filesys.download-url-prefix.attachment}")
+    private String attachmentDownloadUrlPrefix;
 
     private static final SnowMaker snowMaker = new SnowMaker(1);
 
@@ -59,7 +72,7 @@ public class UploadServiceImpl implements UploadService{
             fileReferenceMapper.insert(fileReferenceEntity);
             fileInstanceMapper.incrReferenceNum(fileUploadRequest.getFileMd5());
             ResultModel<String> resultModel = ResultModel.buildSuccessResultModel();
-            resultModel.setData(fileReferenceEntity.getFileId().toString());
+            resultModel.setData(buildAttachmentFileDownloadUrl(fileReferenceEntity.getFileId().toString()));
             return resultModel;
         }
         // 创建session
@@ -85,7 +98,7 @@ public class UploadServiceImpl implements UploadService{
         FileUploadSession fileUploadSession = getFileUploadSessionFromCache(fileUploadDto.getSessionId());
         // 保存文件分片
         try {
-            saveFile(fileUploadSession,fileUploadDto.getPieceInputStream());
+            saveFile(fileUploadSession.getFilePath(),fileUploadDto.getPieceInputStream());
         } catch (IOException e) {
             FileUtils.deleteFile(fileUploadSession.getFilePath());
             throw new RuntimeException(e);
@@ -135,13 +148,80 @@ public class UploadServiceImpl implements UploadService{
                 .build();
         saveFileReference(fileReferenceEntity);
         ResultModel<String> resultModel = ResultModel.buildSuccessResultModel();
-        resultModel.setData(fileReferenceEntity.getFileId().toString());
+        resultModel.setData(buildAttachmentFileDownloadUrl(fileReferenceEntity.getFileId().toString()));
         return resultModel;
     }
 
+    /**
+     * 上传简单文件
+     * */
+    @SneakyThrows
+    @Transactional
+    @Override
+    public ResultModel<String> uploadSimpleFile(UserDto userDto, SimpleFileUploadDto simpleFileUploadDto) {
+        byte[] fileBytes = simpleFileUploadDto.getFileBytes();
+        String sessionId = UUID.randomUUID().toString();
+        File file = new File(fileSystemEnvInfo.buildFilePath(sessionId));
+        BufferedOutputStream out = new BufferedOutputStream(Files.newOutputStream(file.toPath()));
+        out.write(fileBytes);
+        out.flush();
+        out.close();
+        InputStream in = new BufferedInputStream(Files.newInputStream(file.toPath()));
+        String fileMd5 = Md5Utils.getFileMd5(in);
+        File targetFile = new File(fileSystemEnvInfo.buildFilePath(fileMd5));
+        Long fileId = snowMaker.nextId();
+        FileReferenceEntity fileReferenceEntity = FileReferenceEntity
+                .builder()
+                .fileName(simpleFileUploadDto.getFileName())
+                .fileMd5(fileMd5)
+                .fileId(fileId)
+                .isPublic(simpleFileUploadDto.isPublicPerm())
+                .createdBy(userDto.getUserId())
+                .createdDate(new Date())
+                .build();
+        saveFileReference(fileReferenceEntity);
+        boolean refIncr = true;
+        if(!targetFile.exists()){
+            try{
+                lockMd5(fileMd5);
+                if(!targetFile.exists()){
+                    FileInstanceEntity fileInstanceEntity = FileInstanceEntity
+                            .builder()
+                            .filePath(targetFile.getPath())
+                            .fileSize(file.length())
+                            .referenceNum(1)
+                            .fileMd5(fileMd5)
+                            .createdBy(userDto.getUserId())
+                            .createdDate(new Date())
+                            .build();
+                    saveFileInstance(fileInstanceEntity);
+                    file.renameTo(targetFile);
+                    refIncr = false;
+                }
+            }finally {
+                unlockMd5(fileMd5);
+            }
+        }
+        if(refIncr){
+            fileInstanceMapper.incrReferenceNum(fileMd5);
+        }
+        if(simpleFileUploadDto.isTimeLimit()){
+            // todo
+            System.out.println("加入超时删除队列");
+        }
+        in.close();
+        ResultModel<String> resultModel = new ResultModel<>();
+        resultModel.setResultCode(ResultFlag.SUCCESS.code);
+        resultModel.setResultFlag(ResultFlag.SUCCESS);
+        resultModel.setData(buildInlineFileDownloadUrl(fileId));
+        return resultModel;
+    }
 
-    public void saveFile(FileUploadSession fileUploadSession, InputStream in) throws IOException {
-        File file = new File(fileUploadSession.getFilePath());
+    /**
+     * 将session指定的文件保存文件到磁盘
+     * */
+    public void saveFile(String filePath, InputStream in) throws IOException {
+        File file = new File(filePath);
         FileUtils.writeFileByAppend(in,file);
     }
 
@@ -160,6 +240,14 @@ public class UploadServiceImpl implements UploadService{
 
     public void saveFileReference(FileReferenceEntity fileReferenceEntity){
         fileReferenceMapper.insert(fileReferenceEntity);
+    }
+
+    public String buildInlineFileDownloadUrl(Long fileId){
+        return inlineDownloadUrlPrefix.concat(String.valueOf(fileId));
+    }
+
+    public String buildAttachmentFileDownloadUrl(String fileId){
+        return attachmentDownloadUrlPrefix.concat(fileId);
     }
 
     public void lockMd5(String fileMd5){

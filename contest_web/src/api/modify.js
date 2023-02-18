@@ -1,5 +1,5 @@
 import {request} from "@/util/request";
-import {result} from "@/const/request.result";
+import {result} from "@/common/request.result";
 
 export const sendModifyEmailCode = async (userEmail) => {
     let requestResult = {

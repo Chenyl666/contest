@@ -2,6 +2,12 @@ export const state = () => {
     return {
         token: 'none',
         page: 'none',
-        userDto: undefined
+        userDto: undefined,
+        fileUrls: '',
+        createdContestPage: {
+            createContestStep: 0,
+            contestMessage: undefined,
+            enrollMessage: undefined
+        }
     }
 }

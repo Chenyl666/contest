@@ -19,4 +19,9 @@ public interface UploadService {
      * */
     public ResultModel<String> uploadFilePiece(FileUploadDto fileUploadDto);
 
+    /**
+     * 上传小文件
+     * */
+    public ResultModel<String> uploadSimpleFile(UserDto userDto,SimpleFileUploadDto simpleFileUploadDto);
+
 }
