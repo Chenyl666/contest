@@ -6,6 +6,7 @@ import com.contest.entity.filesys.FileInstanceEntity;
 import com.contest.entity.filesys.FileReferenceEntity;
 import com.contest.mapper.FileInstanceMapper;
 import com.contest.mapper.FileReferenceMapper;
+import com.contest.mapper.FileTimeoutMapper;
 import com.contest.result.ResultModel;
 import com.contest.service.DeleteService;
 import com.contest.service.md5lock.Md5Lock;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.util.Optional;
 
 @Service
 public class DeleteServiceImpl implements DeleteService {
@@ -28,6 +30,9 @@ public class DeleteServiceImpl implements DeleteService {
 
     @Resource
     private AsyncDeleteChannel asyncDeleteChannel;
+
+    @Resource
+    private FileTimeoutMapper fileTimeoutMapper;
 
     @Resource
     private Md5Lock md5Lock;
@@ -51,7 +56,7 @@ public class DeleteServiceImpl implements DeleteService {
     }
 
     /**
-     * 删除文件
+     * 删除文件实例
      * */
     @Override
     @Transactional
@@ -72,6 +77,19 @@ public class DeleteServiceImpl implements DeleteService {
                 unlockMd5(fileMd5);
             }
         }
+    }
+
+    /**
+     * 定时任务删除文件
+     * */
+    @Override
+    public void deleteBatchFileOfTimeout(String fileId) {
+        Optional<FileReferenceEntity> fileReferenceEntityOptional = Optional.ofNullable(fileReferenceMapper.selectById(fileId));
+        fileReferenceEntityOptional.ifPresent(fileReferenceEntity -> {
+            fileReferenceMapper.deleteById(fileId);
+            deleteFile(fileReferenceEntity);
+        });
+        fileTimeoutMapper.deleteById(fileId);
     }
 
     public void lockMd5(String fileMd5){

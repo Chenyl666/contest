@@ -2,7 +2,8 @@
   <HeaderDirection
       @to-login="toLogin"
       @to-register="toRegister"
-      @to-contest-list="toContestList" ref="test"/>
+      @to-contest-list="toContestList" ref="test"
+      @to-question-repo="toQuestionRepo"/>
   <router-view
       @to-register="toRegister"
       @to-login="toLogin"
@@ -46,6 +47,9 @@ export default {
     },
     toContestList: () => {
       router.push('/contest/list')
+    },
+    toQuestionRepo: () => {
+      router.push('/question/repo')
     }
   },
   mounted() {
@@ -56,7 +60,7 @@ export default {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
           // router.push('/main')
-          router.push('/contest/create/first')
+          router.push('/question/repo')
         }else{
           router.push("/login")
         }

@@ -5,7 +5,23 @@ export const getContestTypeList = () => {
 }
 
 export const getContestDetail = () => {
-    return request.get('/contest/enroll/get',true)
+    return request.get('/contest/enroll/get/',true)
+}
+
+export const getContestDetailMessageById = async (contestId) => {
+    return await request.get('/contest/enroll/message/get/'.concat(contestId),false)
+}
+
+export const getContestDetailById = async (contestId) => {
+    return await request.get('/contest/enroll/get/'.concat(contestId),true)
+}
+
+export const getContestCreatorByContestId = async (contestId) => {
+    return await request.get('/contest/enroll/creator/get/'.concat(contestId))
+}
+
+export const updateContestDetail = async (contestDetail) => {
+    return await request.post('/contest/enroll/update',contestDetail)
 }
 
 export const saveContestDetail = (contestDetail) => {
@@ -29,7 +45,8 @@ export const saveContestDetail = (contestDetail) => {
         groupingMinNum: contestDetail.enrollMessage.contestGrouping.groupLimit[0],
         autoPrise: contestDetail.enrollMessage.contestAward.autoPrise,
         usePercent: contestDetail.enrollMessage.contestAward.usePercent,
-        contestPriseDistributes: contestDetail.enrollMessage.contestAward.priseList
+        contestPriseDistributes: contestDetail.enrollMessage.contestAward.priseList,
+        organizeUnit: contestDetail.contestMessage.organizeUnit
     }
     return request.post('contest/enroll/save',data,true)
 }

@@ -1,0 +1,15 @@
+server:
+  port: 6452
+
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+        group: dev
+        namespace: dev
+      discovery:
+        server-addr: localhost:8848
+        group: dev
+        namespace: dev

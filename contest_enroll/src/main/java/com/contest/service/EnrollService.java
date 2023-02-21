@@ -12,5 +12,11 @@ public interface EnrollService {
 
     public ResultModel<List<ContestDetailDto>> getContestDetailByUser(UserDto userDto);
 
+    public ResultModel<UserDto> getCreatorByContestId(String contestId);
+
+    public ResultModel<ContestDetailDto> getContestDetailById(String contestId);
+
+    public ResultModel<String> updateContestDetail(ContestDetailDto contestDetailDto);
+
 }
 

@@ -13,7 +13,7 @@ const emit = defineEmits(['on-success'])
 
 const requestMethod = async (file) => {
   let url = ''
-  await uploadSimpleFile(file.raw, file.name, true).then(res => {
+  await uploadSimpleFile(file.raw, file.name, true, true).then(res => {
     url = res
   })
   return new Promise((resolve) => {

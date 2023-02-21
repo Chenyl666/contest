@@ -97,7 +97,7 @@
               <UserIcon />
             </template>
             <template #4>
-              <ShopIcon />
+              <BulletpointIcon/>
             </template>
             <template #5>
               <StarFilledIcon />
@@ -130,9 +130,11 @@ import {
   ArrowRightIcon,
   LockOnIcon,
   UserIcon,
-  ShopIcon,
   StarFilledIcon,
-  NotificationFilledIcon, AddRectangleIcon, FlagIcon,
+  NotificationFilledIcon,
+  AddRectangleIcon,
+  FlagIcon,
+  BulletpointIcon
 } from "tdesign-icons-vue-next";
 import ConfirmDialog from "@/page/component/dialog/ConfirmDialog";
 import {removeToken} from "@/common/token.store";
@@ -146,7 +148,7 @@ export default {
   components: {
     FlagIcon,
     AddRectangleIcon,
-    ConfirmDialog, ArrowRightIcon,LockOnIcon,UserIcon,ShopIcon,StarFilledIcon,NotificationFilledIcon},
+    ConfirmDialog, ArrowRightIcon,LockOnIcon,UserIcon,BulletpointIcon,StarFilledIcon,NotificationFilledIcon},
   data() {
     return {
       registerBtn: {
@@ -188,7 +190,7 @@ export default {
         userType: '',
         menu: [
             { content: '我的竞赛', value: 1, divider: false, prefixIcon: <StarFilledIcon /> },
-            { content: '我的订单', value: 2, divider: false, prefixIcon: <ShopIcon/> },
+            { content: '我的题库', value: 2, divider: false, prefixIcon: <BulletpointIcon /> },
             { content: '个人信息', value: 3, divider: false, prefixIcon: <UserIcon /> },
             { content: '修改密码', value: 4, divider: false, prefixIcon: <LockOnIcon /> },
             { content: '退出登录', value: 5, divider: false, prefixIcon: <ArrowRightIcon /> }
@@ -205,12 +207,18 @@ export default {
       if(item.value === 1){
         this.toContestList()
       }
+      if(item.value === 2){
+        this.toQuestionRepo()
+      }
       if(item.value === 5){
         this.confirmLogout()
       }
     },
     toContestList: function () {
       this.$emit('to-contest-list')
+    },
+    toQuestionRepo: function () {
+      this.$emit('to-question-repo')
     },
     confirmLogout: function () {
       this.dialog.ensureLogout = true

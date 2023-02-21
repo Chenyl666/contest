@@ -1,8 +1,16 @@
 <script setup>
-import {onBeforeUnmount, shallowRef, onMounted, ref, watch} from 'vue'
+import {onBeforeUnmount, shallowRef, onMounted, watch, ref} from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import {defineEmits} from "vue";
 import {store} from "@/store";
+import {defineProps} from "vue";
+
+const props = defineProps({
+  content: {
+    type: String,
+    default: null
+  }
+})
 
 const emits = defineEmits(['content-change'])
 
@@ -10,7 +18,7 @@ const emits = defineEmits(['content-change'])
 const editorRef = shallowRef()
 
 // 内容 HTML
-const valueHtml = ref('')
+let valueHtml = ref(props.content)
 // const valueHtml = toRef(props,"content")
 
 const onContentChange = () => {
@@ -19,7 +27,6 @@ const onContentChange = () => {
 
 // 模拟 ajax 异步获取内容
 onMounted(() => {
-
 })
 
 // 编辑器配置

@@ -19,10 +19,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class ContestDetailDto {
-    private Long contestId;
+    private String contestId;
     private String contestSubject;
     private String contestPrice;
-    private boolean requiredContestPaying;
+    private Boolean requiredContestPaying;
     private String contestDescription;
     private Date enrollStartTime;
     private Date enrollEndTime;
@@ -39,6 +39,7 @@ public class ContestDetailDto {
     private Boolean autoPrise;
     private Boolean usePercent;
     private List<ContestPriseDistributeDto> contestPriseDistributes;
+    private String organizeUnit;
 
     public void setEnrollStartTime(String enrollStartTime){
         this.enrollStartTime = DateUtils.getDateByString(enrollStartTime);
@@ -62,7 +63,7 @@ public class ContestDetailDto {
         contestDetailEntity.setEnrollEndTime(enrollEndTime);
         contestDetailEntity.setContestStartTime(contestStartTime);
         contestDetailEntity.setContestEndTime(contestEndTime);
-        contestDetailEntity.setContestId(contestId);
+        contestDetailEntity.setContestId(Long.parseLong(contestId));
         contestDetailEntity.setContestSubject(contestSubject);
         contestDetailEntity.setContestPrice(contestPrice);
         contestDetailEntity.setRequiredContestPaying(requiredContestPaying);
@@ -77,6 +78,7 @@ public class ContestDetailDto {
         contestDetailEntity.setGroupingMinNum(groupingMinNum);
         contestDetailEntity.setAutoPrise(autoPrise);
         contestDetailEntity.setUsePercent(usePercent);
+        contestDetailEntity.setOrganizeUnit(organizeUnit);
         return contestDetailEntity;
     }
 }

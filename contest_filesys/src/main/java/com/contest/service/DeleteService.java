@@ -6,5 +6,13 @@ import com.contest.result.ResultModel;
 
 public interface DeleteService {
     public ResultModel<String> requestDeleteFile(String fileId, UserDto userDto);
+    /**
+     * 用户删除文件
+     * */
     public void deleteFile(FileReferenceEntity fileReferenceEntity);
+
+    /**
+     * 定时任务删除文件
+     * */
+    public void deleteBatchFileOfTimeout(String fileId);
 }

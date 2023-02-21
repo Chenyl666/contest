@@ -7,6 +7,7 @@ import com.contest.dto.filesys.SimpleFileUploadDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.filesys.FileInstanceEntity;
 import com.contest.entity.filesys.FileReferenceEntity;
+import com.contest.entity.filesys.FileTimeoutEntity;
 import com.contest.mapper.FileInstanceMapper;
 import com.contest.mapper.FileReferenceMapper;
 import com.contest.pojo.filesys.FileUploadSession;
@@ -45,6 +46,9 @@ public class UploadServiceImpl implements UploadService{
 
     @Resource
     private Md5Lock md5Lock;
+
+    @Resource
+    private FileTimeoutService fileTimeoutService;
 
     @Value("${filesys.download-url-prefix.inline}")
     private String inlineDownloadUrlPrefix;
@@ -168,6 +172,7 @@ public class UploadServiceImpl implements UploadService{
         out.close();
         InputStream in = new BufferedInputStream(Files.newInputStream(file.toPath()));
         String fileMd5 = Md5Utils.getFileMd5(in);
+        in.close();
         File targetFile = new File(fileSystemEnvInfo.buildFilePath(fileMd5));
         Long fileId = snowMaker.nextId();
         FileReferenceEntity fileReferenceEntity = FileReferenceEntity
@@ -206,10 +211,15 @@ public class UploadServiceImpl implements UploadService{
             fileInstanceMapper.incrReferenceNum(fileMd5);
         }
         if(simpleFileUploadDto.isTimeLimit()){
-            // todo
-            System.out.println("加入超时删除队列");
+            fileTimeoutService.addTimeoutFile(
+                    FileTimeoutEntity
+                            .builder()
+                            .fileId(fileId)
+                            .timeout(System.currentTimeMillis() + 1000*3600*24)
+                            .createdDate(new Date())
+                            .build()
+            );
         }
-        in.close();
         ResultModel<String> resultModel = new ResultModel<>();
         resultModel.setResultCode(ResultFlag.SUCCESS.code);
         resultModel.setResultFlag(ResultFlag.SUCCESS);

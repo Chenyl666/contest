@@ -7,8 +7,8 @@
     <t-form-item label="竞赛名称" name="subject">
       <t-input v-model="formData.subject" placeholder="请输入竞赛名称"></t-input>
     </t-form-item>
-    <t-form-item label="主办方" name="createdBy">
-      <t-input disabled v-model="formData.createdBy"></t-input>
+    <t-form-item label="主办方" name="organizeUnit">
+      <t-input v-model="formData.organizeUnit" placeholder="请输入竞赛举办方，如有协办方请在竞赛详细中说明"></t-input>
     </t-form-item>
     <t-form-item label="竞赛类别" name="contestTypeId">
       <t-select v-model="formData.contestTypeId" placeholder="请输入竞赛类别">
@@ -65,12 +65,12 @@ const emits = defineEmits(['next-step','last-page'])
 const formData = reactive({
   contestPicture: '',
   subject: '',
-  createdBy: '',
   contestTypeId: null,
   contestLevel: null,
   enrollTimeRange: [],
   contestTimeRange: [],
-  description: ''
+  description: '',
+  organizeUnit: ''
 });
 
 const data = reactive({
@@ -98,7 +98,8 @@ const rules = {
       {required: true, message: '请选择比赛时间', type: 'error'},
       {validator: validateTimeRange, message: '比赛开始时间必须是在报名结束时间之后', type: 'error'}
   ],
-  description: [{required: true, message: '请输入竞赛详细',type: 'error'}]
+  description: [{required: true, message: '请输入竞赛详细',type: 'error'}],
+  organizeUnit: [{required: true, message: '请输入举办方',type: 'error'}]
 }
 
 const onReset = () => {
@@ -106,7 +107,6 @@ const onReset = () => {
 };
 
 const onSubmit = ({ validateResult, e }) => {
-  alert(formData.description)
   store.commit(mutationName.CREATED_CONTEST_PAGE.SET_CONTEST_MESSAGE,formData)
   e.preventDefault()
   if(validateResult === true){
@@ -137,7 +137,7 @@ const supplementContestMessage = (contestMessage) => {
   formData.contestPicture = contestMessage.contestPicture
   formData.enrollTimeRange[0] = contestMessage.enrollTimeRange[0]
   formData.enrollTimeRange[1] = contestMessage.enrollTimeRange[1]
-  formData.createdBy = contestMessage.createdBy
+  formData.organizeUnit = contestMessage.organizeUnit
   formData.subject = contestMessage.subject
 }
 
@@ -146,9 +146,6 @@ const onDescriptionChange = (value) => {
 }
 
 onMounted(() => {
-  if(store.state.userDto !== undefined){
-    formData.createdBy = store.state.userDto.userId
-  }
   if(store.state.createdContestPage.contestMessage !== undefined){
     supplementContestMessage(store.state.createdContestPage.contestMessage)
   }

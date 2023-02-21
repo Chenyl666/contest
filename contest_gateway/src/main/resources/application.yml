@@ -28,6 +28,10 @@ spring:
           uri: lb://contest-enroll
           predicates:
             - Path=/contest/enroll/**
+        - id: contest-question
+          uri: lb://contest-question
+          predicates:
+            - Path=/contest/question/**
     nacos:
       discovery:
         server-addr: localhost:8848

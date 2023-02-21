@@ -10,6 +10,8 @@ import com.contest.entity.contest.ContestStatus;
 import com.contest.entity.user.UserType;
 import com.contest.mapper.ContestPriseDistributeMapper;
 import com.contest.result.ResultModel;
+import com.contest.service.UserService;
+import com.contest.util.ObjectUtils;
 import com.contest.util.SnowMaker;
 import com.contest.service.ContestDetailService;
 import com.contest.service.ContestPriseDistributeService;
@@ -18,10 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +39,9 @@ public class EnrollServiceImpl implements EnrollService {
     @Resource
     private ContestPriseDistributeMapper contestPriseDistributeMapper;
 
+    @Resource
+    private UserService userService;
+
     @Override
     @Transactional
     public ResultModel<Long> saveContestDetail(ContestDetailDto contestDetailDto, UserDto userDto) {
@@ -48,6 +51,8 @@ public class EnrollServiceImpl implements EnrollService {
         List<ContestPriseDistributeEntity> contestPriseDistributeEntityList = generateContestPriseDistributeEntityList(
                 contestDetailDto.getContestPriseDistributes(),contestDetailEntity
         );
+        System.out.println(contestDetailEntity.getOrganizeUnit());
+        System.out.println(contestDetailDto.getOrganizeUnit());
         contestDetailService.save(contestDetailEntity);
         contestPriseDistributeService.saveBatch(contestPriseDistributeEntityList);
         return ResultModel.buildSuccessResultModel("save complete！",contestDetailEntity.getContestId());
@@ -84,17 +89,51 @@ public class EnrollServiceImpl implements EnrollService {
         return ResultModel.buildSuccessResultModel(null,contestDetailDtoList);
     }
 
-    private List<ContestDetailDto> buildContestDetailDtoList(
-            List<ContestDetailEntity> contestDetailEntityList,
-            Map<Long, List<ContestPriseDistributeDto>> contestPriseDistributeMap
+    @Override
+    public ResultModel<UserDto> getCreatorByContestId(String contestId) {
+        Optional<ContestDetailEntity> contestDetailEntityOptional = Optional.ofNullable(contestDetailService.getById(contestId));
+        if(contestDetailEntityOptional.isPresent()){
+            return userService.getUserById(contestDetailEntityOptional.get().getCreatedBy());
+        }
+        return ResultModel.buildFailResultModel("no exists",null);
+    }
+
+    @Override
+    public ResultModel<ContestDetailDto> getContestDetailById(String contestId) {
+        ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestId);
+        List<ContestPriseDistributeEntity> contestPriseDistributeEntityList = contestPriseDistributeService.list(
+                new QueryWrapper<ContestPriseDistributeEntity>().eq("contest_id", contestId)
+        );
+        List<ContestPriseDistributeDto> contestPriseDistributeDtoList = contestPriseDistributeEntityList.stream().map(
+                contestPriseDistributeEntity -> ContestPriseDistributeDto
+                        .builder()
+                        .value(contestPriseDistributeEntity.getValue())
+                        .level(contestPriseDistributeEntity.getLevel())
+                        .build()
+        ).collect(Collectors.toList());
+        return ResultModel.buildSuccessResultModel(null,buildContestDetailDto(contestDetailEntity,contestPriseDistributeDtoList));
+    }
+
+    @Override
+    public ResultModel<String> updateContestDetail(ContestDetailDto contestDetailDto) {
+//        String contestId = contestDetailDto.getContestId();
+//        ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestId);
+//        contestDetailEntity = ObjectUtils.supplementFields(contestDetailDto.dto2Entity(),contestDetailEntity);
+//        System.out.println(contestDetailEntity);
+        contestDetailService.updateById(contestDetailDto.dto2Entity());
+        return ResultModel.buildSuccessResultModel();
+    }
+
+    private ContestDetailDto buildContestDetailDto(
+            ContestDetailEntity contestDetailEntity,
+            List<ContestPriseDistributeDto> contestPriseDistributeDtoList
     ){
-        return contestDetailEntityList.stream().map(
-                contestDetailEntity -> ContestDetailDto
+        return ContestDetailDto
                 .builder()
-                .contestId(contestDetailEntity.getContestId())
+                .contestId(String.valueOf(contestDetailEntity.getContestId()))
                 .contestSubject(contestDetailEntity.getContestSubject())
                 .contestPrice(contestDetailEntity.getContestPrice())
-                .requiredContestPaying(contestDetailEntity.isRequiredContestPaying())
+                .requiredContestPaying(contestDetailEntity.getRequiredContestPaying())
                 .contestDescription(contestDetailEntity.getContestDescription())
                 .enrollStartTime(contestDetailEntity.getEnrollStartTime())
                 .enrollEndTime(contestDetailEntity.getEnrollEndTime())
@@ -110,15 +149,27 @@ public class EnrollServiceImpl implements EnrollService {
                 .groupingMinNum(contestDetailEntity.getGroupingMinNum())
                 .autoPrise(contestDetailEntity.getAutoPrise())
                 .usePercent(contestDetailEntity.getUsePercent())
-                .contestPriseDistributes(contestPriseDistributeMap.get(contestDetailEntity.getContestId()))
-                .build()
+                .contestPriseDistributes(contestPriseDistributeDtoList)
+                .organizeUnit(contestDetailEntity.getOrganizeUnit())
+                .build();
+    }
+
+    private List<ContestDetailDto> buildContestDetailDtoList(
+            List<ContestDetailEntity> contestDetailEntityList,
+            Map<Long, List<ContestPriseDistributeDto>> contestPriseDistributeMap
+    ){
+        return contestDetailEntityList.stream().map(
+                contestDetailEntity -> buildContestDetailDto(
+                        contestDetailEntity,contestPriseDistributeMap.get(contestDetailEntity.getContestId())
+                )
         ).collect(Collectors.toList());
     }
 
     private void supplementContestDetailDto(ContestDetailDto contestDetailDto,UserDto userDto,Long contestId){
         contestDetailDto.setCreatedBy(userDto.getUserId());
         contestDetailDto.setContestStatus(ContestStatus.CHECKING);
-        contestDetailDto.setContestId(contestId);
+        contestDetailDto.setContestId(String.valueOf(contestId));
+        contestDetailDto.setCreatedBy(userDto.getUserId());
     }
 
     private List<ContestPriseDistributeEntity> generateContestPriseDistributeEntityList(

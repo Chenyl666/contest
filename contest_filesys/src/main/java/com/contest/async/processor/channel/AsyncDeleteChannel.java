@@ -11,4 +11,11 @@ public interface AsyncDeleteChannel {
 
     @Input(ChannelNames.CONTEST_ASYNC_DELETE_FILE)
     public SubscribableChannel asyncDeleteFileInputChannel();
+
+    @Output(ChannelNames.CONTEST_DELETE_TIMEOUT_FILE)
+    public SubscribableChannel deleteTimeoutFileOutputChannel();
+
+    @Input(ChannelNames.CONTEST_DELETE_TIMEOUT_FILE)
+    public SubscribableChannel deleteTimeoutFileInputChannel();
+
 }

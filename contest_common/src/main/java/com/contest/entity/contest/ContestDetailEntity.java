@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.lang.reflect.Field;
 import java.util.Date;
 
 @Data
@@ -23,7 +25,7 @@ public class ContestDetailEntity {
     @TableField("contest_price")
     private String contestPrice;
     @TableField("required_contest_paying")
-    private boolean requiredContestPaying;
+    private Boolean requiredContestPaying;
     @TableField("contest_description")
     private String contestDescription;
     @TableField("enroll_start_time")
@@ -58,4 +60,6 @@ public class ContestDetailEntity {
     private Date createdDate;
     @TableField("updated_date")
     private Date updatedDate;
+    @TableField("organize_unit")
+    private String organizeUnit;
 }

@@ -19,4 +19,9 @@ public class AsyncDeleteListener {
     public void asyncDeleteFile(Message<FileReferenceEntity> message){
         deleteService.deleteFile(message.getPayload());
     }
+
+    @StreamListener(ChannelNames.CONTEST_DELETE_TIMEOUT_FILE)
+    public void deleteTimeoutFile(Message<String> message){
+        deleteService.deleteBatchFileOfTimeout(message.getPayload());
+    }
 }

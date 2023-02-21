@@ -18,6 +18,7 @@
         <module>contest_websocket</module>
         <module>contest_common</module>
         <module>contest_gateway</module>
+        <module>contest_question</module>
     </modules>
     <packaging>pom</packaging>
 

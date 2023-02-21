@@ -10,7 +10,7 @@ export const upload = async (file,fileName,publicPerm) => {
         let resultCode
         let sessionId
         await request.post('/filesys/upload/request', {
-            fileName, fileMd5, publicPerm
+            fileName, fileMd5, publicPerm, timeLimit: true
         }, true).then(resp => {
             resultCode = resp.data['resultCode']
             if(resultCode === result.code.SUCCESS){

@@ -33,6 +33,7 @@ import {CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon} fro
 import {getContestDetail} from "@/api/contest";
 import {getTimeStr} from "@/util/date.util";
 import ConfirmDialog from '@/page/component/dialog/ConfirmDialog'
+import router from "@/router/router";
 
 let dialog = reactive({
     deleteItemDialog: {
@@ -40,10 +41,6 @@ let dialog = reactive({
       title: '提示',
       content: '',
       selectContestId: ''
-    },
-    showContestDetailDialog: {
-      visible: false,
-      cid: ''
     }
 })
 
@@ -121,9 +118,7 @@ const importQuestion = (row) => {
 }
 
 const showContestDetail = (row) => {
-  dialog.showContestDetailDialog.cid = row.contestId
-  dialog.showContestDetailDialog.visible = true
-  // alert('展示' + row.contestSubject + '的信息')
+  router.push('/contest/detail/'.concat(row.contestId))
 }
 
 
