@@ -1,5 +1,6 @@
 <template>
   <HeaderDirection
+      v-if="showHeader"
       @to-login="toLogin"
       @to-register="toRegister"
       @to-contest-list="toContestList" ref="test"
@@ -52,6 +53,11 @@ export default {
       router.push('/question/repo')
     }
   },
+  computed: {
+    showHeader: function () {
+      return this.$route.path.indexOf('/question/repo/detail') === -1
+    }
+  },
   mounted() {
     let token = cookies.get('token');
     if(token != null){
@@ -60,7 +66,7 @@ export default {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
           // router.push('/main')
-          router.push('/question/repo')
+          router.push('/question/repo/detail/426586569768439809')
         }else{
           router.push("/login")
         }

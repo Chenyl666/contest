@@ -3,13 +3,13 @@ package com.contest.entity.contest;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.contest.dto.contest.ContestDetailDto;
+import com.contest.enu.ContestLevel;
+import com.contest.enu.ContestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 
 @Data

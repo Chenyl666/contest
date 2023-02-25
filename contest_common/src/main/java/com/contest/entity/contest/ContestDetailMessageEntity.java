@@ -3,7 +3,7 @@ package com.contest.entity.contest;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.contest.entity.contest.ContestLevel;
+import com.contest.enu.ContestLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

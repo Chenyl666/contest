@@ -1,4 +1,4 @@
-package com.contest.entity.user;
+package com.contest.enu;
 
 import java.io.Serializable;
 

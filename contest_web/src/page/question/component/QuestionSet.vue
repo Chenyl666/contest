@@ -1,9 +1,11 @@
 <template>
   <t-tooltip :content="this.title" theme="light" placement="bottom-left">
-    <div @click="$emit('on-click')" :class="{highlight: selected}" class="item">
-      <ViewModuleIcon v-if="type === 'paper'" class="icon"/>
-      <LaptopIcon v-if="type === 'programing'" class="icon"/>
-      <FileIcon v-if="type === 'project'" class="icon"/>
+    <div @dblclick="$emit('on-db-click')"
+         @click="$emit('on-click')"
+         :class="{highlight: selected}" class="item">
+      <ViewModuleIcon v-if="type === 'PAPER'" class="icon"/>
+      <LaptopIcon v-if="type === 'PROGRAMMING'" class="icon"/>
+      <FileIcon v-if="type === 'PROJECT'" class="icon"/>
       <div style="margin-left: 0.2em;text-align: center">{{getTitle}}</div>
     </div>
   </t-tooltip>
@@ -42,7 +44,6 @@ export default {
   }
   .item:hover{
     background-color: #cccccc;
-    border: #2c9fe5 3px solid;
   }
   .icon{
     width: 6em;
@@ -52,6 +53,5 @@ export default {
   }
   .highlight{
     background-color: #cccccc;
-    border: #2c9fe5 3px solid;
   }
 </style>

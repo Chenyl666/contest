@@ -1,6 +1,6 @@
 package com.contest.dto.user;
 
-import com.contest.entity.user.UserType;
+import com.contest.enu.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

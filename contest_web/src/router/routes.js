@@ -20,6 +20,7 @@ import ContestChecking from "@/page/contest/component/ContestChecking";
 import ContestList from "@/page/contest/ContestListPage";
 import ContestDetailPage from "@/page/contest/ContestDetailPage";
 import QuestionRepository from "@/page/question/QuestionRepository";
+import QuestionRepositoryDetail from "@/page/question/QuestionRepositoryDetail";
 
 export const routes = [
     {
@@ -128,6 +129,13 @@ export const routes = [
     {
         path: '/question/repo',
         component: QuestionRepository,
+        beforeEnter: () => {
+            store.commit(mutationName.SET_PAGE, style.HEADER_MENU.QUESTION_REPO)
+        }
+    },
+    {
+        path: '/question/repo/detail/:questionRepoId',
+        component: QuestionRepositoryDetail,
         beforeEnter: () => {
             store.commit(mutationName.SET_PAGE, style.HEADER_MENU.QUESTION_REPO)
         }

@@ -12,4 +12,6 @@ public interface QuestionTagService extends IService<QuestionTagEntity> {
     public ResultModel<String> createQuestionTag(QuestionTagDto questionTagDto, UserDto userDto);
 
     public ResultModel<List<QuestionTagDto>> getQuestionTagList(UserDto userDto);
+
+    public ResultModel<String> deleteQuestionTag(String questionTagId);
 }

@@ -3,7 +3,8 @@ package com.contest.entity.question;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.contest.dto.question.QuestionTagDto;
+import com.contest.dto.question.QuestionRepoDto;
+import com.contest.enu.QuestionRepoType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,15 +13,19 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder(toBuilder = true)
-@TableName("question_tag")
-public class QuestionTagEntity {
+@TableName("question_repo")
+public class QuestionRepoEntity {
     @TableId
+    private Long questionRepoId;
+    @TableField("question_repo_name")
+    private String questionRepoName;
+    @TableField("question_repo_type")
+    private QuestionRepoType questionRepoType;
+    @TableField("question_tag_id")
     private Long questionTagId;
-    @TableField("question_tag_name")
-    private String questionTagName;
     @TableField("created_by")
     private String createdBy;
     @TableField("created_date")
@@ -28,11 +33,13 @@ public class QuestionTagEntity {
     @TableField("updated_date")
     private Date updatedDate;
 
-    public QuestionTagDto entity2Dto(){
-        return QuestionTagDto
+    public QuestionRepoDto entity2Dto(){
+        return QuestionRepoDto
                 .builder()
+                .questionRepoId(String.valueOf(questionRepoId))
+                .questionRepoName(questionRepoName)
                 .questionTagId(String.valueOf(questionTagId))
-                .questionTagName(questionTagName)
+                .questionRepoType(questionRepoType)
                 .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.contest.entity.contest;
+package com.contest.enu;
 
 public enum ContestLevel {
     COLLEGE,

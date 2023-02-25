@@ -9,6 +9,14 @@ const props = defineProps({
   content: {
     type: String,
     default: null
+  },
+  height: {
+    type: String,
+    default: '500px'
+  },
+  width: {
+    type: String,
+    default: null
   }
 })
 
@@ -64,17 +72,22 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div style="border: 1px solid #ccc">
+  <div :style="{width: props.width,height: props.height}">
     <!-- 工具栏 -->
     <Toolbar
         :editor="editorRef"
-        :defaultConfig="toolbarConfig"
-        style="border-bottom: 1px solid #ccc"/>
+        :defaultConfig="toolbarConfig"/>
     <!-- 编辑器 -->
+<!--    <Editor-->
+<!--        v-model="valueHtml"-->
+<!--        :defaultConfig="editorConfig"-->
+<!--        style="overflow-y: hidden;"-->
+<!--        :style="{height: props.height,width: props.width}"-->
+<!--        @onCreated="handleCreated"-->
+<!--        @change="onContentChange"/>-->
     <Editor
         v-model="valueHtml"
         :defaultConfig="editorConfig"
-        style="height: 500px; overflow-y: hidden;"
         @onCreated="handleCreated"
         @change="onContentChange"/>
   </div>

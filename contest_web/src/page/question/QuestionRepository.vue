@@ -3,16 +3,18 @@
     <div class="index">
       <t-list style="width: 100%;height: 100%;border-right: 1px inset">
         <t-list-item style="border-bottom: 1px inset;height: 4em">
-          <span style="font-weight: bold;margin-left: 1.5em;color: #2c9fe5;font-size: 18px;margin-top: 0.5em">题库</span>
+          <span style="font-weight: bold;margin-left: 1.5em;color: #2c9fe5;font-size: 18px;margin-top: 0.5em">标签</span>
         </t-list-item>
-
         <div>
-          <t-list-item v-for="tag in tagList" :key="tag.questionTagId" class="list-item">
+          <t-list-item
+              :class="{'list-item-selected': tagSelected === tag.questionTagId}"
+              @click="changeTag(tag.questionTagId)"
+              v-for="tag in tagList"
+              :key="tag.questionTagId"
+              class="list-item">
             <span class="list-item-font">{{tag.questionTagName}}</span>
           </t-list-item>
         </div>
-
-
         <t-tooltip content="添加书签" theme="light" placement="bottom">
           <t-list-item @click="addQuestionTag" class="ddd">
             <span style="font-weight: bold;margin-left: 1.5em;font-size: 25px">+</span>
@@ -22,17 +24,20 @@
     </div>
     <div class="content">
       <div class="right-top">
-        <t-link variant="text" theme="default" class="right-top-btn">重命名</t-link>
-        <t-link variant="text" theme="default" class="right-top-btn">删除</t-link>
-        <t-link variant="text" theme="default" class="right-top-btn">查看</t-link>
-        <t-link variant="text" theme="default" class="right-top-btn">新建</t-link>
+        <span style="float: left;margin-top: 1.7em;margin-right: 2.5em;font-weight: bold;margin-left: 4em;color: #2c9fe5;font-size: 18px;">题库</span>
+        <t-link @click="dialog.confirmDeleteTag.visitable = true" variant="text" theme="default" class="right-top-btn">删除标签</t-link>
+        <t-link @click="deleteQuestionRepo" variant="text" theme="default" class="right-top-btn">删除题库</t-link>
+        <t-link @click="questionRepoDetail(questionRepoSelected)" variant="text" theme="default" class="right-top-btn">查看题库</t-link>
+        <t-link @click="openNewRepoDialog" variant="text" theme="default" class="right-top-btn">新建题库</t-link>
       </div>
-      <div class="right-bottom">
-        <QuestionSet @on-click="repoSelected = 1" :selected="repoSelected === 1" title="ACM训练赛" type="programing"/>
-        <QuestionSet @on-click="repoSelected = 2" :selected="repoSelected === 2" title="GPLT团体程序设计天梯赛模拟题" type="programing"/>
-        <QuestionSet @on-click="repoSelected = 3" :selected="repoSelected === 3" title="蓝桥杯模拟赛" type="programing"/>
-        <QuestionSet @on-click="repoSelected = 4" :selected="repoSelected === 4" title="第二届数学建模模拟题" type="project"/>
-        <QuestionSet @on-click="repoSelected = 5" :selected="repoSelected === 5" title="计算机网络期末考试" type="paper"/>
+      <div class="right-bottom" @click.capture="questionRepoSelected = null">
+        <QuestionSet v-for="questionRepo in questionRepoList"
+                     :key="questionRepo.questionRepoId"
+                     @on-click="questionRepoSelected = questionRepo.questionRepoId"
+                     @on-db-click="questionRepoDetail(questionRepo.questionRepoId)"
+                     :selected="questionRepoSelected === questionRepo.questionRepoId"
+                     :title="questionRepo.questionRepoName"
+                     :type="questionRepo.questionRepoType"/>
       </div>
     </div>
   </div>
@@ -43,30 +48,69 @@
       @on-close="closeAddTagInputDialog"
       @on-confirm="confirmAddTag"
       :max-character="24"/>
+  <NewRepoDialog
+      @on-close="closeNewRepoDialog"
+      @on-confirm="confirmNewRepoDialog"
+      :visible="dialog.newRepositoryDialog.visitable"/>
+  <ConfirmDialog
+      @on-close="dialog.confirmDeleteRepo.visitable = false"
+      @on-confirm="confirmDeleteRepo"
+      content="确定要删除该题库吗？"
+      :is-visible="dialog.confirmDeleteRepo.visitable"
+      title="提示"/>
+  <ConfirmDialog
+      @on-close="dialog.confirmDeleteTag.visitable = false"
+      @on-confirm="confirmDeleteQuestionTag"
+      :content="`确定要删除该书签 ' ${getCurrentQuestionTag} ' 吗？（其中的所有题目也将会被删除）`"
+      :is-visible="dialog.confirmDeleteTag.visitable"
+      title="提示"/>
 </template>
 
 <script>
 import QuestionSet from "@/page/question/component/QuestionSet";
 import InputDialog from "@/page/component/dialog/InputDialog";
-import {addQuestionTag, getQuestionTag} from "@/api/question";
+import {
+  addQuestionRepo,
+  addQuestionTag,
+  deleteQuestionRepo,
+  deleteQuestionTag,
+  getQuestionRepo,
+  getQuestionTag
+} from "@/api/question";
 import {result} from "@/common/request.result";
 import {MessagePlugin} from "tdesign-vue-next";
+import NewRepoDialog from "@/page/question/component/NewRepoDialog";
+import ConfirmDialog from "@/page/component/dialog/ConfirmDialog";
+import router from "@/router/router";
 
 export default {
   name: "QuestionRepository",
   components: {
+    ConfirmDialog,
+    NewRepoDialog,
     InputDialog,
     QuestionSet
   },
   data() {
     return {
-      repoSelected: null,
       dialog: {
         addTagInputDialog: {
           visitable: false
+        },
+        newRepositoryDialog: {
+          visitable: false
+        },
+        confirmDeleteRepo: {
+          visitable: false
+        },
+        confirmDeleteTag: {
+          visitable: false
         }
       },
-      tagList: [{questionTagId:0,questionTagName:'默认'}]
+      tagList: [{questionTagId:0,questionTagName:'默认'}],
+      tagSelected: null,
+      questionRepoList: [],
+      questionRepoSelected: null
     }
   },
   methods: {
@@ -84,17 +128,89 @@ export default {
       }
       addQuestionTag({questionTagName}).then(resp => {
         if(resp.data['resultCode'] === result.code.SUCCESS){
+          this.tagList.push({questionTagId: resp.data.data,questionTagName})
           MessagePlugin.success("标签新建成功！")
+          this.changeTag(resp.data.data)
         }else{
           MessagePlugin.error('系统繁忙!')
         }
       }).catch(() => {
         MessagePlugin.error('系统繁忙!')
       })
+    },
+    changeTag: function (questionTagId) {
+      this.tagSelected = questionTagId
+      getQuestionRepo(questionTagId,this.questionRepoList)
+      this.questionRepoSelected = null
+    },
+    closeNewRepoDialog: function () {
+      this.dialog.newRepositoryDialog.visitable = false
+    },
+    confirmNewRepoDialog: function (formData) {
+      this.closeNewRepoDialog()
+      let questionRepoDto = {
+        questionRepoId: null,
+        questionRepoName: formData.input,
+        questionRepoType: formData.option,
+        questionTagId: this.tagSelected
+      }
+      addQuestionRepo(questionRepoDto).then(resp => {
+        if(resp.data['resultCode'] === result.code.SUCCESS){
+          questionRepoDto.questionRepoId = resp.data.data
+          this.questionRepoList.push(questionRepoDto)
+        }
+        if(resp.data['resultCode'] === result.code.FAIL){
+          MessagePlugin.error('该题库已存在！')
+        }
+      })
+    },
+    openNewRepoDialog: function () {
+      this.dialog.newRepositoryDialog.visitable = true
+    },
+    questionRepoDetail: function (questionRepoId) {
+      router.push('/question/repo/detail/'.concat(questionRepoId))
+    },
+    deleteQuestionRepo: function () {
+      this.dialog.confirmDeleteRepo.visitable = true
+    },
+    confirmDeleteRepo: function () {
+      deleteQuestionRepo(this.questionRepoSelected).then(resp => {
+        if(resp.data.resultCode === result.code.SUCCESS){
+          MessagePlugin.success('删除成功')
+          getQuestionRepo(this.tagSelected, this.questionRepoList)
+          this.questionRepoSelected = null
+        }
+        this.dialog.confirmDeleteRepo.visitable = false
+      })
+    },
+    confirmDeleteQuestionTag: function () {
+      this.dialog.confirmDeleteTag.visitable = false
+      deleteQuestionTag(this.tagSelected).then(async resp => {
+        if (resp.data.resultCode === result.code.SUCCESS) {
+          MessagePlugin.success('删除成功')
+          await getQuestionTag(this.tagList)
+          this.tagSelected = this.tagList[0].questionTagId
+          await getQuestionRepo(this.tagSelected, this.questionRepoList)
+          this.questionRepoSelected = null
+        }
+      })
     }
   },
-  mounted() {
-    getQuestionTag(this.tagList)
+  computed: {
+    getCurrentQuestionTag: function () {
+      for(let index = 0;index < this.tagList.length; index++){
+        if(this.tagList[index].questionTagId === this.tagSelected){
+          return this.tagList[index].questionTagName
+        }
+      }
+      return null
+    }
+  },
+  async mounted() {
+    await getQuestionTag(this.tagList)
+    this.tagSelected = this.tagList[0].questionTagId
+    await getQuestionRepo(this.tagSelected, this.questionRepoList)
+    this.questionRepoSelected = null
   }
 }
 </script>
@@ -133,6 +249,11 @@ export default {
     position: relative;
   }
   .list-item:hover{
+    border-left: #2c9fe5 3px solid;
+    background-color: #f6f5f7;
+    font-weight: bold;
+  }
+  .list-item-selected{
     border-left: #2c9fe5 3px solid;
     background-color: #f6f5f7;
     font-weight: bold;

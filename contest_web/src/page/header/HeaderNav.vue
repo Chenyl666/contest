@@ -291,6 +291,13 @@ export default {
         }
       }
     }
+  },
+  mounted() {
+    if(store.state.userDto !== undefined){
+      this.user.userName = store.state.userDto.userName
+      this.user.userPic = DEV_CONFIG.BASE_URL.concat('/user/pic/get/').concat(store.state.userDto.userId)
+      this.user.userType = store.state.userDto.userType
+    }
   }
 }
 </script>

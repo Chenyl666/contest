@@ -6,12 +6,11 @@ import com.contest.dto.contest.ContestPriseDistributeDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.contest.ContestDetailEntity;
 import com.contest.entity.contest.ContestPriseDistributeEntity;
-import com.contest.entity.contest.ContestStatus;
-import com.contest.entity.user.UserType;
+import com.contest.enu.ContestStatus;
+import com.contest.enu.UserType;
 import com.contest.mapper.ContestPriseDistributeMapper;
 import com.contest.result.ResultModel;
 import com.contest.service.UserService;
-import com.contest.util.ObjectUtils;
 import com.contest.util.SnowMaker;
 import com.contest.service.ContestDetailService;
 import com.contest.service.ContestPriseDistributeService;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service

@@ -1,15 +1,11 @@
 package com.contest.dto.user;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.contest.entity.user.UnitEntity;
-import com.contest.entity.user.UserType;
+import com.contest.enu.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 @Data
 @AllArgsConstructor

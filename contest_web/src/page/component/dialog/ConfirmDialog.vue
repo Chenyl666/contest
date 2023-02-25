@@ -41,12 +41,10 @@ const onCancel = () => {
 }
 
 const onConfirm = () => {
-  console.log('确认')
   emits('on-confirm')
 }
 
 const onClose = () => {
-  console.log('关闭')
   emits('on-close')
 }
 

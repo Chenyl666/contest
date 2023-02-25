@@ -45,4 +45,20 @@ export class request {
             },
         })
     }
+
+    static delete(url, usingToken = false,header){
+        if(usingToken === true && (store.state.token === null || store.state.token === 'none')){
+            router.push('/login').then()
+            return;
+        }
+        if(header == null){
+            header = {}
+        }
+        header['token'] = store.state.token
+        return axios.delete(url,{
+            baseURL: globalConfig.requestConfig.baseURL,
+            responseType: "json",
+            headers: header
+        })
+    }
 }

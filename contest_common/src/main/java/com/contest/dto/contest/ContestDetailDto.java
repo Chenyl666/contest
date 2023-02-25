@@ -1,10 +1,8 @@
 package com.contest.dto.contest;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.contest.entity.contest.ContestDetailEntity;
-import com.contest.entity.contest.ContestLevel;
-import com.contest.entity.contest.ContestStatus;
+import com.contest.enu.ContestLevel;
+import com.contest.enu.ContestStatus;
 import com.contest.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

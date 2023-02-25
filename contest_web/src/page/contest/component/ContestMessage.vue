@@ -39,8 +39,7 @@
     </t-form-item>
 
     <t-form-item name="description" label="竞赛详细">
-<!--      <t-textarea v-model="formData.description" :autosize="{minRows:20,maxRows:1000}" placeholder="请输入竞赛详细"/>-->
-      <MyEditor @content-change="onDescriptionChange" :content="formData.description"/>
+      <MyEditor @content-change="(value) => formData.description = value" :content="formData.description"/>
     </t-form-item>
 
     <t-form-item style="margin-bottom: 5em">
@@ -139,10 +138,6 @@ const supplementContestMessage = (contestMessage) => {
   formData.enrollTimeRange[1] = contestMessage.enrollTimeRange[1]
   formData.organizeUnit = contestMessage.organizeUnit
   formData.subject = contestMessage.subject
-}
-
-const onDescriptionChange = (value) => {
-  formData.description = value
 }
 
 onMounted(() => {

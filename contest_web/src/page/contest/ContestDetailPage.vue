@@ -101,7 +101,9 @@
         <t-input v-model="formData.contestPrice" type="number" placeholder="提现时将扣除5%的使用费用"/>
       </t-form-item>
       <t-form-item name="description" label="竞赛详细">
-        <MyEditor :content="contestDetailMessage.contestDescription" @content-change="onDescriptionChange" />
+        <MyEditor
+            :content="contestDetailMessage.contestDescription"
+            @content-change="(value) => formData.contestDescription = value" />
       </t-form-item>
       <t-form-item style="margin-bottom: 5em">
         <t-button size="large" block theme="primary" type="submit" @click="onSubmit">保存</t-button>
@@ -214,9 +216,6 @@ export default {
     },
     onSuccess: function (url) {
       this.formData.contestPicture = url
-    },
-    onDescriptionChange: function (value) {
-      this.formData.contestDescription = value
     },
     onSubmit: function () {
       // alert(this.formData.contestPicture)
