@@ -3,35 +3,107 @@
     <t-collapse :default-value="[1]">
       <t-collapse-panel header="题目">
         <t-collapse default-expand-all>
-          <t-collapse-panel class="questionBigTitle" header="单选题">
-
-            <t-list-item class="questionIndex" style="cursor: pointer">
-              <span style="font-size: 13px">1. 以下不是树和图...</span>
+          <t-collapse-panel :key="index" v-for="(questionIndexList,key,index) in list" class="questionBigTitle" :header="questionTypeNameMap[key]">
+            <t-list-item
+                :class="{questionIndexSelected: data.selected === questionIndex.questionId}"
+                @click="onSelected(questionIndex)"
+                :key="index" v-for="(questionIndex,index) in questionIndexList"
+                class="questionIndex"
+                style="cursor: pointer">
+              <span style="font-size: 13px">{{index+1}}. {{toPrefixStr(questionIndex.questionContent)}}</span>
               <template #action>
-                <t-button size="small" theme="default" variant="text" ghost>X</t-button>
-              </template>
-            </t-list-item>
-
-            <t-list-item class="questionIndex" style="cursor: pointer">
-              <span style="font-size: 13px">2. 已知函数f(x)的...</span>
-              <template #action>
-                <t-button size="small" theme="default" variant="text" ghost>X</t-button>
+                <t-button @click="ShowDeleteConfirmDialog(questionIndex)" size="small" theme="default" variant="text" ghost>X</t-button>
               </template>
             </t-list-item>
           </t-collapse-panel>
-
-          <t-collapse-panel class="questionBigTitle" header="多选题"> 多选题内容 </t-collapse-panel>
-          <t-collapse-panel class="questionBigTitle" header="判断题"> 判断题内容 </t-collapse-panel>
-          <t-collapse-panel class="questionBigTitle" header="填空题"> 填空题内容 </t-collapse-panel>
-          <t-collapse-panel class="questionBigTitle" header="问答题"> 问答题内容 </t-collapse-panel>
         </t-collapse>
       </t-collapse-panel>
     </t-collapse>
   </t-space>
+  <ConfirmDialog :content="data.dialog.confirmDeleteDialog.content"
+                 :is-visible="data.dialog.confirmDeleteDialog.visitable"
+                 :title="data.dialog.confirmDeleteDialog.title"
+                 @on-confirm="confirmDeleteQuestion"
+                 @on-close="data.dialog.confirmDeleteDialog.visitable = false"/>
 </template>
+
 <script setup lang="jsx">
+import {reactive, toRef} from "vue";
+import {defineProps} from "vue";
+import {StringUtil} from "@/util/string.util";
+import {defineEmits} from "vue";
+import {defineExpose} from "vue";
+import ConfirmDialog from "@/page/component/dialog/ConfirmDialog";
+import {deleteQuestionById} from "@/api/question";
+import {result} from "@/common/request.result";
+import {MessagePlugin} from "tdesign-vue-next";
+
+const emits = defineEmits(['load-question'])
+
+const clearIndexHighLight = () => {
+  data.selected = null
+}
+
+defineExpose({clearIndexHighLight})
+
+const props = defineProps({
+  questionIndexList: {
+    type: Array,
+    default: null
+  }
+})
+
+const data = reactive({
+  selected: null,
+  dialog: {
+    confirmDeleteDialog: {
+      visitable: false,
+      content: '确定要删除改题目吗？',
+      title: '提示',
+      questionId: null
+    }
+  }
+})
+
+const onSelected = (questionIndex) => {
+  data.selected = questionIndex.questionId
+  emits('load-question',data.selected)
+}
+
+const questionTypeNameMap = reactive({
+  SINGLE_OPTION_QUESTION: '单选题',
+  SUPPLEMENT_QUESTION: '填空题',
+  JUDGE_QUESTION: '判断题',
+  ANSWER_QUESTION: '问答题',
+  PROGRAMMING_QUESTION: '编程题'
+})
+
+const list = toRef(props,'questionIndexList')
+
+const toPrefixStr = (str) => {
+  return StringUtil.getStringPrefix(str,10)
+}
+
+const ShowDeleteConfirmDialog = (questionIndex) => {
+  data.dialog.confirmDeleteDialog.questionId = questionIndex.questionId
+  data.dialog.confirmDeleteDialog.visitable = true
+}
+
+const confirmDeleteQuestion = () => {
+  deleteQuestionById(data.dialog.confirmDeleteDialog.questionId).then(resp => {
+    if(resp.data['resultCode'] === result.code.SUCCESS){
+      emits('onload-question-index')
+      MessagePlugin.success("删除成功！")
+    }else{
+      MessagePlugin.error('系统繁忙！')
+    }
+    data.dialog.confirmDeleteDialog.visitable = false
+  })
+}
+
 
 </script>
+
 <style lang="less">
 .accordion-demo {
   background-color: #f9f9f9;
@@ -54,5 +126,9 @@
 }
 .questionIndex:hover{
   background-color: #a6a6a6;
+}
+.questionIndexSelected{
+  color: #2c9fe5;
+  font-weight: bold;
 }
 </style>

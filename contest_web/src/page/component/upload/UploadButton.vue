@@ -1,17 +1,33 @@
 <template>
-  <div style="width: 350px">
+  <div>
     <!-- abridgeName 省略中间文本，首尾保留的文本字符 -->
     <t-upload
         :show-upload-progress="false"
         :request-method="requestMethod"
-        theme="file"
+        theme="custom"
         placeholder="未选择文件"
-    ></t-upload>
+    >
+      <t-button :variant="props.variant" :theme="props.theme">{{props.value}}</t-button>
+    </t-upload>
   </div>
 </template>
 <script setup>
 import {defineEmits} from 'vue';
 import {uploadSimpleFile} from "@/api/file_upload.";
+import {defineProps} from "vue";
+
+const props = defineProps({
+  value: {
+    required: true
+  },
+  theme: {
+    type: String,
+    default: 'primary'
+  },
+  variant: {
+    type: String
+  },
+})
 
 const emit = defineEmits(['on-success'])
 

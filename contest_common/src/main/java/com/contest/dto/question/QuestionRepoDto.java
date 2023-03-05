@@ -25,7 +25,7 @@ public class QuestionRepoDto {
                 .builder()
                 .questionRepoId(Long.parseLong(questionRepoId))
                 .questionRepoName(questionRepoName)
-                .questionTagId(Long.parseLong(questionTagId))
+                .questionTagId(questionTagId == null?null:Long.parseLong(questionTagId))
                 .questionRepoType(questionRepoType)
                 .build();
     }

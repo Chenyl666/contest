@@ -8,6 +8,7 @@ export const state = () => {
             createContestStep: 0,
             contestMessage: undefined,
             enrollMessage: undefined
-        }
+        },
+        questionContentText: null
     }
 }

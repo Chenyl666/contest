@@ -25,6 +25,9 @@ public class QuestionRepoServiceImpl extends ServiceImpl<QuestionRepoMapper, Que
     @Resource
     private QuestionRepoMapper questionRepoMapper;
 
+    /**
+     * 获取题库
+     * */
     @Override
     public ResultModel<List<QuestionRepoDto>> getQuestionRepoDtoByIdAndTagId(String questionTagId) {
         List<QuestionRepoEntity> questionRepoEntityList = list(
@@ -36,6 +39,9 @@ public class QuestionRepoServiceImpl extends ServiceImpl<QuestionRepoMapper, Que
         return ResultModel.buildSuccessResultModel(null,questionRepoDtoList);
     }
 
+    /**
+     * 添加题库
+     * */
     @Override
     public ResultModel<String> addQuestionRepo(UserDto userDto, QuestionRepoDto questionRepoDto) {
         questionRepoDto.setQuestionRepoId(String.valueOf(snowMaker.nextId()));
@@ -54,9 +60,35 @@ public class QuestionRepoServiceImpl extends ServiceImpl<QuestionRepoMapper, Que
         return ResultModel.buildFailResultModel("题库已存在！");
     }
 
+    /**
+     * 删除题库
+     * */
     @Override
     public ResultModel<String> deleteQuestionRepoById(String questionRepoId) {
         removeById(Long.parseLong(questionRepoId));
+        return ResultModel.buildSuccessResultModel();
+    }
+
+    /**
+     * 获取题库信息
+     * */
+    @Override
+    public ResultModel<QuestionRepoDto> getQuestionRepoById(Long questionRepoId) {
+        ResultModel<QuestionRepoDto> result = null;
+        Optional<QuestionRepoEntity> questionRepoEntityOptional = Optional.ofNullable(getById(questionRepoId));
+        if (questionRepoEntityOptional.isPresent()) {
+            return ResultModel.buildSuccessResultModel(null,questionRepoEntityOptional.get().entity2Dto());
+        }
+        return ResultModel.buildFailResultModel("no exist",null);
+    }
+
+    /**
+     * 修改题库名称
+     * */
+    @Override
+    public ResultModel<String> updateQuestionRepoNameById(QuestionRepoDto questionRepoDto) {
+        QuestionRepoEntity questionRepoEntity = questionRepoDto.dto2Entity();
+        updateById(questionRepoEntity);
         return ResultModel.buildSuccessResultModel();
     }
 

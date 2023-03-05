@@ -4,6 +4,7 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import {defineEmits} from "vue";
 import {store} from "@/store";
 import {defineProps} from "vue";
+import {defineExpose} from "vue";
 
 const props = defineProps({
   content: {
@@ -17,6 +18,10 @@ const props = defineProps({
   width: {
     type: String,
     default: null
+  },
+  saveToStore: {
+    type: String,
+    default: null
   }
 })
 
@@ -28,10 +33,6 @@ const editorRef = shallowRef()
 // 内容 HTML
 let valueHtml = ref(props.content)
 // const valueHtml = toRef(props,"content")
-
-const onContentChange = () => {
-  emits('content-change',valueHtml)
-}
 
 // 模拟 ajax 异步获取内容
 onMounted(() => {
@@ -60,8 +61,26 @@ const handleCreated = (editor) => {
 }
 
 watch(valueHtml, (newValue) => {
+  if(props.saveToStore !== null){
+    store.commit(props.saveToStore,editorRef.value.getText())
+  }
+  // alert('change')
   emits('content-change',newValue)
 })
+
+const setValueHtml = (text) => {
+  valueHtml.value = text
+}
+
+defineExpose(setValueHtml)
+
+const onContentChange = () => {
+  if(props.saveToStore !== null){
+    store.commit(props.saveToStore,editorRef.value.getText())
+  }
+  // alert('change on')
+  emits('content-change',valueHtml)
+}
 
 // 组件销毁时，及时销毁编辑器
 onBeforeUnmount(() => {

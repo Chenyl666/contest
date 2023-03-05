@@ -19,5 +19,8 @@ export const mutations = {
     },
     setEnrollMessage(state,enrollMessage){
         state.createdContestPage.enrollMessage = enrollMessage
+    },
+    setQuestionContentText(state,questionContentText){
+        state.questionContentText = questionContentText
     }
 }

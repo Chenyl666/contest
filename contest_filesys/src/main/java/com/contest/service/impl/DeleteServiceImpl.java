@@ -92,6 +92,16 @@ public class DeleteServiceImpl implements DeleteService {
         fileTimeoutMapper.deleteById(fileId);
     }
 
+    /**
+     * 通过下载链接删除文件
+     * */
+    @Override
+    public void deleteFileByDownloadUrl(String url,UserDto userDto) {
+        String[] split = url.split("/");
+        String fileId = split[split.length-1];
+        requestDeleteFile(fileId,userDto);
+    }
+
     public void lockMd5(String fileMd5){
         md5Lock.lock(fileMd5);
     }

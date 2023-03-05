@@ -41,12 +41,50 @@ export const addQuestionRepo = (questionRepoDto) => {
     return request.post('/contest/question/repo/add',questionRepoDto,true)
 }
 
-
+export const updateQuestionRepoNameById = (questionRepoDto) => {
+    return request.post('/contest/question/repo/update/name',questionRepoDto,true);
+}
 
 export const deleteQuestionRepo = (questionRepoId) => {
     return request.delete('/contest/question/repo/delete/'.concat(questionRepoId),true)
 }
 
+export const getQuestionRepoById = (questionRepoId) => {
+    return request.get('/contest/question/repo/msg/'.concat(questionRepoId),true)
+}
+
 export const deleteQuestionTag = (questionTagId) => {
     return request.delete('/contest/question/tag/delete/'.concat(questionTagId),true)
+}
+
+export const addQuestion = (questionDto) => {
+    return request.post('/contest/question/save',questionDto,true)
+}
+
+export const getQuestionIndex = (questionRepoId) => {
+    return request.get('/contest/question/index/'.concat(questionRepoId),true)
+}
+
+export const getQuestionById = (questionId) => {
+    return request.get('/contest/question/'.concat(questionId))
+}
+
+export const deleteQuestionById = (questionId) => {
+    return request.delete('/contest/question/delete/'.concat(questionId),true)
+}
+
+export const saveQuestionProgram = (questionProgramDto) => {
+    return request.post('/contest/question/program/save',questionProgramDto,true)
+}
+
+export const getQuestionProgramIndex = (questionRepoId) => {
+    return request.get('/contest/question/program/index/'.concat(questionRepoId))
+}
+
+export const getQuestionProgramById = (questionId) => {
+    return request.get('/contest/question/program/get/'.concat(questionId))
+}
+
+export const deleteProgramExample = (questionId,exampleNumber) => {
+    return request.post('/contest/question/program/example/delete',{questionId,exampleNumber},true)
 }

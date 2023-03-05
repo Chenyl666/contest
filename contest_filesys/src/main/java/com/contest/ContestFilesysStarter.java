@@ -12,6 +12,5 @@ import java.util.*;
 public class ContestFilesysStarter {
     public static void main(String[] args) {
         SpringApplication.run(ContestFilesysStarter.class,args);
-
     }
 }

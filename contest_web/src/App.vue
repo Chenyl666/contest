@@ -66,7 +66,7 @@ export default {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
           // router.push('/main')
-          router.push('/question/repo/detail/426586569768439809')
+          router.push('/question/repo/detail/426587450631000065')
         }else{
           router.push("/login")
         }

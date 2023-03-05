@@ -1,7 +1,9 @@
 package com.contest.async.processor;
 
+import com.alibaba.fastjson2.JSON;
 import com.contest.async.processor.channel.AsyncDeleteChannel;
 import com.contest.cnst.ChannelNames;
+import com.contest.dto.user.UserDto;
 import com.contest.entity.filesys.FileReferenceEntity;
 import com.contest.service.DeleteService;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -9,6 +11,7 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.Message;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 @EnableBinding(AsyncDeleteChannel.class)
 public class AsyncDeleteListener {
@@ -23,5 +26,13 @@ public class AsyncDeleteListener {
     @StreamListener(ChannelNames.CONTEST_DELETE_TIMEOUT_FILE)
     public void deleteTimeoutFile(Message<String> message){
         deleteService.deleteBatchFileOfTimeout(message.getPayload());
+    }
+
+    @StreamListener(ChannelNames.CONTEST_DELETE_FILE_BY_DOWNLOAD_URL)
+    public void deleteFileByDownloadUrl(Message<Map<String,String>> message){
+        Map<String, String> payload = message.getPayload();
+        UserDto userDto = JSON.parseObject(payload.get("userDto"),UserDto.class);
+        String url = payload.get("url");
+        deleteService.deleteFileByDownloadUrl(url,userDto);
     }
 }

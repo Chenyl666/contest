@@ -15,4 +15,9 @@ public interface DeleteService {
      * 定时任务删除文件
      * */
     public void deleteBatchFileOfTimeout(String fileId);
+
+    /**
+     * 通过url删除文件
+     * */
+    public void deleteFileByDownloadUrl(String url,UserDto userDto);
 }

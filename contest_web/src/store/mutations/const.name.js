@@ -7,6 +7,6 @@ export const mutationName = {
     CREATED_CONTEST_PAGE: {
         SET_CONTEST_MESSAGE: 'setContestMessage',
         SET_ENROLL_MESSAGE: 'setEnrollMessage'
-    }
-
+    },
+    SET_QUESTION_CONTENT_TEXT: 'setQuestionContentText'
 }

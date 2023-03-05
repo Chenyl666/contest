@@ -10,4 +10,6 @@ public class ChannelNames {
     public static final String CONTEST_ASYNC_DELETE_FILE = "CONTEST_ASYNC_DELETE_FILE";
 
     public static final String CONTEST_DELETE_TIMEOUT_FILE = "CONTEST_DELETE_TIMEOUT_FILE";
+
+    public static final String CONTEST_DELETE_FILE_BY_DOWNLOAD_URL = "CONTEST_DELETE_FILE_BY_DOWNLOAD_URL";
 }

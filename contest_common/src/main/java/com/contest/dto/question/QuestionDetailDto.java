@@ -1,21 +1,20 @@
 package com.contest.dto.question;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.contest.entity.question.QuestionBankPaperEntity;
+import com.alibaba.fastjson2.JSON;
+import com.contest.entity.question.QuestionDetailEntity;
 import com.contest.enu.QuestionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class QuestionBankPaperDto {
+public class QuestionDetailDto {
     private String questionId;
     private QuestionType questionType;
     private String questionContent;
@@ -24,9 +23,18 @@ public class QuestionBankPaperDto {
     private String questionRepoId;
     private String createdBy;
     private Float score;
+    private List<QuestionOption> questionOption;
 
-    public QuestionBankPaperEntity dto2Entity(){
-        return QuestionBankPaperEntity
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class QuestionOption{
+        private String option;
+        private String content;
+    }
+
+    public QuestionDetailEntity dto2Entity(){
+        return QuestionDetailEntity
                 .builder()
                 .questionId(Long.parseLong(questionId))
                 .questionType(questionType)
@@ -36,6 +44,7 @@ public class QuestionBankPaperDto {
                 .questionRepoId(Long.parseLong(questionRepoId))
                 .createdBy(createdBy)
                 .score(score)
+                .questionOption(JSON.toJSONString(questionOption))
                 .build();
     }
 }
