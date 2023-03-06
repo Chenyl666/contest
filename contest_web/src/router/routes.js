@@ -21,6 +21,8 @@ import ContestList from "@/page/contest/ContestListPage";
 import ContestDetailPage from "@/page/contest/ContestDetailPage";
 import QuestionRepository from "@/page/question/QuestionRepository";
 import QuestionRepositoryDetail from "@/page/question/QuestionRepositoryDetail";
+import UserDetail from "@/page/usr/UserDetail";
+import NotFound from "@/page/error/NotFound";
 
 export const routes = [
     {
@@ -139,5 +141,13 @@ export const routes = [
         beforeEnter: () => {
             store.commit(mutationName.SET_PAGE, style.HEADER_MENU.QUESTION_REPO)
         }
+    },
+    {
+        path: '/usr/detail',
+        component: UserDetail
+    },
+    {
+        path: '/404',
+        component: NotFound
     }
 ]

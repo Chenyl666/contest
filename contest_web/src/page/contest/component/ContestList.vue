@@ -18,7 +18,7 @@
           查看信息
         </t-link>
         <t-link @click="importQuestion(row)" style="margin-left: 2em" theme="primary">
-          设置题目
+          导入题库
         </t-link>
         <t-link @click="deleteContestDetail(row)" style="margin-left: 2em" theme="danger">
           撤销竞赛
@@ -26,14 +26,21 @@
       </template>
     </t-table>
   </div>
+  <QuestionSelector @on-close="dialog.questionSelectorDialog.visitable = false"
+                    @on-confirm="onQuestionSelectConfirm"
+                    @import-repo="onQuestionSelectConfirm"
+                    :visible="dialog.questionSelectorDialog.visitable"/>
 </template>
 <script setup lang="jsx">
 import {onMounted, reactive, ref} from 'vue';
 import {CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon} from 'tdesign-icons-vue-next';
-import {getContestDetail} from "@/api/contest";
+import {getContestDetail, getContestTypeByContestId, importContestQuestion} from "@/api/contest";
 import {getTimeStr} from "@/util/date.util";
 import ConfirmDialog from '@/page/component/dialog/ConfirmDialog'
 import router from "@/router/router";
+import {result} from "@/common/request.result";
+import {MessagePlugin} from "tdesign-vue-next";
+import QuestionSelector from "@/page/contest/component/QuestionSelector";
 
 let dialog = reactive({
     deleteItemDialog: {
@@ -41,7 +48,14 @@ let dialog = reactive({
       title: '提示',
       content: '',
       selectContestId: ''
+    },
+    questionSelectorDialog: {
+      visitable: false
     }
+})
+
+let state = reactive({
+  contestSelected: null
 })
 
 let data = reactive([]);
@@ -113,14 +127,38 @@ const onConfirmDeleteItem = () => {
   dialog.deleteItemDialog.selectContestId = null
 }
 
-const importQuestion = (row) => {
-  alert('导入' + row.contestSubject + '的题目页面')
+const importQuestion = async (row) => {
+  let contestType = null
+  await getContestTypeByContestId(row.contestId).then(resp => {
+    if(resp.data.resultCode === result.code.SUCCESS){
+      contestType = resp.data.data
+    }
+  })
+  if(contestType.typeId === 3){
+    await MessagePlugin.info('该竞赛是项目型竞赛，无需导入题目！')
+  }else{
+    state.contestSelected = row.contestId
+    dialog.questionSelectorDialog.visitable = true
+  }
 }
 
 const showContestDetail = (row) => {
   router.push('/contest/detail/'.concat(row.contestId))
 }
 
+const onQuestionSelectConfirm = (questionRepoId) => {
+  importContestQuestion(state.contestSelected,questionRepoId).then(resp => {
+    if(resp.data.resultCode === result.code.SUCCESS){
+      MessagePlugin.success('题库导入成功！')
+    }else if(resp.data.resultCode === result.code.FAIL){
+      MessagePlugin.error(resp.data.message)
+    }
+  }).catch(() => {
+    MessagePlugin.error('系统繁忙！')
+  })
+  dialog.questionSelectorDialog.visitable = false
+  state.contestSelected = null
+}
 
 onMounted(() => {
   getContestDetail().then(resp => {

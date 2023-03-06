@@ -165,7 +165,7 @@ const toNextStep = () => {
 }
 
 const onSubmit = ({validateResult,e}) => {
-  alert(store.state.createdContestPage.contestMessage['organizeUnit'])
+  // alert(store.state.createdContestPage.contestMessage['organizeUnit'])
   e.preventDefault()
   if (validateResult === true) {
     store.commit(mutationName.CREATED_CONTEST_PAGE.SET_ENROLL_MESSAGE, formData)

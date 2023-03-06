@@ -2,6 +2,7 @@ package com.contest.controller;
 
 import com.contest.annotation.currentuser.CurrentUser;
 import com.contest.dto.contest.ContestDetailDto;
+import com.contest.dto.contest.ContestEnrollDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.contest.ContestDetailMessageEntity;
 import com.contest.entity.contest.ContestType;
@@ -12,7 +13,9 @@ import com.contest.service.EnrollService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.xml.transform.Result;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/contest/enroll")
@@ -65,4 +68,20 @@ public class EnrollController {
         return enrollService.updateContestDetail(contestDetailDto);
     }
 
+    @GetMapping("/type/{contest_id}")
+    public ResultModel<ContestType> getContestTypeById(@PathVariable("contest_id")Long contestId){
+        return enrollService.getContestTypeById(contestId);
+    }
+
+    @PostMapping("/question/import")
+    public ResultModel<String> importQuestionRepo(@RequestBody Map<String,Long> params){
+        return enrollService.importQuestionRepo(params.get("contestId"),params.get("questionRepoId"));
+    }
+
+    @GetMapping("/situation/{contest_id}")
+    public ResultModel<ContestEnrollDto> getContestEnrollDto(
+            @PathVariable("contest_id") Long contestId,
+            @CurrentUser UserDto userDto){
+        return enrollService.getContestEnrollDto(contestId, userDto);
+    }
 }

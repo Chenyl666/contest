@@ -42,7 +42,7 @@
       <MyEditor @content-change="(value) => formData.description = value" :content="formData.description"/>
     </t-form-item>
 
-    <t-form-item style="margin-bottom: 5em">
+    <t-form-item style="margin-top: 10em;margin-bottom: 5em">
         <t-button size="large" block theme="primary" type="submit">下一步</t-button>
     </t-form-item>
   </t-form>

@@ -27,7 +27,7 @@ spring:
         - id: contest-enroll
           uri: lb://contest-enroll
           predicates:
-            - Path=/contest/enroll/**
+            - Path=/contest/enroll/**,/contest/pay/**
         - id: contest-question
           uri: lb://contest-question
           predicates:
@@ -52,3 +52,4 @@ uri:
       - /modify
       - /filesys/download
       - /user/pic/get
+      - /contest/pay

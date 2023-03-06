@@ -38,6 +38,7 @@ public class ContestDetailDto {
     private Boolean usePercent;
     private List<ContestPriseDistributeDto> contestPriseDistributes;
     private String organizeUnit;
+    private String questionRepoId;
 
     public void setEnrollStartTime(String enrollStartTime){
         this.enrollStartTime = DateUtils.getDateByString(enrollStartTime);

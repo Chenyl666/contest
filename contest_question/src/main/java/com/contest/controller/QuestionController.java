@@ -178,10 +178,12 @@ public class QuestionController {
                 userDto
         );
     }
-//
-//    /**
-//     * 删除编程题
-//     * */
-//    @DeleteMapping("/program/delete/{question_id}")
-//    public ResultModel<String> deleteQuestionProgramById(@PathVariable("question_id"))
+
+    /**
+     * 获取题库列表
+     * */
+    @GetMapping("/repo/list")
+    public ResultModel<Object> getQuestionRepoList(@CurrentUser UserDto userDto){
+        return questionRepoService.getQuestionRepoList(userDto);
+    }
 }

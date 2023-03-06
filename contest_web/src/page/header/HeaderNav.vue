@@ -72,6 +72,7 @@
             <AddRectangleIcon
                 @mouseenter="btn.notification = '#2c9fe5'"
                 @mouseleave="btn.notification = '#B5C0CA'"
+                @click="dialog.searchContestDialog.visitable = true"
                 :style="{marginLeft: '0.7em',color: btn.notification,cursor: 'pointer'}"
                 size="1.95em"/>
           </t-popup>
@@ -121,7 +122,12 @@
       :is-visible="this.dialog.ensureLogout"
       title="提示"
       content="确定要退出登录吗？"/>
-
+  <InputDialog placeholder="请输入竞赛id"
+               title="查询比赛信息"
+               :max-character="32"
+               @on-confirm="searchContest"
+               @on-close="dialog.searchContestDialog.visitable = false"
+               :visible="dialog.searchContestDialog.visitable"/>
 </template>
 
 <script>
@@ -142,10 +148,12 @@ import {style} from "@/common/style";
 import {store} from "@/store";
 import {DEV_CONFIG} from "@/config/dev.config";
 import router from "@/router/router";
+import InputDialog from "@/page/component/dialog/InputDialog";
 
 export default {
   name: "HeaderDirection",
   components: {
+    InputDialog,
     FlagIcon,
     AddRectangleIcon,
     ConfirmDialog, ArrowRightIcon,LockOnIcon,UserIcon,BulletpointIcon,StarFilledIcon,NotificationFilledIcon},
@@ -197,7 +205,10 @@ export default {
         ]
       },
       dialog: {
-        ensureLogout: false
+        ensureLogout: false,
+        searchContestDialog: {
+          visitable: false,
+        }
       }
     }
   },
@@ -210,12 +221,18 @@ export default {
       if(item.value === 2){
         this.toQuestionRepo()
       }
+      if(item.value === 3){
+        this.toUserDetail()
+      }
       if(item.value === 5){
         this.confirmLogout()
       }
     },
     toContestList: function () {
       this.$emit('to-contest-list')
+    },
+    toUserDetail: function () {
+      this.$emit('to-user-detail')
     },
     toQuestionRepo: function () {
       this.$emit('to-question-repo')
@@ -258,6 +275,10 @@ export default {
     },
     toCreatedContest: () => {
       router.push('/contest/create')
+    },
+    searchContest: function(contestId) {
+      this.dialog.searchContestDialog.visitable = false
+      this.$emit('to-contest-detail',contestId)
     }
   },
   computed: {

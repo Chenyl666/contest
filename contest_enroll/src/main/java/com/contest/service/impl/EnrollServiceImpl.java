@@ -2,19 +2,23 @@ package com.contest.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.contest.dto.contest.ContestDetailDto;
+import com.contest.dto.contest.ContestEnrollDto;
 import com.contest.dto.contest.ContestPriseDistributeDto;
+import com.contest.dto.question.QuestionRepoDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.contest.ContestDetailEntity;
+import com.contest.entity.contest.ContestEnrollEntity;
 import com.contest.entity.contest.ContestPriseDistributeEntity;
+import com.contest.entity.contest.ContestType;
 import com.contest.enu.ContestStatus;
+import com.contest.enu.QuestionRepoType;
 import com.contest.enu.UserType;
+import com.contest.mapper.ContestEnrollMapper;
 import com.contest.mapper.ContestPriseDistributeMapper;
+import com.contest.mapper.ContestTypeMapper;
 import com.contest.result.ResultModel;
-import com.contest.service.UserService;
+import com.contest.service.*;
 import com.contest.util.SnowMaker;
-import com.contest.service.ContestDetailService;
-import com.contest.service.ContestPriseDistributeService;
-import com.contest.service.EnrollService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +43,15 @@ public class EnrollServiceImpl implements EnrollService {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private ContestTypeMapper contestTypeMapper;
+
+    @Resource
+    private QuestionRepoService questionRepoService;
+
+    @Resource
+    private ContestEnrollMapper contestEnrollMapper;
 
     @Override
     @Transactional
@@ -114,12 +127,57 @@ public class EnrollServiceImpl implements EnrollService {
 
     @Override
     public ResultModel<String> updateContestDetail(ContestDetailDto contestDetailDto) {
-//        String contestId = contestDetailDto.getContestId();
-//        ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestId);
-//        contestDetailEntity = ObjectUtils.supplementFields(contestDetailDto.dto2Entity(),contestDetailEntity);
-//        System.out.println(contestDetailEntity);
         contestDetailService.updateById(contestDetailDto.dto2Entity());
         return ResultModel.buildSuccessResultModel();
+    }
+
+    @Override
+    public ResultModel<ContestType> getContestTypeById(Long contestId) {
+        ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestId);
+        if(contestDetailEntity != null){
+            ContestType contestType = contestTypeMapper.selectById(contestDetailEntity.getContestTypeId());
+            return ResultModel.buildSuccessResultModel(null,contestType);
+        }
+        return ResultModel.buildFailResultModel("not exist",null);
+    }
+
+    @Override
+    @Transactional
+    public ResultModel<String> importQuestionRepo(Long contestId, Long questionRepoId) {
+        Optional<QuestionRepoDto> questionRepoDtoOptional = Optional.ofNullable(questionRepoService.getQuestionRepoMessageById(questionRepoId).getData());
+        if (!questionRepoDtoOptional.isPresent()) {
+            return ResultModel.buildFailResultModel("该题库不存在！");
+        }
+        QuestionRepoDto questionRepoDto = questionRepoDtoOptional.get();
+        Integer contestTypeId = QuestionRepoType.getContestTypeId(questionRepoDto.getQuestionRepoType());
+        ResultModel<ContestDetailDto> contestDetailDtoResult = getContestDetailById(String.valueOf(contestId));
+        if(contestDetailDtoResult.getData() == null){
+            throw new NullPointerException();
+        }
+        ContestDetailDto contestDetailDto = contestDetailDtoResult.getData();
+        if(!contestDetailDto.getContestTypeId().equals(contestTypeId)){
+            return ResultModel.buildFailResultModel("竞赛类型和题库类型不匹配！");
+        }
+        contestDetailService.updateById(ContestDetailEntity
+                .builder()
+                .contestId(contestId)
+                .questionRepoId(questionRepoId)
+                .build()
+        );
+        return ResultModel.buildSuccessResultModel();
+    }
+
+    @Override
+    public ResultModel<ContestEnrollDto> getContestEnrollDto(Long contestId, UserDto userDto) {
+        ContestEnrollEntity contestEnrollEntity = contestEnrollMapper.selectOne(
+                new QueryWrapper<ContestEnrollEntity>()
+                        .eq("contest_id", contestId)
+                        .eq("user_id", userDto.getUserId())
+        );
+        if(contestEnrollEntity != null){
+            return ResultModel.buildSuccessResultModel(null,contestEnrollEntity.entity2Dto());
+        }
+        return ResultModel.buildFailResultModel("not exist",null);
     }
 
     private ContestDetailDto buildContestDetailDto(
@@ -149,13 +207,13 @@ public class EnrollServiceImpl implements EnrollService {
                 .usePercent(contestDetailEntity.getUsePercent())
                 .contestPriseDistributes(contestPriseDistributeDtoList)
                 .organizeUnit(contestDetailEntity.getOrganizeUnit())
+                .questionRepoId(String.valueOf(contestDetailEntity.getQuestionRepoId()))
                 .build();
     }
 
     private List<ContestDetailDto> buildContestDetailDtoList(
             List<ContestDetailEntity> contestDetailEntityList,
-            Map<Long, List<ContestPriseDistributeDto>> contestPriseDistributeMap
-    ){
+            Map<Long, List<ContestPriseDistributeDto>> contestPriseDistributeMap){
         return contestDetailEntityList.stream().map(
                 contestDetailEntity -> buildContestDetailDto(
                         contestDetailEntity,contestPriseDistributeMap.get(contestDetailEntity.getContestId())

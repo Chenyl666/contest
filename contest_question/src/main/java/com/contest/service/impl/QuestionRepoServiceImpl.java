@@ -3,18 +3,19 @@ package com.contest.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.contest.dto.question.QuestionRepoDto;
+import com.contest.dto.question.QuestionTagDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.question.QuestionRepoEntity;
+import com.contest.entity.question.QuestionTagEntity;
 import com.contest.mapper.QuestionRepoMapper;
 import com.contest.result.ResultModel;
 import com.contest.service.QuestionRepoService;
+import com.contest.service.QuestionTagService;
 import com.contest.util.SnowMaker;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +25,9 @@ public class QuestionRepoServiceImpl extends ServiceImpl<QuestionRepoMapper, Que
 
     @Resource
     private QuestionRepoMapper questionRepoMapper;
+
+    @Resource
+    private QuestionTagService questionTagService;
 
     /**
      * 获取题库
@@ -90,6 +94,36 @@ public class QuestionRepoServiceImpl extends ServiceImpl<QuestionRepoMapper, Que
         QuestionRepoEntity questionRepoEntity = questionRepoDto.dto2Entity();
         updateById(questionRepoEntity);
         return ResultModel.buildSuccessResultModel();
+    }
+
+    /**
+     * 获取题库列表
+     * */
+    @Override
+    public ResultModel<Object> getQuestionRepoList(UserDto userDto) {
+        List<QuestionRepoDto> questionRepoDtoList = questionRepoMapper.selectList(
+                new QueryWrapper<QuestionRepoEntity>().eq("created_By", userDto.getUserId())
+        ).stream().map(QuestionRepoEntity::entity2Dto).collect(Collectors.toList());
+
+        List<QuestionTagDto> questionTagDtoList = questionTagService.list(
+                new QueryWrapper<QuestionTagEntity>().eq("created_by", userDto.getUserId())
+        ).stream().map(QuestionTagEntity::entity2Dto).collect(Collectors.toList());
+
+        List<Object> result = new LinkedList<>();
+        questionTagDtoList.forEach(questionTagDto -> {
+            Map<String,Object> questionTag = new HashMap<>();
+            questionTag.put("tagId",questionTagDto.getQuestionTagId());
+            questionTag.put("tagName",questionTagDto.getQuestionTagName());
+            LinkedList<Object> questionRepoList = new LinkedList<>();
+            questionRepoDtoList.forEach(questionRepoDto -> {
+                if(questionRepoDto.getQuestionTagId().equals(questionTagDto.getQuestionTagId())){
+                    questionRepoList.add(questionRepoDto);
+                }
+            });
+            questionTag.put("questionRepoList",questionRepoList);
+            result.add(questionTag);
+        });
+        return ResultModel.buildSuccessResultModel(null,result);
     }
 
     public void supplementQuestionRepoEntity(QuestionRepoEntity questionRepoEntity,UserDto userDto){

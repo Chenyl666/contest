@@ -50,3 +50,15 @@ export const saveContestDetail = (contestDetail) => {
     }
     return request.post('contest/enroll/save',data,true)
 }
+
+export const getContestTypeByContestId = (contestId) => {
+    return request.get('/contest/enroll/type/'.concat(contestId))
+}
+
+export const importContestQuestion = (contestId,questionRepoId) => {
+    return request.post('/contest/enroll/question/import',{contestId,questionRepoId},true)
+}
+
+export const getUserEnrollSituation = (contestId) => {
+    return request.get('/contest/enroll/situation/'.concat(contestId),true)
+}

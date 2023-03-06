@@ -1,7 +1,10 @@
-import {store} from "@/store";
 import {request} from "@/util/request";
 
-const getUserPictureByToken = () => {
-    let token = store.state.token
-    request.get('/user/picture')
+export const saveUserDetail = (user) => {
+    return request.post('/user/save',user,true)
 }
+
+export const getUserDetail = () => {
+    return request.get('/user/get/detail',true)
+}
+

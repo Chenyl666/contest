@@ -48,7 +48,9 @@
         <p class="boldFront">主办方</p>
         <p class="rightItem">账号：{{this.contestDetailMessage.createdBy}}</p>
       </div>
-
+      <t-form-item v-if="getUserType === 'PARTICIPANT'" style="margin-top: 2em">
+        <t-button :disabled="hasEnroll" @click="enrollContest" size="large" theme="primary" style="width: 85%">{{hasEnroll?'已报名':'报名参赛'}}</t-button>
+      </t-form-item>
     </div>
   </div>
   <div v-if="editContest.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
@@ -105,12 +107,11 @@
             :content="contestDetailMessage.contestDescription"
             @content-change="(value) => formData.contestDescription = value" />
       </t-form-item>
-      <t-form-item style="margin-bottom: 5em">
+      <t-form-item style="margin-bottom: 5em;margin-top: 10em">
         <t-button size="large" block theme="primary" type="submit" @click="onSubmit">保存</t-button>
       </t-form-item>
     </t-form>
   </div>
-
 </template>
 
 <script>
@@ -118,7 +119,7 @@
 import {
   getContestCreatorByContestId, getContestDetailById,
   getContestDetailMessageById,
-  getContestTypeList, updateContestDetail
+  getContestTypeList, getUserEnrollSituation, updateContestDetail
 } from "@/api/contest";
 import {result} from "@/common/request.result";
 import {toRef} from "vue";
@@ -130,6 +131,9 @@ import UploadImage from "@/page/component/upload/UploadImage"
 import MyEditor from '@/page/component/editor/MyEditor'
 import {CONTEST} from "@/common/contest";
 import {MessagePlugin} from "tdesign-vue-next";
+import router from "@/router/router";
+import {getUserDetail} from "@/api/user";
+import {createEnrollPaymentOrder} from "@/api/payment";
 
 const load = (contestId,_this) => {
   _this.contestId = contestId
@@ -168,7 +172,8 @@ export default {
       CONTEST: CONTEST,
       meta: {
         contestTypeList: [{typeId: null,typeName: null}]
-      }
+      },
+      hasEnroll: false
     }
   },
   methods: {
@@ -242,10 +247,29 @@ export default {
       }).catch(() => {
         MessagePlugin.error("系统繁忙！")
       })
+    },
+    enrollContest: async function () {
+      let pass = true
+      await getUserDetail().then(resp => {
+        if(resp.data.resultCode === result.code.SUCCESS){
+          if(resp.data.data.identify === null || resp.data.data.identify === ''){
+            alert('请先进行实名认证！')
+            pass = false
+            router.push('/usr/detail')
+          }
+        }
+      })
+      if(pass){
+        await createEnrollPaymentOrder(this.$route.params.contestId).then(resp => {
+          if(resp.data.resultCode === result.code.SUCCESS){
+            window.open(resp.data.data)
+          }
+        })
+      }
     }
   },
   computed: {
-    ...mapGetters([gettersName.GET_USER_PIC,gettersName.GET_USER_NAME]),
+    ...mapGetters([gettersName.GET_USER_PIC,gettersName.GET_USER_NAME,gettersName.GET_USER_TYPE]),
     getEnrollStartTime: function(){
       return getTimeStrOfChina(this.contestDetailMessage.enrollStartTime)
     },
@@ -257,7 +281,7 @@ export default {
     },
     getContestEndTime: function () {
       return getTimeStrOfChina(this.contestDetailMessage.contestEndTime)
-    }
+    },
   },
   watch: {
     'this.$route.params.contestId': {
@@ -273,12 +297,20 @@ export default {
     await getContestDetailMessageById(this.$route.params.contestId).then(resp => {
       if (resp.data.resultCode === result.code.SUCCESS) {
         this.contestDetailMessage = toRef(resp.data, 'data')
+        if(resp.data.data === null){
+          router.push('/404')
+        }
       }
     })
     await getContestCreatorByContestId(this.contestDetailMessage.contestId).then(resp => {
       if (resp.data.resultCode === result.code.SUCCESS) {
         this.contestCreator = toRef(resp.data, 'data')
         this.contestCreator.userPic = DEV_CONFIG.BASE_URL.concat('/user/pic/get/').concat(this.contestCreator.userId)
+      }
+    })
+    await getUserEnrollSituation(this.$route.params.contestId).then(resp => {
+      if(resp.data.resultCode === result.code.SUCCESS){
+        this.hasEnroll = true
       }
     })
   }
@@ -309,7 +341,7 @@ export default {
     line-height: 16px;
     font-weight: 600;
     padding-left: 6px;
-    border-left: 4px solid #22bfa7;
+    border-left: 4px solid #2c9fe5;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

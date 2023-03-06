@@ -3,9 +3,12 @@
       v-if="showHeader"
       @to-login="toLogin"
       @to-register="toRegister"
+      @to-user-detail = "toUserDetail"
       @to-contest-list="toContestList" ref="test"
+      @to-contest-detail="toContestDetail"
       @to-question-repo="toQuestionRepo"/>
   <router-view
+      :key="$route.path"
       @to-register="toRegister"
       @to-login="toLogin"
       @to-modify="toModify"
@@ -31,6 +34,7 @@ export default {
   },
   data() {
     return {
+      key: 1
     }
   },
   methods: {
@@ -51,6 +55,12 @@ export default {
     },
     toQuestionRepo: () => {
       router.push('/question/repo')
+    },
+    toUserDetail: () => {
+      router.push('/usr/detail')
+    },
+    toContestDetail: (contestId) => {
+      router.push('/contest/detail/'.concat(contestId))
     }
   },
   computed: {
@@ -66,7 +76,8 @@ export default {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
           // router.push('/main')
-          router.push('/question/repo/detail/426587450631000065')
+          router.push('/contest/detail/430478969909809152')
+          // router.push('/usr/detail')
         }else{
           router.push("/login")
         }

@@ -37,4 +37,9 @@ public interface QuestionRepoService extends IService<QuestionRepoEntity> {
      * */
     public ResultModel<String> updateQuestionRepoNameById(QuestionRepoDto questionRepoDto);
 
+    /**
+     * 获取题库列表
+     * */
+    public ResultModel<Object> getQuestionRepoList(UserDto userDto);
+
 }

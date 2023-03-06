@@ -88,3 +88,7 @@ export const getQuestionProgramById = (questionId) => {
 export const deleteProgramExample = (questionId,exampleNumber) => {
     return request.post('/contest/question/program/example/delete',{questionId,exampleNumber},true)
 }
+
+export const getQuestionTagList = () => {
+    return request.get('/contest/question/repo/list',true)
+}

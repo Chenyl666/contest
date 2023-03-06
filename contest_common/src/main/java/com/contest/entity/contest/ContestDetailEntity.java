@@ -62,4 +62,6 @@ public class ContestDetailEntity {
     private Date updatedDate;
     @TableField("organize_unit")
     private String organizeUnit;
+    @TableField("question_repo_id")
+    private Long questionRepoId;
 }

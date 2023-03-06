@@ -41,8 +41,8 @@ public class UserEntity {
     private Date createdDate;
     @TableField("updated_date")
     private Date updatedDate;
-    @TableField(exist = false)
-    private UnitEntity unit;
+    @TableField("unit")
+    private String unit;
 
     public void setUserType(String userType) {
         this.userType = UserType.valueOf(userType);

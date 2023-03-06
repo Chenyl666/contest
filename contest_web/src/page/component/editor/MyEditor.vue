@@ -94,6 +94,7 @@ onBeforeUnmount(() => {
   <div :style="{width: props.width,height: props.height}">
     <!-- 工具栏 -->
     <Toolbar
+        style="border: #cccccc solid 1px"
         :editor="editorRef"
         :defaultConfig="toolbarConfig"/>
     <!-- 编辑器 -->
@@ -105,6 +106,7 @@ onBeforeUnmount(() => {
 <!--        @onCreated="handleCreated"-->
 <!--        @change="onContentChange"/>-->
     <Editor
+        style="border: #cccccc solid 1px"
         v-model="valueHtml"
         :defaultConfig="editorConfig"
         @onCreated="handleCreated"
