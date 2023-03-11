@@ -28,12 +28,12 @@ export const getTimeStrOfChina = (dateTime) => {
         dateTime.getMinutes(),
         dateTime.getSeconds()
     ]
-    for(let i=0;i<5;i++){
+    for(let i=0;i<6;i++){
         if(timeArray[i] < 10){
             timeArray[i] = '0' + timeArray[i].toString()
         }else{
             timeArray[i] = '' + timeArray[i].toString()
         }
     }
-    return timeArray[0] + '年' + timeArray[1] + '月' + timeArray[2] + '日 ' + timeArray[3] + ':' + timeArray[4]
+    return timeArray[0] + '年' + timeArray[1] + '月' + timeArray[2] + '日 ' + timeArray[3] + ':' + timeArray[4] + ":" + timeArray[5]
 }

@@ -10,6 +10,7 @@
     <span style="font-size: 15px;font-weight: bold">创建竞赛</span>
   </t-link>
   <ContestList v-if="this.getUserType === `ORGANIZER`"/>
+  <EnrollList v-if="this.getUserType === `PARTICIPANT`"/>
 </template>
 
 <script>
@@ -17,10 +18,11 @@ import {mapGetters, mapState} from "vuex";
 import {gettersName} from "@/store/getters/getters.name";
 import ContestList from "@/page/contest/component/ContestList";
 import router from "@/router/router";
+import EnrollList from "@/page/contest/component/EnrollList";
 
 export default {
   name: "ContestListPage",
-  components: {ContestList},
+  components: {EnrollList, ContestList},
   data() {
     return {
       user: {

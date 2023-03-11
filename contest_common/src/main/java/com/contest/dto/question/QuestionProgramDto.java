@@ -1,13 +1,12 @@
 package com.contest.dto.question;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.contest.entity.question.QuestionProgramEntity;
+import com.contest.enu.QuestionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,6 +23,9 @@ public class QuestionProgramDto {
     private String questionInputExpress;
     private String questionOutputExpress;
     private Float score;
+
+    @Builder.Default
+    private QuestionType questionType = QuestionType.PROGRAMMING_QUESTION;
 
     private List<ProgramExampleDto> programExampleList;
 

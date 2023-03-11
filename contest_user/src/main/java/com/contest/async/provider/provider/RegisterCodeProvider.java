@@ -1,4 +1,4 @@
-package com.contest.async.provider.sender;
+package com.contest.async.provider.provider;
 
 import com.contest.async.provider.channel.RegisterCodeOutputChannel;
 import com.contest.dto.notify.EmailCodeMessageDto;

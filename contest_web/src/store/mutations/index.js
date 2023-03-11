@@ -22,5 +22,8 @@ export const mutations = {
     },
     setQuestionContentText(state,questionContentText){
         state.questionContentText = questionContentText
+    },
+    setFullScreen(state,value){
+        state.fullScreen = value
     }
 }

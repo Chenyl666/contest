@@ -62,3 +62,7 @@ export const importContestQuestion = (contestId,questionRepoId) => {
 export const getUserEnrollSituation = (contestId) => {
     return request.get('/contest/enroll/situation/'.concat(contestId),true)
 }
+
+export const getOrganizerEnrollList = () => {
+    return request.get('/contest/enroll/organizer/get',true)
+}

@@ -2,7 +2,7 @@ import {StringUtil} from "@/util/string.util";
 import {checkingEmailRegisteredOrNot, checkingUserIdRegisteredOrNot} from "@/api/register";
 
 const userIdRegex = /^\w{8,16}$/
-const emailRegex = /^\w+@\w+\.\w+$/
+const emailRegex = /^\w+@\w+\..*$/
 const digitalRegex = /^.*\d+.*$/
 const alphaRegex = /^.*[a-zA-Z]+.*$/
 const punctuationRegex = /^.*[^\da-zA-Z]+.*$/

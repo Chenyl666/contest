@@ -3,6 +3,8 @@ package com.contest.entity.contest;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.contest.dto.contest.ContestDetailDto;
+import com.contest.dto.contest.ContestPriseDistributeDto;
 import com.contest.enu.ContestLevel;
 import com.contest.enu.ContestStatus;
 import lombok.AllArgsConstructor;
@@ -11,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -64,4 +67,32 @@ public class ContestDetailEntity {
     private String organizeUnit;
     @TableField("question_repo_id")
     private Long questionRepoId;
+
+    public ContestDetailDto entity2Dto(List<ContestPriseDistributeDto> contestPriseDistributeDtoList){
+        return ContestDetailDto
+                .builder()
+                .contestId(String.valueOf(contestId))
+                .contestSubject(contestSubject)
+                .contestPrice(contestPrice)
+                .requiredContestPaying(requiredContestPaying)
+                .contestDescription(contestDescription)
+                .enrollStartTime(enrollStartTime)
+                .enrollEndTime(enrollEndTime)
+                .contestStartTime(contestStartTime)
+                .contestEndTime(contestEndTime)
+                .contestStatus(contestStatus)
+                .createdBy(createdBy)
+                .contestTypeId(contestTypeId)
+                .contestLevel(contestLevel)
+                .contestPicture(contestPicture)
+                .groupingContest(groupingContest)
+                .groupingMaxNum(getGroupingMaxNum())
+                .groupingMinNum(groupingMinNum)
+                .autoPrise(autoPrise)
+                .usePercent(usePercent)
+                .organizeUnit(organizeUnit)
+                .questionRepoId(String.valueOf(questionRepoId))
+                .contestPriseDistributes(contestPriseDistributeDtoList)
+                .build();
+    }
 }

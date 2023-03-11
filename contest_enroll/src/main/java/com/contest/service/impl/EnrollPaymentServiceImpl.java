@@ -7,9 +7,11 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.contest.async.provider.NotifySendingProvider;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.contest.ContestDetailEntity;
 import com.contest.entity.contest.ContestEnrollEntity;
+import com.contest.entity.notify.NotifyMessageEntity;
 import com.contest.enu.ContestStatus;
 import com.contest.mapper.ContestEnrollMapper;
 import com.contest.result.ResultModel;
@@ -53,6 +55,9 @@ public class EnrollPaymentServiceImpl implements EnrollPaymentService {
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    private NotifySendingProvider notifySendingProvider;
 
     private static final SnowMaker snowMaker = new SnowMaker(1);
 
@@ -140,7 +145,9 @@ public class EnrollPaymentServiceImpl implements EnrollPaymentService {
         contestEnrollEntityOptional.ifPresent(contestEnrollEntity -> {
             contestEnrollEntity.setPay(true);
             contestEnrollMapper.updateById(contestEnrollEntity);
+            sendEnrollSuccessNotifyMessage(contestEnrollEntity);
         });
+
         return ResultModel.buildSuccessResultModel("支付成功！");
     }
 
@@ -155,6 +162,32 @@ public class EnrollPaymentServiceImpl implements EnrollPaymentService {
         }
         model.addAttribute("templateCode", templateCode.toString());
         return "Payment";
+    }
+
+    private void sendEnrollSuccessNotifyMessage(ContestEnrollEntity contestEnrollEntity){
+        ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestEnrollEntity.getContestId());
+        System.out.println(contestDetailEntity);
+        if(contestDetailEntity != null){
+            NotifyMessageEntity notifyMessageEntity = NotifyMessageEntity
+                    .builder()
+                    .messageId(snowMaker.nextId())
+                    .messageTitle("报名成功通知")
+                    .messageContent("恭喜，您已成功报名网络竞赛："
+                            .concat(contestDetailEntity.getContestSubject())
+                            .concat("。比赛时间为：")
+                            .concat(DateUtils.getTimeStr(contestDetailEntity.getContestStartTime()))
+                            .concat("~")
+                            .concat(DateUtils.getTimeStr(contestDetailEntity.getContestEndTime()))
+                            .concat("，请及时参加比赛！")
+                    )
+                    .hasRead(false)
+                    .receiver(contestEnrollEntity.getUserId())
+                    .createdDate(new Date())
+                    .createdBy("system")
+                    .build();
+            notifySendingProvider.sendNotifyMessage(notifyMessageEntity);
+        }
+
     }
 
 }

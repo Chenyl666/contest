@@ -1,6 +1,7 @@
 package com.contest.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.contest.async.provider.NotifySendingProvider;
 import com.contest.dto.contest.ContestDetailDto;
 import com.contest.dto.contest.ContestEnrollDto;
 import com.contest.dto.contest.ContestPriseDistributeDto;
@@ -10,6 +11,7 @@ import com.contest.entity.contest.ContestDetailEntity;
 import com.contest.entity.contest.ContestEnrollEntity;
 import com.contest.entity.contest.ContestPriseDistributeEntity;
 import com.contest.entity.contest.ContestType;
+import com.contest.entity.notify.NotifyMessageEntity;
 import com.contest.enu.ContestStatus;
 import com.contest.enu.QuestionRepoType;
 import com.contest.enu.UserType;
@@ -53,6 +55,9 @@ public class EnrollServiceImpl implements EnrollService {
     @Resource
     private ContestEnrollMapper contestEnrollMapper;
 
+    @Resource
+    private NotifySendingProvider notifySendingProvider;
+
     @Override
     @Transactional
     public ResultModel<Long> saveContestDetail(ContestDetailDto contestDetailDto, UserDto userDto) {
@@ -62,10 +67,9 @@ public class EnrollServiceImpl implements EnrollService {
         List<ContestPriseDistributeEntity> contestPriseDistributeEntityList = generateContestPriseDistributeEntityList(
                 contestDetailDto.getContestPriseDistributes(),contestDetailEntity
         );
-        System.out.println(contestDetailEntity.getOrganizeUnit());
-        System.out.println(contestDetailDto.getOrganizeUnit());
         contestDetailService.save(contestDetailEntity);
         contestPriseDistributeService.saveBatch(contestPriseDistributeEntityList);
+        sentEnrollSuccessNotifyMessage(contestDetailEntity);
         return ResultModel.buildSuccessResultModel("save complete！",contestDetailEntity.getContestId());
     }
 
@@ -209,6 +213,23 @@ public class EnrollServiceImpl implements EnrollService {
                 .organizeUnit(contestDetailEntity.getOrganizeUnit())
                 .questionRepoId(String.valueOf(contestDetailEntity.getQuestionRepoId()))
                 .build();
+    }
+
+    private void sentEnrollSuccessNotifyMessage(ContestDetailEntity contestDetailEntity){
+        NotifyMessageEntity notifyMessageEntity = NotifyMessageEntity
+                .builder()
+                .messageId(snowMaker.nextId())
+                .messageTitle("审核通知")
+                .messageContent(
+                        "恭喜您，您举办的网络竞赛".concat(contestDetailEntity.getContestSubject())
+                                .concat("已经提交成功，并且将会在两个工作日内进行受理！")
+                )
+                .hasRead(false)
+                .receiver(contestDetailEntity.getCreatedBy())
+                .createdDate(new Date())
+                .createdBy("system")
+                .build();
+        notifySendingProvider.sendNotifyMessage(notifyMessageEntity);
     }
 
     private List<ContestDetailDto> buildContestDetailDtoList(

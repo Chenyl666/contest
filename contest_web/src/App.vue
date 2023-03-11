@@ -8,11 +8,11 @@
       @to-contest-detail="toContestDetail"
       @to-question-repo="toQuestionRepo"/>
   <router-view
-      :key="$route.path"
       @to-register="toRegister"
       @to-login="toLogin"
       @to-modify="toModify"
       @to-index="toIndex"
+      @decr-notify-count="decreaseNotifyCount"
       ref="page"/>
 </template>
 
@@ -26,6 +26,7 @@ import {result} from "@/common/request.result";
 import {saveToken} from "@/common/token.store";
 import {store} from "@/store";
 import {mutationName} from "@/store/mutations/const.name";
+import screenfull from "screenfull"
 
 export default {
   name: 'App',
@@ -61,11 +62,28 @@ export default {
     },
     toContestDetail: (contestId) => {
       router.push('/contest/detail/'.concat(contestId))
+    },
+    decreaseNotifyCount: function () {
+      this.$refs.test.decreaseNotifyCount()
+    },
+    setFullScreen: function () {
+      screenfull.toggle()
+    }
+  },
+  watch: {
+    "$store.state.fullScreen":{
+      handler: function (newVal) {
+        if(newVal === true){
+          screenfull.toggle()
+        }else{
+          screenfull.exit()
+        }
+      }
     }
   },
   computed: {
     showHeader: function () {
-      return this.$route.path.indexOf('/question/repo/detail') === -1
+      return this.$route.path.indexOf('/question/repo/detail') === -1 && this.$route.path.indexOf('/contest/online') === -1
     }
   },
   mounted() {
@@ -76,8 +94,9 @@ export default {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
           // router.push('/main')
-          router.push('/contest/detail/430478969909809152')
-          // router.push('/usr/detail')
+          // router.push('/contest/online/page/424399885819711488')
+          router.push('/contest/online/tip/425331313520676864')
+          // router.push('/contest/online/tip/424399885819711488')
         }else{
           router.push("/login")
         }

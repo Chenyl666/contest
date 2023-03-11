@@ -3,6 +3,7 @@ package com.contest.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.contest.dto.question.QuestionDetailDto;
 import com.contest.dto.question.QuestionIndexDto;
+import com.contest.dto.question.QuestionProgramDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.question.QuestionDetailEntity;
 import com.contest.enu.QuestionType;
@@ -37,4 +38,19 @@ public interface QuestionService extends IService<QuestionDetailEntity> {
      * 获取编程题目录
      * */
     public ResultModel<Map<QuestionType,List<QuestionIndexDto>>> getProgramQuestionIndexById(Long questionRepoId);
+
+    /**
+     * 获取题目列表
+     * */
+    public ResultModel<List<QuestionIndexDto>> getQuestionList(Long questionRepoId);
+
+    /**
+     * 获取常规题目
+     * */
+    public ResultModel<List<QuestionDetailDto>> getQuestionDetailListByRepoId(Long questionRepoId);
+
+    /**
+     * 获取编程题目
+     * */
+    public ResultModel<List<QuestionProgramDto>> getQuestionProgramListByRepoId(Long questionRepoId);
 }

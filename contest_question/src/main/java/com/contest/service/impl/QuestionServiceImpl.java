@@ -1,16 +1,19 @@
 package com.contest.service.impl;
 
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.contest.dto.question.QuestionDetailDto;
 import com.contest.dto.question.QuestionIndexDto;
+import com.contest.dto.question.QuestionProgramDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.question.QuestionDetailEntity;
 import com.contest.entity.question.QuestionProgramEntity;
+import com.contest.entity.question.QuestionRepoEntity;
+import com.contest.enu.QuestionRepoType;
 import com.contest.enu.QuestionType;
 import com.contest.mapper.QuestionDetailMapper;
 import com.contest.mapper.QuestionProgramMapper;
+import com.contest.mapper.QuestionRepoMapper;
 import com.contest.result.ResultModel;
 import com.contest.service.QuestionProgramService;
 import com.contest.service.QuestionService;
@@ -31,6 +34,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionDetailMapper, Quest
 
     @Resource
     private QuestionProgramService questionProgramService;
+
+    @Resource
+    private QuestionRepoMapper questionRepoMapper;
 
     /**
      * 保存题目
@@ -120,6 +126,60 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionDetailMapper, Quest
         Map<QuestionType, List<QuestionIndexDto>> res = new HashMap<>();
         res.put(QuestionType.PROGRAMMING_QUESTION,questionIndexDtoList);
         return ResultModel.buildSuccessResultModel(null,res);
+    }
+
+    /**
+     * 获取题目列表
+     * */
+    @Override
+    public ResultModel<List<QuestionIndexDto>> getQuestionList(Long questionRepoId) {
+        QuestionRepoEntity questionRepoEntity = questionRepoMapper.selectById(questionRepoId);
+        if(questionRepoEntity == null){
+            return ResultModel.buildFailResultModel("not exist",null);
+        }
+        if(QuestionRepoType.PAPER.equals(questionRepoEntity.getQuestionRepoType())){
+            List<QuestionDetailEntity> questionDetailEntityList = list(
+                    new QueryWrapper<QuestionDetailEntity>()
+                            .eq("question_repo_id", questionRepoId)
+            );
+
+            List<QuestionIndexDto> questionDetailDtoList = questionDetailEntityList.stream()
+                    .map(questionDetailEntity -> new QuestionIndexDto(String.valueOf(questionDetailEntity.getQuestionId()),questionDetailEntity.getQuestionType(),null,null)).collect(Collectors.toList());
+            return ResultModel.buildSuccessResultModel(null,questionDetailDtoList);
+        }
+        if(QuestionRepoType.PROGRAMMING.equals(questionRepoEntity.getQuestionRepoType())){
+            List<QuestionProgramEntity> questionProgramEntityList = questionProgramMapper.selectList(
+                    new QueryWrapper<QuestionProgramEntity>().eq("question_repo_id", questionRepoId)
+            );
+            List<QuestionIndexDto> questionList = questionProgramEntityList.stream()
+                    .map(questionProgramEntity -> new QuestionIndexDto(String.valueOf(questionProgramEntity.getQuestionId()),QuestionType.PROGRAMMING_QUESTION,null,null)).collect(Collectors.toList());
+            return ResultModel.buildSuccessResultModel(null,questionList);
+        }
+        return ResultModel.buildFailResultModel("Type error!",null);
+    }
+
+    /**
+     * 获取试卷题目
+     * */
+    @Override
+    public ResultModel<List<QuestionDetailDto>> getQuestionDetailListByRepoId(Long questionRepoId) {
+        List<QuestionDetailEntity> questionRepoEntityList = list(
+                new QueryWrapper<QuestionDetailEntity>().eq("question_repo_id", questionRepoId)
+        );
+        List<QuestionDetailDto> questionDetailDtoList = questionRepoEntityList.stream().map(QuestionDetailEntity::entity2Dto).collect(Collectors.toList());
+        return ResultModel.buildSuccessResultModel(null,questionDetailDtoList);
+    }
+
+    /**
+     * 获取编程题目
+     * */
+    @Override
+    public ResultModel<List<QuestionProgramDto>> getQuestionProgramListByRepoId(Long questionRepoId) {
+        List<QuestionProgramEntity> questionProgramEntityList = questionProgramService.list(
+                new QueryWrapper<QuestionProgramEntity>().eq("question_repo_id", questionRepoId)
+        );
+        List<QuestionProgramDto> questionProgramDtoList = questionProgramEntityList.stream().map(QuestionProgramEntity::entity2Dto).collect(Collectors.toList());
+        return ResultModel.buildSuccessResultModel(null,questionProgramDtoList);
     }
 
 }

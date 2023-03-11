@@ -77,15 +77,18 @@
                 size="1.95em"/>
           </t-popup>
 
-          <t-popup content="消息通知"
-                   trigger="hover"
-                   placement="bottom">
-            <NotificationFilledIcon
-                @mouseenter="btn.takePartIn = '#2c9fe5'"
-                @mouseleave="btn.takePartIn = '#B5C0CA'"
-                :style="{marginLeft: '0.4em',color: btn.takePartIn,cursor: 'pointer'}"
-                size="1.95em"/>
-          </t-popup>
+          <t-badge  :count="notifyCount>0?notifyCount:''" :offset="[1,1]">
+            <t-popup content="消息通知"
+                     trigger="hover"
+                     placement="bottom">
+              <NotificationFilledIcon
+                  @click="toMessageCenter"
+                  @mouseenter="btn.takePartIn = '#2c9fe5'"
+                  @mouseleave="btn.takePartIn = '#B5C0CA'"
+                  :style="{marginLeft: '0.4em',color: btn.takePartIn,cursor: 'pointer'}"
+                  size="1.95em"/>
+            </t-popup>
+          </t-badge>
 
           <t-dropdown :options="user.menu" @click="userMenuHandler">
             <template #1>
@@ -149,9 +152,12 @@ import {store} from "@/store";
 import {DEV_CONFIG} from "@/config/dev.config";
 import router from "@/router/router";
 import InputDialog from "@/page/component/dialog/InputDialog";
+import {getUnreadCount} from "@/api/notify";
+import {result} from "@/common/request.result";
 
 export default {
   name: "HeaderDirection",
+  emits: ['toRegister','toLogin'],
   components: {
     InputDialog,
     FlagIcon,
@@ -159,6 +165,7 @@ export default {
     ConfirmDialog, ArrowRightIcon,LockOnIcon,UserIcon,BulletpointIcon,StarFilledIcon,NotificationFilledIcon},
   data() {
     return {
+      notifyCount: 0,
       registerBtn: {
         ghost: true
       },
@@ -279,6 +286,14 @@ export default {
     searchContest: function(contestId) {
       this.dialog.searchContestDialog.visitable = false
       this.$emit('to-contest-detail',contestId)
+    },
+    toMessageCenter: () => {
+      router.push('/message')
+    },
+    decreaseNotifyCount: function () {
+      if(this.notifyCount !== 0){
+        this.notifyCount--
+      }
     }
   },
   computed: {
@@ -313,12 +328,20 @@ export default {
       }
     }
   },
-  mounted() {
-    if(store.state.userDto !== undefined){
+  async mounted() {
+    if (store.state.userDto !== undefined) {
       this.user.userName = store.state.userDto.userName
       this.user.userPic = DEV_CONFIG.BASE_URL.concat('/user/pic/get/').concat(store.state.userDto.userId)
       this.user.userType = store.state.userDto.userType
     }
+    let _this = this
+    setTimeout(() => {
+      getUnreadCount().then(resp => {
+        if(resp.data.resultCode === result.code.SUCCESS){
+          _this.notifyCount = resp.data.data
+        }
+      })
+    },200)
   }
 }
 </script>

@@ -1,7 +1,9 @@
 package com.contest.service.register;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.contest.async.provider.sender.RegisterCodeProvider;
+import com.contest.async.provider.provider.NotifySendingProvider;
+import com.contest.async.provider.provider.RegisterCodeProvider;
+import com.contest.entity.notify.NotifyMessageEntity;
 import com.contest.util.RedisUtil;
 import com.contest.dto.notify.EmailCodeMessageDto;
 import com.contest.dto.user.UserRegisterDto;
@@ -10,6 +12,7 @@ import com.contest.mapper.UserMapper;
 import com.contest.result.ResultFlag;
 import com.contest.result.ResultModel;
 import com.contest.util.RandomGenerator;
+import com.contest.util.SnowMaker;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
@@ -21,16 +24,21 @@ import java.util.concurrent.TimeUnit;
 public class RegisterServiceImpl implements RegisterService {
 
     @Resource
-    RegisterCodeProvider registerCodeProvider;
+    private RegisterCodeProvider registerCodeProvider;
 
     @Resource
-    RedisUtil redisUtil;
+    private RedisUtil redisUtil;
 
     @Value("${user.default.pic}")
-    String defaultUserPicUrl;
+    private String defaultUserPicUrl;
 
     @Resource
-    UserMapper userMapper;
+    private UserMapper userMapper;
+
+    @Resource
+    private NotifySendingProvider notifySendingProvider;
+
+    private static final SnowMaker snowMaker = new SnowMaker(1);
 
     /**
      * 发送邮箱注册验证码
@@ -74,6 +82,7 @@ public class RegisterServiceImpl implements RegisterService {
             return ResultModel.buildFailResultModel("该用户已被注册！");
         }
         deleteEmailCodeFromCache(userRegisterDto.getUserEmail());
+        sendRegisterNotifyMessage(userRegisterDto);
         return ResultModel.buildSuccessResultModel("注册成功！");
     }
 
@@ -103,6 +112,26 @@ public class RegisterServiceImpl implements RegisterService {
             return ResultModel.buildFailResultModel("该用户id已经被注册！");
         }
         return ResultModel.buildSuccessResultModel("该用户未被注册！");
+    }
+
+    public void sendRegisterNotifyMessage(UserRegisterDto userRegisterDto){
+        notifySendingProvider.sendNotifyMessage(
+                NotifyMessageEntity
+                        .builder()
+                        .messageId(snowMaker.nextId())
+                        .messageTitle("用户注册成功通知！")
+                        .receiver(userRegisterDto.getUserId())
+                        .hasRead(false)
+                        .createdDate(new Date())
+                        .createdBy("system")
+                        .messageContent(
+                                "亲爱的新用户".concat(userRegisterDto.getUserId())
+                                            .concat("，您好！您的CloudContest账号已经注册成功，并成功绑定邮箱")
+                                            .concat(userRegisterDto.getUserEmail())
+                                            .concat("，感谢您的支持！")
+                        )
+                        .build()
+        );
     }
 
     /**

@@ -24,4 +24,8 @@ public class DateUtils {
         long timeStamp = date.getTime();
         return timeStamp >= timeStamp1 && timeStamp <= timeStamp2;
     }
+
+    public static String getTimeStr(Date date){
+        return simpleDateFormat.format(date);
+    }
 }

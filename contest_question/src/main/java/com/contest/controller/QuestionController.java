@@ -186,4 +186,28 @@ public class QuestionController {
     public ResultModel<Object> getQuestionRepoList(@CurrentUser UserDto userDto){
         return questionRepoService.getQuestionRepoList(userDto);
     }
+
+    /**
+     * 获取题目列表
+     * */
+    @GetMapping("/list/{question_repo_id}")
+    public ResultModel<List<QuestionIndexDto>> getQuestionList(@PathVariable("question_repo_id")Long questionRepoId){
+        return questionService.getQuestionList(questionRepoId);
+    }
+
+    /**
+     * 获取常规竞赛题目
+     * */
+    @GetMapping("/list/paper/{question_repo_id}")
+    public ResultModel<List<QuestionDetailDto>> getQuestionListByRepoId(@PathVariable("question_repo_id")Long questionRepoId){
+        return questionService.getQuestionDetailListByRepoId(questionRepoId);
+    }
+
+    /**
+     * 获取编程竞赛题目
+     * */
+    @GetMapping("/list/program/{question_repo_id}")
+    public ResultModel<List<QuestionProgramDto>> getQuestionProgramListByRepoId(@PathVariable("question_repo_id")Long questionRepoId){
+        return questionService.getQuestionProgramListByRepoId(questionRepoId);
+    }
 }

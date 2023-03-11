@@ -34,6 +34,7 @@ import router from "@/router/router";
 export default {
   name: "LoginBoard",
   components: {CarVideo},
+  emits: ['toModify'],
   mounted() {
     if(router.currentRoute.value.fullPath === '/login/email-code'){
       this.emailCodeMethodBtnHighLight = true

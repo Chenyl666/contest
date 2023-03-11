@@ -4,10 +4,12 @@ import com.contest.annotation.currentuser.CurrentUser;
 import com.contest.dto.contest.ContestDetailDto;
 import com.contest.dto.contest.ContestEnrollDto;
 import com.contest.dto.user.UserDto;
+import com.contest.entity.contest.ContestDetailEntity;
 import com.contest.entity.contest.ContestDetailMessageEntity;
 import com.contest.entity.contest.ContestType;
 import com.contest.result.ResultModel;
 import com.contest.service.ContestDetailMessageService;
+import com.contest.service.ContestDetailService;
 import com.contest.service.ContestTypeService;
 import com.contest.service.EnrollService;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,9 @@ public class EnrollController {
 
     @Resource
     private ContestDetailMessageService contestDetailMessageService;
+
+    @Resource
+    private ContestDetailService contestDetailService;
 
     @GetMapping("/type")
     public ResultModel<List<ContestType>> getContestTypeList(){
@@ -83,5 +88,10 @@ public class EnrollController {
             @PathVariable("contest_id") Long contestId,
             @CurrentUser UserDto userDto){
         return enrollService.getContestEnrollDto(contestId, userDto);
+    }
+
+    @GetMapping("/organizer/get")
+    public ResultModel<List<ContestDetailDto>> getOrganizerEnrollList(@CurrentUser UserDto userDto){
+        return contestDetailService.getOrganizerContestDetailList(userDto);
     }
 }

@@ -18,7 +18,7 @@
           查看信息
         </t-link>
         <t-link @click="importQuestion(row)" style="margin-left: 2em" theme="primary">
-          导入题库
+          {{nullString(row.questionRepoId)?'导入题库':'查看题库'}}
         </t-link>
         <t-link @click="deleteContestDetail(row)" style="margin-left: 2em" theme="danger">
           撤销竞赛
@@ -33,7 +33,7 @@
 </template>
 <script setup lang="jsx">
 import {onMounted, reactive, ref} from 'vue';
-import {CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon} from 'tdesign-icons-vue-next';
+import {CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon,StarFilledIcon} from 'tdesign-icons-vue-next';
 import {getContestDetail, getContestTypeByContestId, importContestQuestion} from "@/api/contest";
 import {getTimeStr} from "@/util/date.util";
 import ConfirmDialog from '@/page/component/dialog/ConfirmDialog'
@@ -63,8 +63,9 @@ const statusNameListMap = {
   CHECKING: { label: '审核中', theme: 'primary', icon: <ErrorCircleFilledIcon /> },
   PASSABLE: { label: '审核通过', theme: 'success', icon: <CheckCircleFilledIcon /> },
   ENROLLING: { label: '报名中', theme: 'primary', icon: <ErrorCircleFilledIcon /> },
+  WAIT_CONTEST: { label: '待开始', theme: 'primary', icon: <StarFilledIcon /> },
   CONTESTING: { label: '比赛中', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
-  END: { label: '已结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
+  CONTEST_END: { label: '已结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
   FAIL: { label: '审核失败', theme: 'danger', icon: <CloseCircleFilledIcon /> },
 };
 
@@ -128,6 +129,10 @@ const onConfirmDeleteItem = () => {
 }
 
 const importQuestion = async (row) => {
+  if(!nullString(row.questionRepoId)){
+    await router.push('/question/repo/detail/'.concat(row.questionRepoId))
+    return
+  }
   let contestType = null
   await getContestTypeByContestId(row.contestId).then(resp => {
     if(resp.data.resultCode === result.code.SUCCESS){
@@ -158,6 +163,10 @@ const onQuestionSelectConfirm = (questionRepoId) => {
   })
   dialog.questionSelectorDialog.visitable = false
   state.contestSelected = null
+}
+
+const nullString = (str) => {
+  return str === null || str === '' || str === 'null'
 }
 
 onMounted(() => {

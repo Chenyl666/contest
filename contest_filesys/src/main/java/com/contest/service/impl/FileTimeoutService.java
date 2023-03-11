@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@EnableScheduling
 @Slf4j
 public class FileTimeoutService {
 

@@ -9,6 +9,7 @@ export const state = () => {
             contestMessage: undefined,
             enrollMessage: undefined
         },
-        questionContentText: null
+        questionContentText: null,
+        fullScreen: false
     }
 }

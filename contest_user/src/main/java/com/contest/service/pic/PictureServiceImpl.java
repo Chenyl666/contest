@@ -49,24 +49,30 @@ public class PictureServiceImpl implements PictureService{
     @Override
     public void getPicture(String userId, OutputStream out) {
         Optional<UserEntity> userEntityOptional = Optional.ofNullable(userMapper.selectById(userId));
+        if(!userEntityOptional.isPresent() || userEntityOptional.get().getUserPic() == null){
+            loadPicture(out, "422609470661595136");
+        }
         if(userEntityOptional.isPresent()){
-            String userPic = userEntityOptional.get().getUserPic();
-            byte[] buf = null;
-            try{
-                buf = restTemplate.getForObject(
-                        ServicesURL.CONTEST_FILESYS.concat("/filesys/download/inline/").concat(userPic),
-                        byte[].class
-                );
-            }catch (Exception e){
-                buf = restTemplate.getForObject(
-                        DEFAULT_PICTURE_URL,
-                        byte[].class
-                );
-            }finally {
-                if(buf != null){
-                    out.write(buf);
-                    out.flush();
-                }
+            loadPicture(out, userEntityOptional.get().getUserPic());
+        }
+    }
+
+    private void loadPicture(OutputStream out, String userPic) throws IOException {
+        byte[] buf = null;
+        try{
+            buf = restTemplate.getForObject(
+                    ServicesURL.CONTEST_FILESYS.concat("/filesys/download/inline/").concat(userPic),
+                    byte[].class
+            );
+        }catch (Exception e){
+            buf = restTemplate.getForObject(
+                    DEFAULT_PICTURE_URL,
+                    byte[].class
+            );
+        }finally {
+            if(buf != null){
+                out.write(buf);
+                out.flush();
             }
         }
     }

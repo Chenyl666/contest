@@ -8,5 +8,6 @@ export const mutationName = {
         SET_CONTEST_MESSAGE: 'setContestMessage',
         SET_ENROLL_MESSAGE: 'setEnrollMessage'
     },
-    SET_QUESTION_CONTENT_TEXT: 'setQuestionContentText'
+    SET_QUESTION_CONTENT_TEXT: 'setQuestionContentText',
+    SET_FULL_SCREEN: 'setFullScreen'
 }

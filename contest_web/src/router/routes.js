@@ -18,11 +18,14 @@ import ContestMessage from '@/page/contest/component/ContestMessage'
 import EnrollMessage from "@/page/contest/component/EnrollMessage";
 import ContestChecking from "@/page/contest/component/ContestChecking";
 import ContestList from "@/page/contest/ContestListPage";
-import ContestDetailPage from "@/page/contest/ContestDetailPage";
 import QuestionRepository from "@/page/question/QuestionRepository";
 import QuestionRepositoryDetail from "@/page/question/QuestionRepositoryDetail";
 import UserDetail from "@/page/usr/UserDetail";
 import NotFound from "@/page/error/NotFound";
+import MessageCenter from "@/page/notify/MessageCenter";
+import ContestDetailPage from "@/page/contest/ContestDetailPage";
+import ContestOnlinePage from "@/page/contest/ContestOnlinePage";
+import ContestOnlineTip from "@/page/contest/ContestOnlineTip";
 
 export const routes = [
     {
@@ -80,7 +83,6 @@ export const routes = [
     {
         path: '/contest/create',
         component: CreatedContestPage,
-        redirect: '/contest/create/first',
         beforeEnter: () => {
             store.commit(mutationName.SET_PAGE, style.HEADER_MENU.CONTEST_PAGE)
         },
@@ -141,6 +143,21 @@ export const routes = [
         beforeEnter: () => {
             store.commit(mutationName.SET_PAGE, style.HEADER_MENU.QUESTION_REPO)
         }
+    },
+    {
+      path: '/message',
+      component: MessageCenter,
+      beforeEnter: () => {
+          store.commit(mutationName.SET_PAGE, '')
+      }
+    },
+    {
+        path: '/contest/online/page/:contestId',
+        component: ContestOnlinePage
+    },
+    {
+        path: '/contest/online/tip/:contestId',
+        component: ContestOnlineTip
     },
     {
         path: '/usr/detail',

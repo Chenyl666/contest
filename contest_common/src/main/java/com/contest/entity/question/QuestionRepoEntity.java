@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
@@ -17,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @TableName("question_repo")
-public class QuestionRepoEntity {
+public class QuestionRepoEntity implements Serializable {
     @TableId
     private Long questionRepoId;
     @TableField("question_repo_name")

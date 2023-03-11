@@ -33,7 +33,10 @@ export default {
       this.toStepPage()
     },
     toStepPage: function () {
+      console.log(router.currentRoute)
+      console.log('/contest/create/'.concat(this.steps[store.state.createdContestPage.createContestStep]))
       router.push('/contest/create/'.concat(this.steps[store.state.createdContestPage.createContestStep]))
+      console.log(router.currentRoute)
     }
   },
   mounted() {
