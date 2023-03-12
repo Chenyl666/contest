@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
@@ -15,7 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @TableName("contest_enroll")
-public class ContestEnrollEntity {
+public class ContestEnrollEntity implements Serializable {
     @TableId
     private Long enrollId;
     @TableField("contest_id")
@@ -28,6 +30,12 @@ public class ContestEnrollEntity {
     private Date createdDate;
     @TableField("updated_date")
     private Date updatedDate;
+    @TableField("status")
+    private Status status;
+
+    public static enum Status{
+        NO_START,ING,END
+    }
 
     public ContestEnrollDto entity2Dto(){
         return ContestEnrollDto
@@ -39,4 +47,15 @@ public class ContestEnrollEntity {
                 .build();
     }
 
+    public void setIngStatus(){
+        this.status = Status.ING;
+    }
+
+    public void setEndStatus(){
+        this.status = Status.END;
+    }
+
+    public void setNoStartStatus(){
+        this.status = Status.NO_START;
+    }
 }

@@ -95,7 +95,7 @@ export default {
           saveToken(resp.data['data'])
           // router.push('/main')
           // router.push('/contest/online/page/424399885819711488')
-          router.push('/contest/online/tip/425331313520676864')
+          router.push('/contest/online/page/425331313520676864')
           // router.push('/contest/online/tip/424399885819711488')
         }else{
           router.push("/login")

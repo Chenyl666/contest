@@ -7,10 +7,7 @@ import com.contest.dto.user.UserDto;
 import com.contest.enu.QuestionType;
 import com.contest.result.ResultModel;
 import com.contest.service.ContestAnswerService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -41,6 +38,34 @@ public class ContestOnlineController {
             @CurrentUser UserDto userDto,
             @PathVariable("contest_id") Long contestId){
         return contestAnswerService.getContestPrograms(userDto, contestId);
+    }
+
+//    /**
+//     * 保存常规题目的回答情况
+//     * */
+//    @PostMapping("/answer/paper/save")
+//    public ResultModel<String> savePaperQuestionAnswer(@RequestBody ContestAnswerDto contestAnswerDto){
+//        return contestAnswerService.savePaperQuestionAnswer(contestAnswerDto);
+//    }
+
+    /**
+     * 保存所有常规题目的回答情况
+     * */
+    @PostMapping("/answer/paper/save")
+    public ResultModel<String> savePaperAnswer(@RequestBody Map<QuestionType,List<ContestAnswerDto>> contestAnswerDtoMap){
+        return contestAnswerService.save(contestAnswerDtoMap);
+    }
+
+    /**
+     * 更新用户的竞赛状态
+     * */
+    @PostMapping("/status/update")
+    public ResultModel<String> updateUserContestStatus(
+            @RequestParam("status")Integer status,
+            @CurrentUser UserDto userDto,
+            @RequestParam("contestId")Long contestId
+    ){
+        return contestAnswerService.updateUserContestStatus(userDto, contestId, status);
     }
 
 }

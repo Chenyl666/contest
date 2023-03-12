@@ -27,7 +27,7 @@
   <div style="margin-top: 4em" v-if="step === 2">
     <h2 style="text-align: center">请做好准备，比赛即将开始</h2>
     <p style="text-align: center">当前时间：{{getCurrentTime}}</p>
-    <p style="text-align: center">开始时间：{{contestStartTime}}</p>
+    <p style="text-align: center">开始时间：{{getTime(contestStartTime)}}</p>
     <t-button @click="startContest" :disabled="!enableToStart" size="large" style="width: 17em;margin-left: 39.5em;margin-top: 1em" theme="success">开始</t-button>
   </div>
   <ScreenLoading :loading="loading"/>
@@ -60,7 +60,7 @@ export default {
       contestStartTime: null,
       contestEndTime: null,
       contestSubject: null,
-      step: 2,
+      step: 0,
       cameraKey: 1,
       showSecondNextBtn: false,
       times: new Date(),
@@ -89,15 +89,15 @@ export default {
     setTimesInterval:function() {
       this.times = new Date()
     },
-    startContest: function () {
-      initContest(this.$route.params.contestId).then(resp => {
+    startContest: async function () {
+      await initContest(this.$route.params.contestId).then(resp => {
         this.loading = true
-        if(resp.data.resultCode === result.code.SUCCESS){
+        if (resp.data.resultCode === result.code.SUCCESS) {
           this.loading = false
           screenfull.toggle()
-          document.addEventListener('fullscreenchange',() => onFullscreenchange())
+          document.addEventListener('fullscreenchange', () => onFullscreenchange())
           router.push('/contest/online/page/'.concat(this.$route.params.contestId))
-        }else{
+        } else {
           this.startFailCallBack('系统繁忙！')
         }
       }).catch(() => {
@@ -112,8 +112,8 @@ export default {
   mounted() {
     this.getTimes()
     getContestDetailById(this.$route.params.contestId).then(resp => {
-      this.contestStartTime = getTimeStrOfChina(resp.data.data.contestStartTime)
-      this.contestEndTime = getTimeStrOfChina(resp.data.data.contestEndTime)
+      this.contestStartTime = resp.data.data.contestStartTime
+      this.contestEndTime = resp.data.data.contestEndTime
       this.contestSubject = resp.data.data.contestSubject
       let startTimeStamp = new Date(resp.data.data.contestStartTime).getTime()
       let endTimeStamp = new Date(resp.data.data.contestEndTime).getTime()
@@ -131,7 +131,7 @@ export default {
   watch: {
     "getCurrentTime": {
       handler: function (newVal) {
-        if(newVal === this.contestStartTime){
+        if(newVal === this.getTime(this.contestStartTime)){
           this.enableToStart = true
         }
       }

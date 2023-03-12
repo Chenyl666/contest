@@ -26,6 +26,7 @@ import MessageCenter from "@/page/notify/MessageCenter";
 import ContestDetailPage from "@/page/contest/ContestDetailPage";
 import ContestOnlinePage from "@/page/contest/ContestOnlinePage";
 import ContestOnlineTip from "@/page/contest/ContestOnlineTip";
+import EndPage from "@/page/contest/EndPage";
 
 export const routes = [
     {
@@ -166,5 +167,9 @@ export const routes = [
     {
         path: '/404',
         component: NotFound
+    },
+    {
+        path: '/end',
+        component: EndPage
     }
 ]
