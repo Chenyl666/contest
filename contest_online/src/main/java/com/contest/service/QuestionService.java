@@ -28,4 +28,8 @@ public interface QuestionService {
     public ResultModel<List<QuestionProgramDto>> getQuestionProgramListByRepoId(
             @PathVariable("question_repo_id")Long questionRepoId
     );
+
+    @GetMapping("/contest/question/program/get/{question_id}")
+    public ResultModel<QuestionProgramDto> getQuestionProgramById(@PathVariable("question_id") Long questionId);
+
 }

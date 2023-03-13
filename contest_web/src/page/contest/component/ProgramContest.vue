@@ -15,11 +15,11 @@
       <div class="config">
           <div style="display: inline-block;margin-left: 2em;font-size: 16px">编程语言</div>
           <t-select style="display: inline-block;width: 10em;margin-left: 1em;margin-top: 1em" @change="onLanguageChange" v-model="language">
-            <t-option value="c">C</t-option>
-            <t-option value="cpp">C++</t-option>
-            <t-option value="java">Java</t-option>
-            <t-option value="python">Python</t-option>
-            <t-option value="javascript">JavaScript</t-option>
+            <t-option value="c">c</t-option>
+            <t-option value="cpp">cpp</t-option>
+            <t-option value="java">java</t-option>
+            <t-option value="python">python</t-option>
+            <t-option value="javascript">javascript</t-option>
           </t-select>
           <t-button style="float: right;margin-right: 2em;margin-top: 1em">提交</t-button>
       </div>
