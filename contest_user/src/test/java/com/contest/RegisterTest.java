@@ -17,7 +17,6 @@ public class RegisterTest {
     @Test
     public void getAllUsers(){
         List<UserEntity> userEntities = userMapper.selectList(null);
-        userEntities.forEach(System.out::println);
     }
 
 }

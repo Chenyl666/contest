@@ -35,6 +35,7 @@ const requestMethod = async (file) => {
   let url = ''
   await uploadSimpleFile(file.raw, file.name, true, true).then(res => {
     url = res
+    url = url.replace("127.0.0.1:8080",'contest-filesys')
   })
   return new Promise((resolve) => {
     emit('on-success',url)

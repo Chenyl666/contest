@@ -5,19 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class ContestCodeDto {
-
-    public static enum LanguageType{
-        java,c,cpp,python,javascript
-    }
-
     private Long answerId;
     private Long questionId;
     private String code;
-    private LanguageType languageType;
-
+    private String languageType;
 }

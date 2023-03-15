@@ -134,7 +134,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 import {
   ArrowRightIcon,
   LockOnIcon,
@@ -226,6 +226,10 @@ export default {
         this.toContestList()
       }
       if(item.value === 2){
+        if(store.getters.getUserType === 'PARTICIPANT'){
+          alert('没有权限')
+          return
+        }
         this.toQuestionRepo()
       }
       if(item.value === 3){
@@ -301,6 +305,7 @@ export default {
       token: 'token',
       page: 'page'
     }),
+    ...mapGetters(['getUserType']),
     isMainPage: function () {
       return store.state.page === style.HEADER_MENU.MAIN_PAGE
     },

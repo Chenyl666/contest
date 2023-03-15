@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,4 +49,10 @@ public class FileTimeoutService {
         }
     }
 
+    /**
+     * 将临时文件设置成永久文件
+     * */
+    public void setTimeoutFileCancelTimeOut(Long fileId){
+        fileTimeoutMapper.deleteById(fileId);
+    }
 }

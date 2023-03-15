@@ -1,6 +1,7 @@
 package com.contest.controller;
 
 import com.contest.annotation.currentuser.CurrentUser;
+import com.contest.dto.contest.ContestAnswerResultDto;
 import com.contest.dto.online.ContestAnswerDto;
 import com.contest.dto.online.ContestProgramDto;
 import com.contest.dto.user.UserDto;
@@ -40,14 +41,6 @@ public class ContestOnlineController {
         return contestAnswerService.getContestPrograms(userDto, contestId);
     }
 
-//    /**
-//     * 保存常规题目的回答情况
-//     * */
-//    @PostMapping("/answer/paper/save")
-//    public ResultModel<String> savePaperQuestionAnswer(@RequestBody ContestAnswerDto contestAnswerDto){
-//        return contestAnswerService.savePaperQuestionAnswer(contestAnswerDto);
-//    }
-
     /**
      * 保存所有常规题目的回答情况
      * */
@@ -68,4 +61,27 @@ public class ContestOnlineController {
         return contestAnswerService.updateUserContestStatus(userDto, contestId, status);
     }
 
+    /**
+     * 获取考试的所有填空题和问答题
+     * */
+    @GetMapping("/question/judge/{contest_id}")
+    public ResultModel<List<ContestAnswerResultDto>> getSupplementAndAnswerQuestionList(@PathVariable("contest_id")Long contestId){
+        return contestAnswerService.getSupplementAndAnswerQuestionList(contestId);
+    }
+
+    /**
+     * 手动判题
+     * */
+    @PostMapping("/judge")
+    public ResultModel<String> judgeByEnrollId(@RequestParam("answerId")Long answerId,@RequestParam("score")Float score){
+        return contestAnswerService.judgeByEnrollId(answerId, score);
+    }
+
+    /**
+     * 自动判题
+     * */
+    @PostMapping("/judge/auto")
+    public ResultModel<String> judgeAutoByContestId(@RequestParam("contestId")Long contestId){
+        return contestAnswerService.judgeAutoByContestId(contestId);
+    }
 }

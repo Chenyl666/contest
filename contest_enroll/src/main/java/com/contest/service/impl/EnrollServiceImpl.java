@@ -7,10 +7,7 @@ import com.contest.dto.contest.ContestEnrollDto;
 import com.contest.dto.contest.ContestPriseDistributeDto;
 import com.contest.dto.question.QuestionRepoDto;
 import com.contest.dto.user.UserDto;
-import com.contest.entity.contest.ContestDetailEntity;
-import com.contest.entity.contest.ContestEnrollEntity;
-import com.contest.entity.contest.ContestPriseDistributeEntity;
-import com.contest.entity.contest.ContestType;
+import com.contest.entity.contest.*;
 import com.contest.entity.notify.NotifyMessageEntity;
 import com.contest.enu.ContestStatus;
 import com.contest.enu.QuestionRepoType;
@@ -182,6 +179,37 @@ public class EnrollServiceImpl implements EnrollService {
             return ResultModel.buildSuccessResultModel(null,contestEnrollEntity.entity2Dto());
         }
         return ResultModel.buildFailResultModel("not exist",null);
+    }
+
+    @Override
+    public ResultModel<List<ContestEnrollMessage>> getContestEnrollMessageListByCreatedBy(UserDto userDto,Long contestId) {
+        List<ContestEnrollMessage> contestEnrollMessageList = contestEnrollMapper.getContestEnrollMessageByCreatedBy(userDto.getUserId(),contestId);
+        return ResultModel.buildSuccessResultModel(null,contestEnrollMessageList);
+    }
+
+    @Override
+    public ResultModel<String> deleteEnrollById(Long enrollId,UserDto userDto) {
+        ContestEnrollEntity contestEnrollEntity = contestEnrollMapper.selectById(enrollId);
+        Long contestId = contestEnrollEntity.getContestId();
+        ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestId);
+        String userId = contestEnrollEntity.getUserId();
+        NotifyMessageEntity notifyMessageEntity = NotifyMessageEntity
+                .builder()
+                .receiver(userId)
+                .hasRead(false)
+                .createdBy(userDto.getUserId())
+                .messageTitle("参赛资格取消提醒")
+                .messageContent(
+                        "亲爱的参赛者，很抱歉您在已经报名的竞赛"
+                                .concat(contestDetailEntity.getContestSubject())
+                                .concat("由于不可控原因而取消了比赛资格，若支付过报名费，将在两个工作日内退还！")
+                )
+                .createdDate(new Date())
+                .messageId(snowMaker.nextId())
+                .build();
+        notifySendingProvider.sendNotifyMessage(notifyMessageEntity);
+        contestEnrollMapper.deleteById(enrollId);
+        return ResultModel.buildSuccessResultModel();
     }
 
     private ContestDetailDto buildContestDetailDto(

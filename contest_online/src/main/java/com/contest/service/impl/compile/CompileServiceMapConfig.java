@@ -18,10 +18,10 @@ public class CompileServiceMapConfig {
     private ProgramCompileService javaCompileService;
 
     @Bean("compileServiceMap")
-    public Map<ContestCodeDto.LanguageType,ProgramCompileService> compileServiceMap(){
-        HashMap<ContestCodeDto.LanguageType, ProgramCompileService> map = new HashMap<>();
-        map.put(ContestCodeDto.LanguageType.c,this.cCompileService);
-        map.put(ContestCodeDto.LanguageType.java,this.javaCompileService);
+    public Map<String,ProgramCompileService> compileServiceMap(){
+        HashMap<String, ProgramCompileService> map = new HashMap<>();
+        map.put("c",this.cCompileService);
+        map.put("java",this.javaCompileService);
         return map;
     }
 }

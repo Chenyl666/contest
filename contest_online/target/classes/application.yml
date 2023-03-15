@@ -3,3 +3,13 @@ spring:
     active: dev
   application:
     name: contest-online
+
+compiler:
+#  env: windows  # windows和linux
+  windows:
+    prefix: C:\Users\55403\Desktop\毕业设计\开发环境\compiler\
+    input: ${compiler.windows.prefix}ans\[!1!]\in[!2!].txt
+    output: ${compiler.windows.prefix}ans\[!1!]\out[!2!].txt
+    c: ${compiler.windows.prefix}c_startup_script.bat
+    java: ${compiler.windows.prefix}java_startup_script.bat
+    answer: ${compiler.windows.prefix}ans\[!1!]\[!2!]

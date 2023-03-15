@@ -210,4 +210,12 @@ public class QuestionController {
     public ResultModel<List<QuestionProgramDto>> getQuestionProgramListByRepoId(@PathVariable("question_repo_id")Long questionRepoId){
         return questionService.getQuestionProgramListByRepoId(questionRepoId);
     }
+
+    /**
+     * 通过题库id批量获取常规竞赛题目
+     * */
+    @GetMapping("/list2/{question_repo_id}")
+    public ResultModel<List<QuestionDetailDto>> getQuestionDetailDtoListByRepoId(@PathVariable("question_repo_id") Long questionRepoId){
+        return questionService.getQuestionDetailDtoListByRepoId(questionRepoId);
+    }
 }

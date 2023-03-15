@@ -5,7 +5,7 @@ export const getters = {
         if(state.userDto === undefined){
             return ''
         }
-        return state.userDto.userName
+        return state.userDto.userId
     },
     getUserPic(state) {
         if(state.userDto === undefined){

@@ -182,4 +182,16 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionDetailMapper, Quest
         return ResultModel.buildSuccessResultModel(null,questionProgramDtoList);
     }
 
+    /**
+     * 通过contestId获取竞赛题目
+     * */
+    @Override
+    public ResultModel<List<QuestionDetailDto>> getQuestionDetailDtoListByRepoId(Long questionRepoId) {
+        List<QuestionDetailEntity> questionDetailEntityList = list(
+                new QueryWrapper<QuestionDetailEntity>().eq("question_repo_id", questionRepoId)
+        );
+        List<QuestionDetailDto> questionDetailDtoList = questionDetailEntityList.stream().map(QuestionDetailEntity::entity2Dto).collect(Collectors.toList());
+        return ResultModel.buildSuccessResultModel(null,questionDetailDtoList);
+    }
+
 }

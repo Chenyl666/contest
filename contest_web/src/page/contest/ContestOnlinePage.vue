@@ -21,6 +21,7 @@
                @to-next-question="toNextQuestion"
                :key="key"/>
   <ProgramContest v-if="contest.contestDetail.contestTypeId === 2"
+                  @flag-question-success="flagQuestionSuccess"
                   :current-question="contest.current"/>
 </template>
 
@@ -160,6 +161,9 @@ export default {
         setEndStatus(this.$route.params.contestId,2)
         router.push('/end')
       }
+    },
+    flagQuestionSuccess: function () {
+      this.contest.questionList.PROGRAMMING_QUESTION[this.contest.current.currentIndex].answerContent = "true"
     }
   },
   computed: {

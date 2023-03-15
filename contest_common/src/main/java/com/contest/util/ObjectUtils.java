@@ -11,8 +11,6 @@ public class ObjectUtils<T> {
      * */
     @SneakyThrows
     public  static <T> T supplementFields(Object o1, Object o2){
-        System.out.println(o1);
-        System.out.println(o2);
         if(o1 == null || o2 == null){
             throw new NullPointerException();
         }

@@ -53,4 +53,9 @@ public interface QuestionService extends IService<QuestionDetailEntity> {
      * 获取编程题目
      * */
     public ResultModel<List<QuestionProgramDto>> getQuestionProgramListByRepoId(Long questionRepoId);
+
+    /**
+     * 通过竞赛id获取题目
+     * */
+    public ResultModel<List<QuestionDetailDto>> getQuestionDetailDtoListByRepoId(Long questionRepoId);
 }

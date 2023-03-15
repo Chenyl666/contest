@@ -166,7 +166,6 @@ public class EnrollPaymentServiceImpl implements EnrollPaymentService {
 
     private void sendEnrollSuccessNotifyMessage(ContestEnrollEntity contestEnrollEntity){
         ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestEnrollEntity.getContestId());
-        System.out.println(contestDetailEntity);
         if(contestDetailEntity != null){
             NotifyMessageEntity notifyMessageEntity = NotifyMessageEntity
                     .builder()
@@ -187,7 +186,6 @@ public class EnrollPaymentServiceImpl implements EnrollPaymentService {
                     .build();
             notifySendingProvider.sendNotifyMessage(notifyMessageEntity);
         }
-
     }
 
 }

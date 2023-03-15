@@ -27,3 +27,7 @@ export const setIngStatus = (contestId) => {
 export const setEndStatus = (contestId) => {
     return request.postWithForm('/contest/online/status/update',{contestId,status:2},true)
 }
+
+export const submitProgramCode = (answerId,questionId,code,languageType) => {
+    return request.post('/contest/program/submit',{answerId, questionId, code, languageType},true)
+}

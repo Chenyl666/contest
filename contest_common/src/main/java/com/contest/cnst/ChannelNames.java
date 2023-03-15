@@ -15,4 +15,6 @@ public class ChannelNames {
 
     public static final String CONTEST_NOTIFY_SENDING = "CONTEST_NOTIFY_SENDING";
 
+    public static final String CONTEST_SET_FILE_NOT_TIMEOUT = "CONTEST_SET_FILE_NOT_TIMEOUT";
+
 }

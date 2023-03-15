@@ -17,10 +17,7 @@ public class LoginTest {
     @Test
     public void loginTest(){
         String userJson = JWT.decode(token).getClaims().get("current_user").asString();
-        System.out.println(userJson);
         TokenPayload tokenPayload = JSON.parseObject(userJson, TokenPayload.class);
-        System.out.println(tokenPayload.getIpAddress());
-        System.out.println(new Date(tokenPayload.getLoginTimer()));
     }
 
 }

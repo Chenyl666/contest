@@ -6,6 +6,7 @@ import com.contest.dto.contest.ContestEnrollDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.contest.ContestDetailEntity;
 import com.contest.entity.contest.ContestDetailMessageEntity;
+import com.contest.entity.contest.ContestEnrollMessage;
 import com.contest.entity.contest.ContestType;
 import com.contest.result.ResultModel;
 import com.contest.service.ContestDetailMessageService;
@@ -93,5 +94,17 @@ public class EnrollController {
     @GetMapping("/organizer/get")
     public ResultModel<List<ContestDetailDto>> getOrganizerEnrollList(@CurrentUser UserDto userDto){
         return contestDetailService.getOrganizerContestDetailList(userDto);
+    }
+
+    @GetMapping("/enrollList/{contest_id}")
+    public ResultModel<List<ContestEnrollMessage>> getEnrollList(
+            @CurrentUser UserDto userDto,
+            @PathVariable("contest_id") Long contestId){
+        return enrollService.getContestEnrollMessageListByCreatedBy(userDto,contestId);
+    }
+
+    @DeleteMapping("/delete/{enroll_id}")
+    public ResultModel<String> deleteEnrollById(@PathVariable("enroll_id")Long enrollId,@CurrentUser UserDto userDto){
+        return enrollService.deleteEnrollById(enrollId,userDto);
     }
 }

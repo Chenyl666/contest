@@ -33,4 +33,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         updateById(userEntity);
         return ResultModel.buildSuccessResultModel();
     }
+
+    /**
+     * 通过用户id获取用户详细信息
+     * */
+    @Override
+    public ResultModel<UserDetailDto> getUserDetailById(String userId) {
+        Optional<UserEntity> userEntityOptional = Optional.ofNullable(getById(userId));
+        if(userEntityOptional.isPresent()){
+            return ResultModel.buildSuccessResultModel(null,userEntityOptional.get().entity2DetailDto());
+        }
+        return ResultModel.buildFailResultModel("not exist",null);
+    }
 }

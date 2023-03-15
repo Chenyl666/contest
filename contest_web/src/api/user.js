@@ -8,3 +8,7 @@ export const getUserDetail = () => {
     return request.get('/user/get/detail',true)
 }
 
+export const getUserDetailById = (userId) => {
+    return request.get('/user/get/detail/'.concat(userId),true)
+}
+

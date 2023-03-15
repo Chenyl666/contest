@@ -23,7 +23,7 @@ spring:
         - id: contest-online
           uri: lb://contest-online
           predicates:
-            - Path=/contest/online/**,/contest/init/**
+            - Path=/contest/online/**,/contest/init/**,/contest/program/**
         - id: contest-enroll
           uri: lb://contest-enroll
           predicates:

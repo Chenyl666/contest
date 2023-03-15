@@ -6,6 +6,7 @@ import com.contest.cnst.ChannelNames;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.filesys.FileReferenceEntity;
 import com.contest.service.DeleteService;
+import com.contest.service.impl.FileTimeoutService;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.Message;
@@ -17,6 +18,9 @@ import java.util.Map;
 public class AsyncDeleteListener {
     @Resource
     private DeleteService deleteService;
+
+    @Resource
+    private FileTimeoutService fileTimeoutService;
 
     @StreamListener(ChannelNames.CONTEST_ASYNC_DELETE_FILE)
     public void asyncDeleteFile(Message<FileReferenceEntity> message){
@@ -34,5 +38,10 @@ public class AsyncDeleteListener {
         UserDto userDto = JSON.parseObject(payload.get("userDto"),UserDto.class);
         String url = payload.get("url");
         deleteService.deleteFileByDownloadUrl(url,userDto);
+    }
+
+    @StreamListener(ChannelNames.CONTEST_SET_FILE_NOT_TIMEOUT)
+    public void setFileNotTimeout(Message<Long> message){
+        fileTimeoutService.setTimeoutFileCancelTimeOut(message.getPayload());
     }
 }

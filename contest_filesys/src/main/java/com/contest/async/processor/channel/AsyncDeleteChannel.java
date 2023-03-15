@@ -21,4 +21,6 @@ public interface AsyncDeleteChannel {
     @Input(ChannelNames.CONTEST_DELETE_FILE_BY_DOWNLOAD_URL)
     public SubscribableChannel deleteFileByDownloadUrl();
 
+    @Input(ChannelNames.CONTEST_SET_FILE_NOT_TIMEOUT)
+    public SubscribableChannel setFileNotTimeout();
 }

@@ -30,6 +30,10 @@ public interface QuestionService {
     );
 
     @GetMapping("/contest/question/program/get/{question_id}")
-    public ResultModel<QuestionProgramDto> getQuestionProgramById(@PathVariable("question_id") Long questionId);
+    public ResultModel<QuestionProgramDto> getQuestionProgramById(
+            @PathVariable("question_id") Long questionId
+    );
 
+    @GetMapping("/contest/question/list2/{question_repo_id}")
+    public ResultModel<List<QuestionDetailDto>> getQuestionDetailDtoListByRepoId(@PathVariable("question_repo_id") Long questionRepoId);
 }

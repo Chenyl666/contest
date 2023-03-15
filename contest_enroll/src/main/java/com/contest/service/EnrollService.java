@@ -4,6 +4,7 @@ import com.contest.annotation.currentuser.CurrentUser;
 import com.contest.dto.contest.ContestDetailDto;
 import com.contest.dto.contest.ContestEnrollDto;
 import com.contest.dto.user.UserDto;
+import com.contest.entity.contest.ContestEnrollMessage;
 import com.contest.entity.contest.ContestType;
 import com.contest.result.ResultModel;
 import org.apache.ibatis.annotations.ResultMap;
@@ -27,6 +28,8 @@ public interface EnrollService {
 
     public ResultModel<ContestEnrollDto> getContestEnrollDto(Long contestId,UserDto userDto);
 
+    public ResultModel<List<ContestEnrollMessage>> getContestEnrollMessageListByCreatedBy(UserDto userDto,Long contestId);
 
+    public ResultModel<String> deleteEnrollById(Long enrollId,UserDto userDto);
 }
 

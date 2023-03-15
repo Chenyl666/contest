@@ -2,16 +2,21 @@ package com.contest.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.contest.dto.notify.NotifyDto;
+import com.contest.dto.notify.NotifyEmailDto;
 import com.contest.dto.user.UserDto;
 import com.contest.entity.notify.NotifyEntity;
 import com.contest.entity.notify.NotifyMessageEntity;
+import com.contest.entity.user.UserEntity;
 import com.contest.mapper.NotifyMapper;
 import com.contest.mapper.NotifyMessageMapper;
+import com.contest.mapper.UserMapper;
 import com.contest.result.ResultModel;
 import com.contest.service.NotifyService;
+import com.contest.smtp.SmtpMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +27,13 @@ public class NotifyServiceImpl implements NotifyService {
     private NotifyMapper notifyMapper;
 
     @Resource
+    private SmtpMailSender smtpMailSender;
+
+    @Resource
     private NotifyMessageMapper notifyMessageMapper;
+
+    @Resource
+    private UserMapper userMapper;
 
     private static final int pageSize = 4;
 
@@ -31,7 +42,15 @@ public class NotifyServiceImpl implements NotifyService {
      * */
     @Override
     public void saveNotifyMessage(NotifyMessageEntity notifyMessageEntity) {
+        NotifyEmailDto notifyEmailDto = NotifyEmailDto
+                .builder()
+                .messageContent(notifyMessageEntity.getMessageContent())
+                .messageTitle(notifyMessageEntity.getMessageTitle())
+                .receiver(notifyMessageEntity.getReceiver())
+                .createdBy("system")
+                .build();
         notifyMessageMapper.insert(notifyMessageEntity);
+        sendEmail(notifyEmailDto);
     }
 
     /**
@@ -74,6 +93,12 @@ public class NotifyServiceImpl implements NotifyService {
 
     private int computePageOffset(int page){
         return (page-1)*pageSize;
+    }
+
+    private void sendEmail(NotifyEmailDto notifyEmailDto){
+        String receiverId = notifyEmailDto.getReceiver();
+        UserEntity user = userMapper.selectById(receiverId);
+        smtpMailSender.sendSimpleEmail(notifyEmailDto.getMessageTitle(), notifyEmailDto.getMessageContent(), user.getUserEmail());
     }
 
 }

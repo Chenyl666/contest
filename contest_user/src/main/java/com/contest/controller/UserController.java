@@ -46,4 +46,8 @@ public class UserController {
         return userService.saveUser(userDetailDto);
     }
 
+    @GetMapping("/get/detail/{user_id}")
+    public ResultModel<UserDetailDto> getUserDetailById(@PathVariable("user_id")String userId){
+        return userService.getUserDetailById(userId);
+    }
 }

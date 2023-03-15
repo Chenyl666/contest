@@ -1,6 +1,7 @@
 package com.contest.entity.filesys;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ import java.util.Date;
 @TableName("file_timeout")
 public class FileTimeoutEntity {
     @TableField("file_id")
+    @TableId
     private Long fileId;
     @TableField("timeout")
     private Long timeout;

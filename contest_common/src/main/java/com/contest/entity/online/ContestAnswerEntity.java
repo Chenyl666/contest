@@ -3,6 +3,7 @@ package com.contest.entity.online;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.contest.dto.contest.ContestAnswerResultDto;
 import com.contest.dto.online.ContestAnswerDto;
 import com.contest.dto.online.ContestProgramDto;
 import com.contest.dto.question.QuestionDetailDto;
@@ -41,6 +42,8 @@ public class ContestAnswerEntity {
     private Date createdDate;
     @TableField("updated_date")
     private Date updatedDate;
+    @TableField("has_judge")
+    private Boolean hasJudge;
 
     public ContestAnswerDto entity2Dto(QuestionDetailDto questionDetailDto){
         return ContestAnswerDto
@@ -66,4 +69,17 @@ public class ContestAnswerEntity {
                 .build();
     }
 
+    public ContestAnswerResultDto entity2ResultDto(QuestionDetailDto questionDetailDto){
+        return ContestAnswerResultDto
+                .builder()
+                .questionDetailDto(questionDetailDto)
+                .answerContent(answerContent)
+                .answerId(answerId.toString())
+                .contestId(contestId)
+                .judgeComment(judgeComment)
+                .questionType(questionType)
+                .score(score)
+                .hasJudge(hasJudge)
+                .build();
+    }
 }

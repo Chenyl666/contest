@@ -17,7 +17,11 @@ export const getContestDetailById = async (contestId) => {
 }
 
 export const getContestCreatorByContestId = async (contestId) => {
-    return await request.get('/contest/enroll/creator/get/'.concat(contestId))
+    return await request.get('/contest/enroll/creator/get/'.concat(contestId),true)
+}
+
+export const getContestAnsList = (contestId) => {
+    return request.get('/contest/online/question/judge/'.concat(contestId),true)
 }
 
 export const updateContestDetail = async (contestDetail) => {
@@ -65,4 +69,20 @@ export const getUserEnrollSituation = (contestId) => {
 
 export const getOrganizerEnrollList = () => {
     return request.get('/contest/enroll/organizer/get',true)
+}
+
+export const getEnrollMessageList = (contestId) => {
+    return request.get('/contest/enroll/enrollList/'.concat(contestId),true)
+}
+
+export const deleteContestEnrollById = (enrollId) => {
+    return request.delete('/contest/enroll/delete/'.concat(enrollId),true)
+}
+
+export const judgeAnswer = (answerId,score) => {
+    return request.postWithForm('/contest/online/judge',{answerId,score},true)
+}
+
+export const autoJudge = (contestId) => {
+    return request.postWithForm('/contest/online/judge/auto',{contestId},true)
 }

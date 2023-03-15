@@ -8,8 +8,11 @@
     <div @click="selectedNotifyMessage" :class="{titleTagBorder: true,titleSelected: notifyMessage.titleSelected}">
       <span class="titleTag">通知公告</span>
     </div>
-    <div @click="selectedEditMessage" :class="{titleTagBorder: true,titleSelected: editContest.titleSelected}">
+    <div v-if="isCreator" @click="selectedEditMessage" :class="{titleTagBorder: true,titleSelected: editContest.titleSelected}">
       <span class="titleTag">编辑竞赛</span>
+    </div>
+    <div v-if="isCreator" @click="selectedContestManagement" :class="{titleTagBorder: true,titleSelected: contestManagement.titleSelected}">
+      <span class="titleTag">竞赛管理</span>
     </div>
   </div>
   <div v-if="contestMessage.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
@@ -52,6 +55,9 @@
         <t-button :disabled="hasEnroll" @click="enrollContest" size="large" theme="primary" style="width: 85%">{{hasEnroll?'已报名':'报名参赛'}}</t-button>
       </t-form-item>
     </div>
+  </div>
+  <div v-if="notifyMessage.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
+    通知公告页面
   </div>
   <div v-if="editContest.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
     <t-form ref="form" :data="formData" :colon="true">
@@ -112,6 +118,9 @@
       </t-form-item>
     </t-form>
   </div>
+  <div v-if="contestManagement.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
+    <ContestManagement/>
+  </div>
 </template>
 
 <script>
@@ -134,6 +143,8 @@ import {MessagePlugin} from "tdesign-vue-next";
 import router from "@/router/router";
 import {getUserDetail} from "@/api/user";
 import {createEnrollPaymentOrder} from "@/api/payment";
+import {store} from "@/store";
+import ContestManagement from "@/page/contest/component/ContestManagement";
 
 const load = (contestId,_this) => {
   _this.contestId = contestId
@@ -141,17 +152,20 @@ const load = (contestId,_this) => {
 
 export default {
   name: "ContestDetail",
-  components: {UploadImage,MyEditor},
+  components: {ContestManagement, UploadImage,MyEditor},
   data() {
     return {
       contestMessage: {
-        titleSelected: true
+        titleSelected: false
       },
       notifyMessage: {
         titleSelected: false
       },
       editContest: {
         titleSelected: false
+      },
+      contestManagement: {
+        titleSelected: true
       },
       contestId: '',
       contestDetailMessage: {
@@ -178,9 +192,8 @@ export default {
   },
   methods: {
     selectedContestMessage: async function () {
+      this.clearTitleSelected()
       this.contestMessage.titleSelected = true
-      this.notifyMessage.titleSelected = false
-      this.editContest.titleSelected = false
       await getContestDetailMessageById(this.$route.params.contestId).then(resp => {
         if (resp.data.resultCode === result.code.SUCCESS) {
           this.contestDetailMessage = toRef(resp.data, 'data')
@@ -194,15 +207,22 @@ export default {
       })
     },
     selectedNotifyMessage: function () {
-      this.contestMessage.titleSelected = false
+      this.clearTitleSelected()
       this.notifyMessage.titleSelected = true
-      this.editContest.titleSelected = false
     },
-    selectedEditMessage: function () {
+    clearTitleSelected: function () {
+      this.contestManagement.titleSelected = false
       this.contestMessage.titleSelected = false
       this.notifyMessage.titleSelected = false
+      this.editContest.titleSelected = false
+    },
+    selectedContestManagement: function () {
+      this.clearTitleSelected()
+      this.contestManagement.titleSelected = true
+    },
+    selectedEditMessage: function () {
+      this.clearTitleSelected()
       this.editContest.titleSelected = true
-      console.log(this.contestId + 'id')
       getContestDetailById(this.$route.params.contestId).then(resp => {
         console.log(resp.data)
         if(resp.data['resultCode'] === result.code.SUCCESS){
@@ -277,7 +297,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([gettersName.GET_USER_PIC,gettersName.GET_USER_NAME,gettersName.GET_USER_TYPE]),
+    ...mapGetters([gettersName.GET_USER_PIC,gettersName.GET_USER_NAME,gettersName.GET_USER_TYPE,gettersName.GET_USER_ID]),
     getEnrollStartTime: function(){
       return getTimeStrOfChina(this.contestDetailMessage.enrollStartTime)
     },
@@ -290,6 +310,9 @@ export default {
     getContestEndTime: function () {
       return getTimeStrOfChina(this.contestDetailMessage.contestEndTime)
     },
+    isCreator: function () {
+      return store.getters.getUserId === this.contestDetailMessage.createdBy
+    }
   },
   watch: {
     'this.$route.params.contestId': {
@@ -305,6 +328,8 @@ export default {
     await getContestDetailMessageById(this.$route.params.contestId).then(resp => {
       if (resp.data.resultCode === result.code.SUCCESS) {
         this.contestDetailMessage = toRef(resp.data, 'data')
+        console.log(this.contestDetailMessage)
+        console.log(store.getters.getUserId)
         if(resp.data.data === null){
           router.push('/404')
         }

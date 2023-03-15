@@ -13,7 +13,6 @@ public class NotifySendingProvider {
     private NotifySendingOutputChannel notifySendingOutputChannel;
 
     public void sendNotifyMessage(NotifyMessageEntity notifyEntity){
-        System.out.println("sending");
         notifySendingOutputChannel.notifySendingChannel().send(
                 MessageBuilder.<NotifyMessageEntity>withPayload(notifyEntity).build()
         );

@@ -2,6 +2,7 @@ package com.contest.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.contest.async.processor.AsyncListener;
 import com.contest.dto.question.ProgramExampleDto;
 import com.contest.dto.question.QuestionProgramDto;
 import com.contest.dto.user.UserDto;
@@ -24,6 +25,9 @@ public class QuestionProgramServiceImpl extends ServiceImpl<QuestionProgramMappe
 
     @Resource
     private ProgramExampleService programExampleService;
+
+    @Resource
+    private AsyncListener asyncListener;
 
     private static final SnowMaker snowMaker = new SnowMaker(1);
 
@@ -55,6 +59,11 @@ public class QuestionProgramServiceImpl extends ServiceImpl<QuestionProgramMappe
                 return programExampleDto.dto2Entity();
             }).collect(Collectors.toList());
             programExampleService.saveBatch(programExampleEntityList);
+        }
+        for (ProgramExampleDto programExampleDto : questionProgramDto.getProgramExampleList()) {
+            String[] split = programExampleDto.getExampleUrl().split("/");
+            Long fileId = Long.parseLong(split[split.length-1]);
+            asyncListener.setFileNotTimeout(fileId);
         }
         return ResultModel.buildSuccessResultModel();
     }
