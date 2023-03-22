@@ -60,7 +60,7 @@ public class ContestInitServiceImpl implements ContestInitService {
     @Resource
     private ContestEnrollMapper contestEnrollMapper;
 
-    private Map<Long,Lock> lockMap = new ConcurrentHashMap<>();
+    private final Map<Long,Lock> lockMap = new ConcurrentHashMap<>();
 
     private static final SnowMaker snowMaker = new SnowMaker(1);
 
@@ -116,6 +116,9 @@ public class ContestInitServiceImpl implements ContestInitService {
     public ResultModel<String> checkContestStatus(UserDto userDto, Long contestId) {
         // 检查时间是否符合
         ContestDetailEntity contestDetailEntity = contestDetailMapper.selectById(contestId);
+        if(contestDetailEntity == null) {
+            return ResultModel.buildFailResultModel();
+        }
         long startTimeStamp = contestDetailEntity.getContestStartTime().getTime();
         long endTimeStamp = contestDetailEntity.getContestEndTime().getTime();
         long nowTimeStamp = System.currentTimeMillis();

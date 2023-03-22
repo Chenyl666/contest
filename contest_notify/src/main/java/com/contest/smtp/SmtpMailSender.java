@@ -1,5 +1,6 @@
 package com.contest.smtp;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,6 +20,7 @@ public class SmtpMailSender {
     String emailSender;
 
     public void sendSimpleEmail(String subject,String text,String receiver){
+        System.out.println("send email to: " + receiver);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,true);
@@ -31,5 +33,4 @@ public class SmtpMailSender {
             throw new RuntimeException(e);
         }
     }
-
 }

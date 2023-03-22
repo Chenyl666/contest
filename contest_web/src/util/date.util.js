@@ -15,7 +15,7 @@ export const getTimeStr = (dateTime) => {
             timeArray[i] = '' + timeArray[i].toString()
         }
     }
-    return timeArray[0] + '-' + timeArray[1] + '-' + timeArray[2] + ' ' + timeArray[3] + ':' + timeArray[4] + timeArray[5]
+    return timeArray[0] + '-' + timeArray[1] + '-' + timeArray[2] + ' ' + timeArray[3] + ':' + timeArray[4] + ":" + timeArray[5]
 }
 
 export const getTimeStrOfChina = (dateTime) => {

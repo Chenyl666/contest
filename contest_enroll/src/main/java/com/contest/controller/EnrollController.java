@@ -107,4 +107,12 @@ public class EnrollController {
     public ResultModel<String> deleteEnrollById(@PathVariable("enroll_id")Long enrollId,@CurrentUser UserDto userDto){
         return enrollService.deleteEnrollById(enrollId,userDto);
     }
+
+    @GetMapping("/list/{contest_id}")
+    public ResultModel<List<ContestEnrollDto>> getEnrollListByContestId(@PathVariable("contest_id")Long contestId){
+        return enrollService.getContestEnrollListByContestId(contestId);
+    }
+
+
+
 }

@@ -137,10 +137,17 @@ export default {
   async mounted() {
     await getQuestionRepoById(this.$route.params.questionRepoId).then(resp => {
       if (resp.data.resultCode === result.code.SUCCESS) {
+        if(resp.data.data === null){
+          this.$router.push('/404')
+        }
         this.questionRepo.questionRepoType = resp.data.data.questionRepoType
         this.questionRepo.questionRepoName = resp.data.data.questionRepoName
         this.questionRepo.questionRepoId = this.$route.params.questionRepoId
+      }else{
+        this.$router.push('/404')
       }
+    }).catch(() => {
+      this.$router.push('/404')
     })
     if (this.questionRepo.questionRepoType === 'PAPER') {
       getQuestionIndex(this.$route.params.questionRepoId).then(resp => {

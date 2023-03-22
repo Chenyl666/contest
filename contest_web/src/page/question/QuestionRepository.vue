@@ -168,10 +168,19 @@ export default {
       this.dialog.newRepositoryDialog.visitable = true
     },
     questionRepoDetail: function (questionRepoId) {
-      router.push('/question/repo/detail/'.concat(questionRepoId))
+      if(questionRepoId === null || questionRepoId === ''){
+        MessagePlugin.info('请选择题库！')
+      }else{
+        router.push('/question/repo/detail/'.concat(questionRepoId))
+        this.questionRepoSelected = null
+      }
     },
     deleteQuestionRepo: function () {
-      this.dialog.confirmDeleteRepo.visitable = true
+      if(this.questionRepoSelected === null){
+        MessagePlugin.info('请选择题库！')
+      }else{
+        this.dialog.confirmDeleteRepo.visitable = true
+      }
     },
     confirmDeleteRepo: function () {
       deleteQuestionRepo(this.questionRepoSelected).then(resp => {

@@ -22,7 +22,9 @@ public class ProgramCompileServiceImpl extends ProgramCompileService{
      * 编译运行代码*/
     @Override
     public ResultModel<List<ProgramResult>> runCode(ContestCodeDto contestCodeDto) {
-        ProgramCompileService programCompileService = compileServiceMap.get(contestCodeDto.getLanguageType());
+        ProgramCompileService programCompileService = compileServiceMap.get(
+                contestCodeDto.getLanguageType()
+        );
         return programCompileService.runCode(contestCodeDto);
     }
 }

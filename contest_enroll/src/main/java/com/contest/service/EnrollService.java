@@ -31,5 +31,7 @@ public interface EnrollService {
     public ResultModel<List<ContestEnrollMessage>> getContestEnrollMessageListByCreatedBy(UserDto userDto,Long contestId);
 
     public ResultModel<String> deleteEnrollById(Long enrollId,UserDto userDto);
+
+    public ResultModel<List<ContestEnrollDto>> getContestEnrollListByContestId(Long contestId);
 }
 

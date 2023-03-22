@@ -84,6 +84,7 @@ export const routes = [
     {
         path: '/contest/create',
         component: CreatedContestPage,
+        redirect: '/contest/create/first',
         beforeEnter: () => {
             store.commit(mutationName.SET_PAGE, style.HEADER_MENU.CONTEST_PAGE)
         },

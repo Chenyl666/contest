@@ -2,7 +2,7 @@
   <t-header>
     <div style="background-color: white;width: 100%;height: 4em;margin-bottom: -0.5em;border-bottom: 2px solid #f6f5f7">
       <img src="../../assets/logo.png" style="width:13.44em;height: 4em;margin-left: 10em;" alt="LOGO">
-      <div style="margin-left: 28em;">
+      <div style="margin-left: 32em;">
         <ul style="display: flex;list-style-type:none;margin-top: -3em">
           <li class="dir-item">
             <t-badge @click="changePage('mainPage')" @mouseenter="menu.tag.mainPage.select = true" @mouseleave="menu.tag.mainPage.select = false" :count="menu.tag.mainPage.hot" class="txt">
@@ -21,14 +21,14 @@
           </li>
           <li class="dir-item">
             <t-badge @click="changePage('coursePage')" @mouseenter="menu.tag.coursePage.select = true" @mouseleave="menu.tag.coursePage.select = false" :count="menu.tag.coursePage.hot" class="txt">
-              <span :class="{selected: isCoursePage, selecting: menu.tag.coursePage.select}">课程</span>
+              <span :class="{selected: isCoursePage, selecting: menu.tag.coursePage.select}">更多</span>
             </t-badge>
           </li>
-          <li class="dir-item">
-            <t-badge @click="changePage('bookPage')" @mouseenter="menu.tag.bookPage.select = true" @mouseleave="menu.tag.bookPage.select = false" :count="menu.tag.bookPage.hot" class="txt">
-              <span :class="{selected: isBookPage, selecting: menu.tag.bookPage.select}">图书</span>
-            </t-badge>
-          </li>
+<!--          <li class="dir-item">-->
+<!--            <t-badge @click="changePage('bookPage')" @mouseenter="menu.tag.bookPage.select = true" @mouseleave="menu.tag.bookPage.select = false" :count="menu.tag.bookPage.hot" class="txt">-->
+<!--              <span :class="{selected: isBookPage, selecting: menu.tag.bookPage.select}">图书</span>-->
+<!--            </t-badge>-->
+<!--          </li>-->
         </ul>
       </div>
 

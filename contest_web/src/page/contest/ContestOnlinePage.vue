@@ -204,6 +204,8 @@ export default {
     await checkContestStatus(router.currentRoute.value.params.contestId).then(resp => {
       if(resp.data.resultCode === result.code.SUCCESS){
         checkResult = true
+      }else{
+        router.push('/404')
       }
     })
     if(!checkResult){

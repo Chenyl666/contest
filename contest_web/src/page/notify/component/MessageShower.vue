@@ -3,7 +3,6 @@
       width="40%"
       v-model:visible="isVisitable"
       :header="props.title"
-      :body="props.content"
       attach="body"
       :confirm-on-enter="true"
       :on-confirm="onConfirm"

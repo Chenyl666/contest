@@ -12,7 +12,7 @@
       <div>
         <span>用户id:{{user.userId}}</span><br>
         <span>邮箱:{{user.userEmail}}</span><br>
-        <span>联系方式:{{user.userEmail === null?'无':user.userEmail}}</span><br>
+        <span>联系方式:{{user.userPhone === null?'无':user.userPhone}}</span><br>
         <span>昵称：{{user.userName}}</span><br>
         <span>身份证号码：{{user.identify}}</span><br>
         <span>所在单位：{{user.unit}}</span><br>

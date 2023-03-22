@@ -212,6 +212,15 @@ public class EnrollServiceImpl implements EnrollService {
         return ResultModel.buildSuccessResultModel();
     }
 
+    @Override
+    public ResultModel<List<ContestEnrollDto>> getContestEnrollListByContestId(Long contestId) {
+        List<ContestEnrollEntity> contestEnrollEntityList = contestEnrollMapper.selectList(
+                new QueryWrapper<ContestEnrollEntity>().eq("contest_id", contestId)
+        );
+        List<ContestEnrollDto> contestEnrollDtoList = contestEnrollEntityList.stream().map(ContestEnrollEntity::entity2Dto).collect(Collectors.toList());
+        return ResultModel.buildSuccessResultModel(null,contestEnrollDtoList);
+    }
+
     private ContestDetailDto buildContestDetailDto(
             ContestDetailEntity contestDetailEntity,
             List<ContestPriseDistributeDto> contestPriseDistributeDtoList

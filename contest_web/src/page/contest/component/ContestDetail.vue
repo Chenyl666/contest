@@ -57,7 +57,7 @@
     </div>
   </div>
   <div v-if="notifyMessage.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
-    通知公告页面
+    <ContestNotify/>
   </div>
   <div v-if="editContest.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
     <t-form ref="form" :data="formData" :colon="true">
@@ -145,6 +145,7 @@ import {getUserDetail} from "@/api/user";
 import {createEnrollPaymentOrder} from "@/api/payment";
 import {store} from "@/store";
 import ContestManagement from "@/page/contest/component/ContestManagement";
+import ContestNotify from "@/page/contest/component/ContestNotify";
 
 const load = (contestId,_this) => {
   _this.contestId = contestId
@@ -152,20 +153,20 @@ const load = (contestId,_this) => {
 
 export default {
   name: "ContestDetail",
-  components: {ContestManagement, UploadImage,MyEditor},
+  components: {ContestNotify, ContestManagement, UploadImage,MyEditor},
   data() {
     return {
       contestMessage: {
         titleSelected: false
       },
       notifyMessage: {
-        titleSelected: false
+        titleSelected: true
       },
       editContest: {
         titleSelected: false
       },
       contestManagement: {
-        titleSelected: true
+        titleSelected: false
       },
       contestId: '',
       contestDetailMessage: {
