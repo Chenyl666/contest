@@ -172,5 +172,9 @@ export const routes = [
     {
         path: '/end',
         component: EndPage
+    },
+    {
+        path: '/',
+        redirect: '/main'
     }
 ]

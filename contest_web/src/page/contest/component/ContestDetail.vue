@@ -1,5 +1,4 @@
 <template>
-
   <div style="width: 70em;margin-top: 0.5em;margin-left: 13em;border-bottom: rgba(0,0,0,0.10) 1px solid">
     <img style="width: 70em;" :src="contestDetailMessage.contestPicture" alt=""/>
     <div @click="selectedContestMessage" :class="{titleTagBorder: true,titleSelected: contestMessage.titleSelected}">
@@ -160,13 +159,13 @@ export default {
         titleSelected: false
       },
       notifyMessage: {
-        titleSelected: true
+        titleSelected: false
       },
       editContest: {
         titleSelected: false
       },
       contestManagement: {
-        titleSelected: false
+        titleSelected: true
       },
       contestId: '',
       contestDetailMessage: {

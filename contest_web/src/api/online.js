@@ -31,3 +31,11 @@ export const setEndStatus = (contestId) => {
 export const submitProgramCode = (answerId,questionId,code,languageType) => {
     return request.post('/contest/program/submit',{answerId, questionId, code, languageType},true)
 }
+
+export const getOnlineStatusDto = (contestId) => {
+    return request.get('/online/status/list/'.concat(contestId),true)
+}
+
+export const getChatRecordsListByUserId = (userId) => {
+    return request.get('/contest/chat/records/'.concat(userId),true)
+}

@@ -8,9 +8,9 @@
         </p>
       </t-tab-panel>
       <t-tab-panel value="second">
-        <template #label> <t-icon name="cloud" class="tabs-icon-margin" /> 状态管理 </template>
+        <template #label> <t-icon name="cloud" class="tabs-icon-margin" /> 实时消息 </template>
         <p style="padding-left: 25px">
-          状态管理
+          <OnlineManagement/>
         </p>
       </t-tab-panel>
       <t-tab-panel value="third">
@@ -33,8 +33,9 @@ import { ref } from 'vue';
 import UserList from "@/page/contest/component/detail_page/UserList";
 import QuestionManagement from "@/page/contest/component/detail_page/QuestionManagement";
 import NotifyList from "@/page/contest/component/detail_page/NotifyList";
+import OnlineManagement from "@/page/contest/component/detail_page/OnlineManagement";
 
-const value = ref('third');
+const value = ref('second');
 const theme = ref('normal');
 
 const handlerChange = (newValue) => {

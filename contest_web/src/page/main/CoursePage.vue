@@ -1,10 +1,12 @@
 <template>
-  课程页面
+  <MyVideo/>
 </template>
 
 <script>
+import MyVideo from '@/page/component/video/MyVideo'
 export default {
-  name: "CoursePage"
+  name: "CoursePage",
+  components: {MyVideo}
 }
 </script>
 

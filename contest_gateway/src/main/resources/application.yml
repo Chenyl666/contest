@@ -23,7 +23,7 @@ spring:
         - id: contest-online
           uri: lb://contest-online
           predicates:
-            - Path=/contest/online/**,/contest/init/**,/contest/program/**
+            - Path=/contest/online/**,/contest/init/**,/contest/program/**,/online/**
         - id: contest-enroll
           uri: lb://contest-enroll
           predicates:
@@ -35,7 +35,7 @@ spring:
         - id: contest-notify
           uri: lb://contest-notify
           predicates:
-            - Path=/contest/notify/**
+            - Path=/contest/notify/**,/contest/chat/**
     nacos:
       discovery:
         server-addr: localhost:8848

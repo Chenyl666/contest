@@ -191,7 +191,7 @@ export default {
   height: 54.4em;
   margin-bottom: 5em;
   margin-left: 6em;
-  margin-top: -8em;
+  margin-top: -11em;
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 10%);
 }
 

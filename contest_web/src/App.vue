@@ -27,6 +27,7 @@ import {saveToken} from "@/common/token.store";
 import {store} from "@/store";
 import {mutationName} from "@/store/mutations/const.name";
 import screenfull from "screenfull"
+import {mapGetters} from "vuex";
 
 export default {
   name: 'App',
@@ -35,7 +36,8 @@ export default {
   },
   data() {
     return {
-      key: 1
+      key: 1,
+      websocket: null
     }
   },
   methods: {
@@ -84,7 +86,10 @@ export default {
   computed: {
     showHeader: function () {
       return this.$route.path.indexOf('/question/repo/detail') === -1 && this.$route.path.indexOf('/contest/online') === -1
-    }
+    },
+    ...mapGetters({
+      getUserType: 'getUserType'
+    })
   },
   mounted() {
     let token = cookies.get('token');
@@ -94,7 +99,12 @@ export default {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
           // router.push('/main')
-          router.push('/contest/detail/424399885819711488')
+          if(this.getUserType === 'PARTICIPANT'){
+            router.push('/contest/online/page/425331313520676864')
+          }
+          if(this.getUserType === 'ORGANIZER'){
+            router.push('/contest/detail/424399885819711488')
+          }
           // router.push('/contest/online/page/424399885819711488')
           // router.push('/contest/online/page/425331313520676864')
           // router.push('/contest/online/tip/424399885819711488')

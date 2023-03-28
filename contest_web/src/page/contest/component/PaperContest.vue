@@ -156,7 +156,7 @@ export default {
     height: 60em;
     margin-bottom: 5em;
     margin-left: 11.5em;
-    margin-top: -6em;
+    margin-top: -9em;
     box-shadow: 0 0 10px 0 rgb(0 0 0 / 10%);
   }
   .option-item{

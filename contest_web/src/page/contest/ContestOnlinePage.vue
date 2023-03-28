@@ -23,6 +23,7 @@
   <ProgramContest v-if="contest.contestDetail.contestTypeId === 2"
                   @flag-question-success="flagQuestionSuccess"
                   :current-question="contest.current"/>
+
 </template>
 
 <script>

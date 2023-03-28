@@ -7,10 +7,14 @@ import com.contest.entity.user.UserEntity;
 import com.contest.result.ResultModel;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 public interface UserService extends IService<UserEntity> {
     public ResultModel<UserDetailDto> getUserDetailDto(UserDto userDto);
 
     public ResultModel<String> saveUser(UserDetailDto userDetailDto);
 
     public ResultModel<UserDetailDto> getUserDetailById(String userId);
+
+    public ResultModel<List<UserDto>> getUserDtoListByIdList(List<String> idList);
 }
