@@ -7,6 +7,9 @@
     <div @click="selectedNotifyMessage" :class="{titleTagBorder: true,titleSelected: notifyMessage.titleSelected}">
       <span class="titleTag">通知公告</span>
     </div>
+    <div v-if="!isCreator" @click="selectedContestResult" :class="{titleTagBorder: true,titleSelected: contestResult.titleSelected}">
+      <span class="titleTag">查询成绩</span>
+    </div>
     <div v-if="isCreator" @click="selectedEditMessage" :class="{titleTagBorder: true,titleSelected: editContest.titleSelected}">
       <span class="titleTag">编辑竞赛</span>
     </div>
@@ -57,6 +60,9 @@
   </div>
   <div v-if="notifyMessage.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
     <ContestNotify/>
+  </div>
+  <div v-if="contestResult.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
+    <ContestResultOfUser/>
   </div>
   <div v-if="editContest.titleSelected" style="width: 70em;margin-top: 0.5em;margin-left: 13em;margin-bottom: 15em">
     <t-form ref="form" :data="formData" :colon="true">
@@ -145,6 +151,7 @@ import {createEnrollPaymentOrder} from "@/api/payment";
 import {store} from "@/store";
 import ContestManagement from "@/page/contest/component/ContestManagement";
 import ContestNotify from "@/page/contest/component/ContestNotify";
+import ContestResultOfUser from "@/page/contest/component/ContestResultOfUser";
 
 const load = (contestId,_this) => {
   _this.contestId = contestId
@@ -152,20 +159,23 @@ const load = (contestId,_this) => {
 
 export default {
   name: "ContestDetail",
-  components: {ContestNotify, ContestManagement, UploadImage,MyEditor},
+  components: {ContestResultOfUser, ContestNotify, ContestManagement, UploadImage,MyEditor},
   data() {
     return {
       contestMessage: {
-        titleSelected: false
+        titleSelected: true
       },
       notifyMessage: {
+        titleSelected: false
+      },
+      contestResult: {
         titleSelected: false
       },
       editContest: {
         titleSelected: false
       },
       contestManagement: {
-        titleSelected: true
+        titleSelected: false
       },
       contestId: '',
       contestDetailMessage: {
@@ -215,10 +225,15 @@ export default {
       this.contestMessage.titleSelected = false
       this.notifyMessage.titleSelected = false
       this.editContest.titleSelected = false
+      this.contestResult.titleSelected = false
     },
     selectedContestManagement: function () {
       this.clearTitleSelected()
       this.contestManagement.titleSelected = true
+    },
+    selectedContestResult: function () {
+      this.clearTitleSelected()
+      this.contestResult.titleSelected = true
     },
     selectedEditMessage: function () {
       this.clearTitleSelected()

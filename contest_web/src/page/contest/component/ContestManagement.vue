@@ -22,21 +22,25 @@
       <t-tab-panel value="forth">
         <template #label> <t-icon name="root-list" class="tabs-icon-margin" /> 判题管理 </template>
         <p style="padding-left: 25px">
-          <QuestionManagement/>
+          <QuestionManagement :key="data.questionManagementKey" @reload="data.questionManagementKey = (data.questionManagementKey + 1)%10"/>
         </p>
       </t-tab-panel>
     </t-tabs>
   </t-space>
 </template>
 <script setup>
-import { ref } from 'vue';
+import {reactive, ref} from 'vue';
 import UserList from "@/page/contest/component/detail_page/UserList";
 import QuestionManagement from "@/page/contest/component/detail_page/QuestionManagement";
 import NotifyList from "@/page/contest/component/detail_page/NotifyList";
 import OnlineManagement from "@/page/contest/component/detail_page/OnlineManagement";
 
-const value = ref('second');
+const value = ref('first');
 const theme = ref('normal');
+
+const data = reactive({
+  questionManagementKey: 1
+})
 
 const handlerChange = (newValue) => {
   value.value = newValue;

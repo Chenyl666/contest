@@ -1,8 +1,9 @@
 <template>
-  <div v-if="formData.contestDetail.contestTypeId === 2">
-    <h2>该比赛为编程类竞赛，无需进行批改</h2>
+  <div v-if="formData.contestDetail.contestTypeId === 2 || formData.contestDetail.contestStatus === 'RESULT' || formData.contestDetail.contestStatus === 'PUBLISH'">
+<!--    <h2>该比赛为编程类竞赛，无需进行批改</h2>-->
+    <ContestResult @publish="publishResult" :contest-result-list="formData.result" :contest-detail="formData.contestDetail"/>
   </div>
-  <div v-if="formData.contestDetail.contestTypeId === 1">
+  <div v-if="formData.contestDetail.contestTypeId === 1 && formData.contestDetail.contestStatus !== 'RESULT' && formData.contestDetail.contestStatus !== 'PUBLISH'">
     <t-form style="display: table">
       <t-form-item :label="'题目类型'" style="display: table-cell;">
         <t-select v-model="queryWrapper.questionType">
@@ -21,6 +22,7 @@
       <t-form-item style="margin-left: -2em">
         <t-button @click="query" theme="success">筛选</t-button>
         <t-button style="margin-left: 2em" @click="reset" theme="primary">重置</t-button>
+        <t-button @click="exportResult" style="margin-left: 2em" theme="default">导出成绩</t-button>
       </t-form-item>
     </t-form>
     <p style="margin-left: 1.4em">
@@ -60,15 +62,27 @@
 <script setup lang="jsx">
 import {onMounted, reactive, ref} from 'vue';
 // import {ErrorCircleFilledIcon, CheckCircleFilledIcon, CloseCircleFilledIcon} from 'tdesign-icons-vue-next';
-import {autoJudge, getContestAnsList, getContestDetailById, judgeAnswer} from "@/api/contest";
+import {
+  autoJudge,
+  exportResultByContestId,
+  getContestAnsList,
+  getContestDetailById,
+  getContestResultListByContestId,
+  judgeAnswer, publishContestResult
+} from "@/api/contest";
 import router from "@/router/router";
 import AnswerDialog from "@/page/contest/component/detail_page/dialog/AnswerDialog";
 import {result} from "@/common/request.result";
 import {MessagePlugin} from "tdesign-vue-next";
+import {defineEmits} from "vue";
+import ContestResult from "@/page/contest/component/detail_page/ContestResult";
+
+const emits = defineEmits(['reload'])
 
 const formData = reactive({
   contestDetail: {},
   allData: [],
+  result: [],
   currentAnswer: {
     answerContent: '',
     answerId: '',
@@ -168,7 +182,6 @@ const onQuestionJudgeConfirm = (answerId, score) => {
       formData.currentAnswer.hasJudge = true
     }
   })
-
 }
 
 const onQuestionJudgeClose = () => {
@@ -207,19 +220,53 @@ const judgeAuto = () => {
   })
 }
 
+const reload = () => {
+  emits('reload')
+}
+
+const exportResult = () => {
+  if(confirm('确定要导出成绩？导出成绩后将无法再修改分数！')){
+    exportResultByContestId(formData.contestDetail.contestId).then(resp => {
+      if(resp.data.resultCode === result.code.SUCCESS){
+        reload()
+      }
+    })
+  }
+}
+
+const publishResult = () => {
+  if(confirm('确定要发布成绩？发布成绩后所有的参赛者将收到通知！')){
+    publishContestResult(formData.contestDetail.contestId).then(resp => {
+      if(resp.data.resultCode === result.code.SUCCESS){
+        MessagePlugin.success('发布成功')
+        reload()
+      }else{
+        MessagePlugin.error(resp.data.message)
+      }
+    })
+  }
+}
+
 onMounted(async () => {
   await getContestDetailById(router.currentRoute.value.params.contestId).then(resp => {
     formData.contestDetail = resp.data.data
   })
-  getContestAnsList(router.currentRoute.value.params.contestId).then(resp => {
-    let list = resp.data.data
-    for (let i = 0; i < list.length; i++) {
-      data.push(list[i])
-      allData.push(list[i])
-    }
-    pagination.total = data.length
-    pagination.defaultPageSize = 5
-  })
+  if(formData.contestDetail.contestTypeId === 2 || formData.contestDetail.contestStatus === 'RESULT' || formData.contestDetail.contestStatus === 'PUBLISH'){
+    await getContestResultListByContestId(formData.contestDetail.contestId).then(resp => {
+      console.log(resp.data.data)
+      formData.result = resp.data.data
+    })
+  }else{
+    getContestAnsList(router.currentRoute.value.params.contestId).then(resp => {
+      let list = resp.data.data
+      for (let i = 0; i < list.length; i++) {
+        data.push(list[i])
+        allData.push(list[i])
+      }
+      pagination.total = data.length
+      pagination.defaultPageSize = 5
+    })
+  }
 })
 
 </script>

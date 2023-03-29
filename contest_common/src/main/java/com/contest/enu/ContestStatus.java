@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ContestStatus {
-    CHECKING, PASSABLE, FAIL, ENROLLING, ENROLL_END, CONTESTING, CONTEST_END;
+    CHECKING, PASSABLE, FAIL, ENROLLING, ENROLL_END, CONTESTING, CONTEST_END, RESULT, PUBLISH;
 
     private static final Map<ContestStatus, ContestStatus> nextStatus;
 

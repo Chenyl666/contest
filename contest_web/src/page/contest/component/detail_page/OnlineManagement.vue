@@ -46,7 +46,6 @@ import {MessagePlugin} from "tdesign-vue-next";
 import {store} from "@/store";
 import {getUserDetail} from "@/api/user";
 const data = reactive([]);
-const total = 28;
 
 let websocket = reactive(null)
 
@@ -131,11 +130,11 @@ const handleRowClick = (e) => {
   console.log(e);
 };
 
-const pagination = {
+const pagination = reactive({
   defaultCurrent: 1,
   defaultPageSize: 5,
-  total,
-};
+  total: 0,
+});
 
 onMounted(async () => {
   await getOnlineStatusDto(router.currentRoute.value.params.contestId).then(async resp => {
@@ -143,6 +142,7 @@ onMounted(async () => {
       resp.data.data[i].tips = ''
       data.push(resp.data.data[i])
     }
+    pagination.total = resp.data.data.length
     // data = resp.data.data
     await getUserDetail().then(resp => {
       ws.selfId = resp.data.data.userId

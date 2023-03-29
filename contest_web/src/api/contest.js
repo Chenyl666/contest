@@ -1,4 +1,5 @@
 import {request} from "@/util/request";
+import {globalConfig} from "@/global.config";
 
 export const getContestTypeList = () => {
     return request.get('/contest/enroll/type')
@@ -85,4 +86,24 @@ export const judgeAnswer = (answerId,score) => {
 
 export const autoJudge = (contestId) => {
     return request.postWithForm('/contest/online/judge/auto',{contestId},true)
+}
+
+export const exportResultByContestId = (contestId) => {
+    return request.postWithForm('/contest/result/generate',{contestId},true)
+}
+
+export const getContestResultListByContestId = (contestId) => {
+    return request.get('/contest/result/list/'.concat(contestId),true)
+}
+
+export const publishContestResult = (contestId) => {
+    return request.postWithForm("/contest/result/publish",{contestId},true)
+}
+
+export const exportContestResultAsExcel = (contestId) => {
+    window.location.href = globalConfig.requestConfig.baseURL + '/contest/result/excel/'.concat(contestId)
+}
+
+export const getContestUserResult = (contestId) => {
+    return request.get('/contest/result/get/'.concat(contestId),true)
 }

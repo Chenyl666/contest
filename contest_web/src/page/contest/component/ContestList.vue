@@ -67,6 +67,8 @@ const statusNameListMap = {
   CONTESTING: { label: '比赛中', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
   CONTEST_END: { label: '已结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
   FAIL: { label: '审核失败', theme: 'danger', icon: <CloseCircleFilledIcon /> },
+  RESULT: { label: '已结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
+  PUBLISH: { label: '已结束', theme: 'default', icon: <CloseCircleFilledIcon /> }
 };
 
 const columns = ref([

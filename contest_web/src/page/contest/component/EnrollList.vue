@@ -46,6 +46,8 @@ const statusNameListMap = {
   WAIT_CONTEST: { label: '等待开始', theme: 'primary', icon: <StarFilledIcon /> },
   CONTESTING: { label: '正在比赛', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
   CONTEST_END: { label: '比赛结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
+  RESULT: { label: '比赛结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
+  PUBLISH: { label: '比赛结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
   FAIL: { label: '审核失败', theme: 'danger', icon: <CloseCircleFilledIcon /> },
 };
 
