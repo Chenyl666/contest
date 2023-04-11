@@ -64,6 +64,7 @@ public class EnrollServiceImpl implements EnrollService {
         List<ContestPriseDistributeEntity> contestPriseDistributeEntityList = generateContestPriseDistributeEntityList(
                 contestDetailDto.getContestPriseDistributes(),contestDetailEntity
         );
+        contestDetailEntity.setContestStatus(ContestStatus.PASSABLE);
         contestDetailService.save(contestDetailEntity);
         contestPriseDistributeService.saveBatch(contestPriseDistributeEntityList);
         sentEnrollSuccessNotifyMessage(contestDetailEntity);
@@ -271,7 +272,8 @@ public class EnrollServiceImpl implements EnrollService {
 
     private List<ContestDetailDto> buildContestDetailDtoList(
             List<ContestDetailEntity> contestDetailEntityList,
-            Map<Long, List<ContestPriseDistributeDto>> contestPriseDistributeMap){
+            Map<Long, List<ContestPriseDistributeDto>> contestPriseDistributeMap
+    ){
         return contestDetailEntityList.stream().map(
                 contestDetailEntity -> buildContestDetailDto(
                         contestDetailEntity,contestPriseDistributeMap.get(contestDetailEntity.getContestId())

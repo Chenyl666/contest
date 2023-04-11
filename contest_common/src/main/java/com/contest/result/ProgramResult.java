@@ -27,6 +27,10 @@ public class ProgramResult {
 
     private String message;
 
+    private String input;
+
+    private String output;
+
     public static ProgramResult buildAllPass(Integer number, Float score){
         return ProgramResult
                 .builder()
@@ -37,6 +41,21 @@ public class ProgramResult {
                 .build();
     }
 
+    public static ProgramResult buildAllPass(
+            Integer number, Float score,
+            String inputText, String outputText
+    ){
+        return ProgramResult
+                .builder()
+                .code(PASS)
+                .number(number)
+                .message("正确")
+                .score(score)
+                .input(inputText)
+                .output(outputText)
+                .build();
+    }
+
     public static ProgramResult buildError(Integer number){
         return ProgramResult
                 .builder()
@@ -44,6 +63,18 @@ public class ProgramResult {
                 .number(number)
                 .message("错误")
                 .score(0f)
+                .build();
+    }
+
+    public static ProgramResult buildError(Integer number,String input,String output){
+        return ProgramResult
+                .builder()
+                .code(ERROR)
+                .number(number)
+                .message("错误")
+                .score(0f)
+                .input(input)
+                .output(output)
                 .build();
     }
 

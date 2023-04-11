@@ -23,7 +23,7 @@
 <script setup lang="jsx">
 import {onMounted, reactive, ref} from 'vue';
 import {CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon, StarFilledIcon} from 'tdesign-icons-vue-next';
-import {getTimeStr} from "@/util/date.util";
+import { getTimeStrOfChina} from "@/util/date.util";
 import router from "@/router/router";
 import {getOrganizerEnrollList} from "@/api/contest";
 import {result} from "@/common/request.result";
@@ -43,7 +43,7 @@ const statusNameListMap = {
   CHECKING: { label: '正在审核', theme: 'primary', icon: <ErrorCircleFilledIcon /> },
   PASSABLE: { label: '审核通过', theme: 'success', icon: <CheckCircleFilledIcon /> },
   ENROLLING: { label: '正在报名', theme: 'primary', icon: <ErrorCircleFilledIcon /> },
-  WAIT_CONTEST: { label: '等待开始', theme: 'primary', icon: <StarFilledIcon /> },
+  ENROLL_END: { label: '等待开始', theme: 'primary', icon: <StarFilledIcon /> },
   CONTESTING: { label: '正在比赛', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
   CONTEST_END: { label: '比赛结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
   RESULT: { label: '比赛结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
@@ -61,6 +61,7 @@ const columns = ref([
     foot: '-',
     align: 'center',
     cell: (h, { row }) => {
+      console.log(row.contestStatus)
       return (
           // <t-tag shape="round" theme={statusNameListMap[row.status].theme} variant="light-outline">
           <t-tag shape="round" theme={statusNameListMap[row.contestStatus].theme} variant="light-outline">
@@ -77,8 +78,8 @@ const columns = ref([
     ellipsis: true,
     align: 'center',
     cell: (h, {row}) => {
-      let contestStartTime = getTimeStr(row.contestStartTime);
-      let contestEndTime = getTimeStr(row.contestEndTime)
+      let contestStartTime = getTimeStrOfChina(row.contestStartTime);
+      let contestEndTime = getTimeStrOfChina(row.contestEndTime)
       return contestStartTime + '~' + contestEndTime
     }
   },

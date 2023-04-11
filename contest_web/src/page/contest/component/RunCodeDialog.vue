@@ -12,17 +12,24 @@
         destroy-on-close>
       <template #body>
         <div v-if="running">
-          <t-loading v-if="!error" style="margin-left: 9em;margin-top: 1em"/>
-          <CloseCircleFilledIcon style="color: red;margin-left: 23em;margin-top: 2.5em;width: 2.8em;height: 2.8em" v-if="error"/>
-          <span :style="{color: error?'red':'#0075FF'}"
-              style="display: block;font-weight: bold;font-size: 16px;;float: right;margin-right: 21.5em;margin-top: 2.7em">
-            {{error?'编译错误':'运行中'}}
-          </span>
+          <div v-if="!error">
+            <t-loading style="margin-left: 9em;margin-top: 1em"/>
+<!--            <CloseCircleFilledIcon style="color: red;margin-left: 23em;margin-top: 2.5em;width: 2.8em;height: 2.8em"-->
+<!--                                   v-if="error"/>-->
+            <span :style="{color: '#0075FF'}"
+                  style="display: block;font-weight: bold;font-size: 16px;;float: right;margin-right: 21.5em;margin-top: 2.7em">
+              运行中
+            </span>
+          </div>
+          <div v-if="error" style="color: red">
+            <h3 style="color: red">错误：</h3>
+            {{errorMessage}}
+          </div>
         </div>
         <div v-if="!running" style="overflow-y: auto;width: 55em;height: 35em">
           <div style="margin-top: 0.5em">
-            <span :style="{color: statusMap[status].theme}">运行状态：{{statusMap[status].label}}</span>
-            <span style="margin-left: 5em;">得分：{{sumScore}}</span>
+            <span :style="{color: statusMap[status].theme}">运行状态：{{ statusMap[status].label }}</span>
+            <span style="margin-left: 5em;">得分：{{ sumScore }}</span>
           </div>
           <t-table
               style="margin-top: 1em"
@@ -37,18 +44,24 @@
               :show-header="showHeader"
               cell-empty-content="-"
               @row-click="handleRowClick"
-          />
+          >
+            <template #operation="{row}">
+              <t-link @click="showExampleOutput(row)" theme="primary">查看输出</t-link>
+            </template>
+          </t-table>
         </div>
       </template>
     </t-dialog>
   </div>
+  <ExampleOutputDialog @on-close="dialog.visit = false" :input="dialog.input" :output="dialog.output" :visitable="dialog.visit"/>
 </template>
 <script setup>
-import {defineProps, defineEmits, toRef} from "vue";
-import { ref } from 'vue';
-import { ErrorCircleFilledIcon, CheckCircleFilledIcon, CloseCircleFilledIcon } from 'tdesign-icons-vue-next';
+import {defineProps, defineEmits, toRef, reactive} from "vue";
+import {ref} from 'vue';
+import {ErrorCircleFilledIcon, CheckCircleFilledIcon, CloseCircleFilledIcon} from 'tdesign-icons-vue-next';
 import {getTimeStrOfChina} from "@/util/date.util";
 import {store} from "@/store";
+import ExampleOutputDialog from "@/page/contest/component/ExampleOutputDialog";
 
 const emits = defineEmits(['on-close'])
 
@@ -66,6 +79,12 @@ const statusMap = {
     theme: 'red'
   }
 }
+
+const dialog = reactive({
+  input: '',
+  output: '',
+  visit: false
+})
 
 const props = defineProps({
   visitable: {
@@ -93,22 +112,27 @@ const props = defineProps({
   error: {
     type: Boolean,
     required: true
+  },
+  errorMessage: {
+    type: String,
+    required: true
   }
 })
 
 const onClose = () => {
+  dialog.visit = false
   emits('on-close')
 }
 
-const data = toRef(props,'data')
+const data = toRef(props, 'data')
 
-const visit = toRef(props,'visitable')
+const visit = toRef(props, 'visitable')
 
 const statusNameListMap = {
-  1: { label: '测试通过', theme: 'success', icon: <CheckCircleFilledIcon /> },
-  2: { label: '答案错误', theme: 'danger', icon: <CloseCircleFilledIcon /> },
-  3: { label: '内存溢出', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
-  4: { label: '运行超时', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
+  1: {label: '测试通过', theme: 'success', icon: <CheckCircleFilledIcon/>},
+  2: {label: '答案错误', theme: 'danger', icon: <CloseCircleFilledIcon/>},
+  3: {label: '内存溢出', theme: 'warning', icon: <ErrorCircleFilledIcon/>},
+  4: {label: '运行超时', theme: 'warning', icon: <ErrorCircleFilledIcon/>},
 };
 
 const stripe = ref(true);
@@ -119,12 +143,12 @@ const size = ref('medium');
 const showHeader = ref(true);
 
 const columns = ref([
-  { colKey: 'number', title: '测试点', width: '100', align: 'center' },
+  {colKey: 'number', title: '测试点', width: '100', align: 'center'},
   {
     colKey: 'code',
     title: '测试结果',
     align: 'center',
-    cell: (h, { row }) => {
+    cell: (h, {row}) => {
       return (
           <t-tag shape="round" theme={statusNameListMap[row.code].theme} variant="light-outline">
             {statusNameListMap[row.code].icon}
@@ -133,7 +157,7 @@ const columns = ref([
       );
     },
   },
-  { colKey: 'score', title: '得分', align: 'center' },
+  {colKey: 'score', title: '得分', align: 'center'},
   {
     colKey: 'username',
     title: '提交用户',
@@ -151,11 +175,22 @@ const columns = ref([
       return getTimeStrOfChina(date)
     }
   },
+  {
+    colKey: 'operation',
+    title: '操作',
+    align: 'center'
+  }
 ]);
 
 const handleRowClick = (e) => {
   console.log(e);
 };
+
+const showExampleOutput = (row) => {
+  dialog.output = row.output
+  dialog.input = row.input
+  dialog.visit = true
+}
 
 </script>
 <style scoped>
@@ -167,6 +202,7 @@ const handleRowClick = (e) => {
   border-radius: 2px;
   overflow: hidden;
 }
+
 body {
   width: 3000px;
 }

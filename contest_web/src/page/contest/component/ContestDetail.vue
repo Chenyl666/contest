@@ -133,7 +133,7 @@
 import {
   getContestCreatorByContestId, getContestDetailById,
   getContestDetailMessageById,
-  getContestTypeList, getUserEnrollSituation, updateContestDetail
+  getContestTypeList, getUserEnrollSituation, updateContestDetail, updateContestStatus
 } from "@/api/contest";
 import {result} from "@/common/request.result";
 import {toRef} from "vue";
@@ -337,6 +337,7 @@ export default {
     }
   },
   async mounted() {
+    await updateContestStatus(this.$route.params.contestId)
     await getContestTypeList().then(resp => {
       this.meta.contestTypeList = toRef(resp.data,'data')
     })

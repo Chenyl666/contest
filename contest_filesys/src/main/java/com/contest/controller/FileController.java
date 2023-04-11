@@ -4,6 +4,7 @@ import com.contest.annotation.currentuser.CurrentUser;
 import com.contest.annotation.filepiece.FilePiece;
 import com.contest.annotation.simplefile.SimpleFileRequestBody;
 import com.contest.annotation.uploadrequest.UploadRequest;
+import com.contest.dto.filesys.FileTextDto;
 import com.contest.dto.filesys.FileUploadDto;
 import com.contest.dto.filesys.SimpleFileUploadDto;
 import com.contest.dto.user.UserDto;
@@ -63,6 +64,14 @@ public class FileController {
             @SimpleFileRequestBody SimpleFileUploadDto simpleFileUploadDto
     ){
         return uploadService.uploadSimpleFile(userDto, simpleFileUploadDto);
+    }
+
+    /**
+     * 上传文本文件
+     * */
+    @PostMapping("/upload/text")
+    public ResultModel<String> uploadText(@RequestBody FileTextDto fileTextDto,@CurrentUser UserDto userDto){
+        return uploadService.uploadText(fileTextDto, userDto);
     }
 
     /**

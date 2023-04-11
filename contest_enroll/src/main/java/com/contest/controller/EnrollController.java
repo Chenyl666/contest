@@ -36,11 +36,17 @@ public class EnrollController {
     @Resource
     private ContestDetailService contestDetailService;
 
+    /**
+     * 获取比赛类型
+     * */
     @GetMapping("/type")
     public ResultModel<List<ContestType>> getContestTypeList(){
         return ResultModel.buildSuccessResultModel(null,contestTypeService.list(null));
     }
 
+    /**
+     * 保存比赛信息
+     * */
     @PostMapping("/save")
     public ResultModel<Long> saveContestDetail(
             @RequestBody ContestDetailDto contestDetailDto,
@@ -49,41 +55,65 @@ public class EnrollController {
         return enrollService.saveContestDetail(contestDetailDto, userDto);
     }
 
+    /**
+     * 获取用户的比赛列表
+     * */
     @GetMapping("/get")
     public ResultModel<List<ContestDetailDto>> getContestDetailList(@CurrentUser UserDto userDto){
         return enrollService.getContestDetailByUser(userDto);
     }
 
+    /**
+     * 获取比赛的信息
+     * */
     @GetMapping("/message/get/{contest_id}")
     public ResultModel<ContestDetailMessageEntity> getContestDetailMessageById(@PathVariable("contest_id") String contestId){
         return ResultModel.buildSuccessResultModel(null,contestDetailMessageService.getById(contestId));
     }
 
+    /**
+     * 通过比赛id获取举办方
+     * */
     @GetMapping("/creator/get/{contest_id}")
     public ResultModel<UserDto> getCreatorByContestId(@PathVariable("contest_id")String contestId){
         return enrollService.getCreatorByContestId(contestId);
     }
 
+    /**
+     * 通过比赛的id获取比赛具体信息
+     * */
     @GetMapping("/get/{contest_id}")
     public ResultModel<ContestDetailDto> getContestDetailById(@PathVariable("contest_id")String contestId){
         return enrollService.getContestDetailById(contestId);
     }
 
+    /**
+     * 更新比赛信息
+     * */
     @PostMapping("/update")
     public ResultModel<String> updateContestDetail(@RequestBody ContestDetailDto contestDetailDto){
         return enrollService.updateContestDetail(contestDetailDto);
     }
 
+    /**
+     * 通过比赛id获取其类型
+     * */
     @GetMapping("/type/{contest_id}")
     public ResultModel<ContestType> getContestTypeById(@PathVariable("contest_id")Long contestId){
         return enrollService.getContestTypeById(contestId);
     }
 
+    /**
+     * 给竞赛导入题库
+     * */
     @PostMapping("/question/import")
     public ResultModel<String> importQuestionRepo(@RequestBody Map<String,Long> params){
         return enrollService.importQuestionRepo(params.get("contestId"),params.get("questionRepoId"));
     }
 
+    /**
+     * 通过参赛者id获取比赛报名情况
+     * */
     @GetMapping("/situation/{contest_id}")
     public ResultModel<ContestEnrollDto> getContestEnrollDto(
             @PathVariable("contest_id") Long contestId,
@@ -91,11 +121,17 @@ public class EnrollController {
         return enrollService.getContestEnrollDto(contestId, userDto);
     }
 
+    /**
+     * 获取举办者的所有竞赛
+     * */
     @GetMapping("/organizer/get")
     public ResultModel<List<ContestDetailDto>> getOrganizerEnrollList(@CurrentUser UserDto userDto){
         return contestDetailService.getOrganizerContestDetailList(userDto);
     }
 
+    /**
+     * 通过比赛id获取注册列表
+     * */
     @GetMapping("/enrollList/{contest_id}")
     public ResultModel<List<ContestEnrollMessage>> getEnrollList(
             @CurrentUser UserDto userDto,
@@ -113,6 +149,14 @@ public class EnrollController {
         return enrollService.getContestEnrollListByContestId(contestId);
     }
 
+    @GetMapping("/hot/list")
+    public ResultModel<List<ContestDetailDto>> getHotContestDetailList(){
+        return contestDetailService.getHotContestDetailList();
+    }
 
+    @PostMapping("/status/update")
+    public ResultModel<String> updateStatus(@RequestParam("contestId")Long contestId){
+        return contestDetailService.updateContestStatus(contestId);
+    }
 
 }

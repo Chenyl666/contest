@@ -9,3 +9,16 @@ export const uploadSimpleFile = async (file, fileName, publicPerm, timeLimit) =>
     })
     return url
 }
+
+export const uploadText = async (text,fileName) => {
+    let url = ''
+    await request.post('/filesys/upload/text',{
+        fileName,
+        publicPerm: true,
+        text,
+        timeLimit: true
+    },true).then(resp => {
+        url = resp.data.data
+    })
+    return url
+}

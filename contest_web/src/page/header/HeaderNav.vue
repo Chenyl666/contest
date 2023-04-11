@@ -207,7 +207,7 @@ export default {
             { content: '我的竞赛', value: 1, divider: false, prefixIcon: <StarFilledIcon /> },
             { content: '我的题库', value: 2, divider: false, prefixIcon: <BulletpointIcon /> },
             { content: '个人信息', value: 3, divider: false, prefixIcon: <UserIcon /> },
-            { content: '修改密码', value: 4, divider: false, prefixIcon: <LockOnIcon /> },
+            // { content: '修改密码', value: 4, divider: false, prefixIcon: <LockOnIcon /> },
             { content: '退出登录', value: 5, divider: false, prefixIcon: <ArrowRightIcon /> }
         ]
       },
@@ -241,6 +241,7 @@ export default {
     },
     toContestList: function () {
       this.$emit('to-contest-list')
+      // this.toContestList()
     },
     toUserDetail: function () {
       this.$emit('to-user-detail')
@@ -260,18 +261,23 @@ export default {
     onCloseLogout: function () {
       this.dialog.ensureLogout = false
     },
-    changePage: (page) => {
+    changePage: function(page) {
         switch (page) {
           case style.HEADER_MENU.MAIN_PAGE: {
             router.push('/main')
             break
           }
           case style.HEADER_MENU.CONTEST_PAGE: {
-            router.push('/contest')
+            // router.push('/contest')
+            this.toContestList()
             break
           }
           case style.HEADER_MENU.QUESTION_REPO: {
-            router.push('/ques')
+            if(store.getters.getUserType === 'PARTICIPANT'){
+              alert('没有权限')
+              return
+            }
+            this.toQuestionRepo()
             break
           }
           case style.HEADER_MENU.COURSE_PAGE: {

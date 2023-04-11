@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import {getContestDetailById} from "@/api/contest";
+import {getContestDetailById, updateContestStatus} from "@/api/contest";
 import {getTimeStrOfChina} from "@/util/date.util";
 import CameraVideo from '@/page/contest/component/CameraVideo'
 import router from "@/router/router";
@@ -109,16 +109,17 @@ export default {
       MessagePlugin.error(info)
     }
   },
-  mounted() {
+  async mounted() {
+    await updateContestStatus(this.$route.params.contestId)
     this.getTimes()
-    getContestDetailById(this.$route.params.contestId).then(resp => {
+    await getContestDetailById(this.$route.params.contestId).then(resp => {
       this.contestStartTime = resp.data.data.contestStartTime
       this.contestEndTime = resp.data.data.contestEndTime
       this.contestSubject = resp.data.data.contestSubject
       let startTimeStamp = new Date(resp.data.data.contestStartTime).getTime()
       let endTimeStamp = new Date(resp.data.data.contestEndTime).getTime()
       let currentTimeStamp = new Date()
-      if(currentTimeStamp>=startTimeStamp && currentTimeStamp<=endTimeStamp){
+      if (currentTimeStamp >= startTimeStamp && currentTimeStamp <= endTimeStamp) {
         this.enableToStart = true
       }
     })

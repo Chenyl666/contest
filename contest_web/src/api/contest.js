@@ -107,3 +107,11 @@ export const exportContestResultAsExcel = (contestId) => {
 export const getContestUserResult = (contestId) => {
     return request.get('/contest/result/get/'.concat(contestId),true)
 }
+
+export const getHotContestDetailList = () => {
+    return request.get('/contest/enroll/hot/list',true)
+}
+
+export const updateContestStatus = (contestId) => {
+    return request.postWithForm('/contest/enroll/status/update',{contestId},true)
+}

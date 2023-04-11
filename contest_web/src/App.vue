@@ -99,15 +99,8 @@ export default {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
           // router.push('/main')
-          if(this.getUserType === 'PARTICIPANT'){
-            router.push('/contest/online/page/425331313520676864')
-          }
-          if(this.getUserType === 'ORGANIZER'){
-            router.push('/contest/detail/424399885819711488')
-          }
-          // router.push('/contest/online/page/424399885819711488')
-          // router.push('/contest/online/page/425331313520676864')
-          // router.push('/contest/online/tip/424399885819711488')
+          router.push('/contest/online/page/439819269673324544')
+          // router.push('/question/repo/detail/439824695693414401')
         }else{
           router.push("/login")
         }

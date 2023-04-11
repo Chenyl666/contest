@@ -29,7 +29,7 @@
 <script>
 
 import ContestQuestionList from "@/page/contest/component/ContestQuestionList";
-import {getContestDetailById} from "@/api/contest";
+import {getContestDetailById, updateContestStatus} from "@/api/contest";
 import router from "@/router/router";
 import {result} from "@/common/request.result";
 import {
@@ -122,6 +122,7 @@ export default {
           clearInterval(this.contest.interval)
           savePaperQuestionAnswer(this.contest.questionList).catch(() => MessagePlugin.error('请检查网络问题！'))
           setEndStatus(this.$route.params.contestId,2)
+          updateContestStatus(this.$route.params.contestId)
           router.push('/end')
         }else{
           this.contest.currentTime = date
@@ -156,6 +157,7 @@ export default {
     },
     complete: function () {
       if(confirm('交卷后将无法继续答题，确认继续吗？')){
+        updateContestStatus(this.$route.params.contestId)
         clearInterval(this.saveInterval)
         clearInterval(this.contest.interval)
         savePaperQuestionAnswer(this.contest.questionList).catch(() => MessagePlugin.error('请检查网络问题！'))
@@ -210,7 +212,7 @@ export default {
       }
     })
     if(!checkResult){
-      router.push('/end')
+      await router.push('/end')
       return
     }
     await getContestDetailById(router.currentRoute.value.params.contestId).then(resp => {

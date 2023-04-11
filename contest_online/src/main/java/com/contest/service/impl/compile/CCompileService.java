@@ -14,11 +14,13 @@ import com.contest.service.QuestionService;
 import com.contest.util.FileUtils;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +49,9 @@ public class CCompileService extends ProgramCompileService {
 
     @Resource
     private ContestAnswerMapper contestAnswerMapper;
+
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
     /**
      * 对源码进行编译运行
@@ -113,6 +118,14 @@ public class CCompileService extends ProgramCompileService {
                 programResultList.add(ProgramResult.buildAllPass(i,5f));
                 score += 5;
             }else{
+                File customerOutFile = new File(this.answerPath
+                        .replace("[!1!]",contestCodeDto.getQuestionId().toString())
+                        .replace("[!2!]",contestCodeDto.getAnswerId().toString())
+                        .concat("\\customer.out")
+                );
+                if(customerOutFile.length() == 0){
+                    return ResultModel.buildFailResultModel("编译错误",null);
+                }
                 programResultList.add(ProgramResult.buildError(i));
             }
             FileUtils.deleteFile(
@@ -222,5 +235,47 @@ public class CCompileService extends ProgramCompileService {
                 deleteFileDir(subFile);
             }
         }
+    }
+
+    @SneakyThrows
+    private String getOutputText(ContestCodeDto contestCodeDto, String errorMessageFile) {
+        String compilerErrorMessageFilePath = this.answerPath
+                .replace("[!1!]", contestCodeDto.getQuestionId().toString())
+                .replace("[!2!]", contestCodeDto.getAnswerId().toString())
+                .concat("\\")
+                .concat(errorMessageFile);
+        File file = new File(compilerErrorMessageFilePath);
+        if (file.length() == 0 || !file.exists()) {
+            return null;
+        }
+        InputStreamReader reader = new InputStreamReader(Files.newInputStream(file.toPath()), "GB2312");
+        StringBuilder stringBuilder = new StringBuilder();
+        char[] buf = new char[128];
+        int len = -1;
+        while ((len = reader.read(buf)) != -1) {
+            stringBuilder.append(buf, 0, len);
+        }
+        reader.close();
+        return stringBuilder.toString();
+    }
+
+    @SneakyThrows
+    private String getInputText(Long questionId, Integer index) {
+        Object cache = redisTemplate.opsForValue().get("PROGRAM::QUESTION::".concat(questionId.toString()));
+        if (cache != null) {
+            return cache.toString();
+        }
+        String filePath = inputPathTemplate
+                .replace("[!1!]",questionId.toString())
+                .replace("[!2!]",index.toString());
+        File file = new File(filePath);
+        InputStreamReader reader = new InputStreamReader(Files.newInputStream(file.toPath()));
+        char[] buf = new char[128];
+        int len = -1;
+        StringBuilder stringBuilder = new StringBuilder();
+        while((len = reader.read(buf))!=-1){
+            stringBuilder.append(buf,0,len);
+        }
+        return stringBuilder.toString();
     }
 }

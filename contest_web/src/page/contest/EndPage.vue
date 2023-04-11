@@ -1,5 +1,6 @@
 <template>
-  <h1>比赛结束页面</h1>
+  <video style="margin-left: 32em" src="../../assets/contest_end.mp4"/>
+  <h1 style="color: #0075FF;margin-left: 21.8em;margin-top: -3em">比赛结束</h1>
 </template>
 
 <script>

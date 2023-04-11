@@ -60,7 +60,7 @@ public class ResultModel<T> {
         return ResultModel.<T>builder()
                 .resultFlag(ResultFlag.FAIL)
                 .resultCode(ResultFlag.FAIL.code)
-                .message(ResultFlag.FAIL.msg)
+                .message(message == null?ResultFlag.FAIL.msg:message)
                 .data(data)
                 .build();
     }

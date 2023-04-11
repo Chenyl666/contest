@@ -11,7 +11,7 @@
               class="right-top-btn"
               @click="back"
               style="margin-left: 1.5em;margin-right: 1em">返回</t-button>
-    <t-button theme="default" class="right-top-btn">预览</t-button>
+<!--    <t-button theme="default" class="right-top-btn">预览</t-button>-->
   </t-header>
   <div class="left">
     <div style="margin-left: 1.5em;margin-top: 1.5em">

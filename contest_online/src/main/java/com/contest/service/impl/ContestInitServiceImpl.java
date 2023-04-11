@@ -1,5 +1,6 @@
 package com.contest.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.contest.dto.question.ProgramExampleDto;
 import com.contest.dto.question.QuestionIndexDto;
@@ -178,6 +179,8 @@ public class ContestInitServiceImpl implements ContestInitService {
                 }
             }
             QuestionProgramDto questionProgramDto = r.getData();
+            System.out.println(questionProgramDto == null);
+            System.out.println(JSON.toJSONString(questionProgramDto));
             Map<Integer, List<ProgramExampleDto>> exampleMap = buildProgramExampleMap(questionProgramDto);
             for (Integer number : exampleMap.keySet()) {
                 List<ProgramExampleDto> programExampleList = exampleMap.get(number);

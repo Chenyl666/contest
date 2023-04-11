@@ -49,12 +49,19 @@
             <t-list-item :key="index" v-for="(questionExample,index) in question.questionExampleList">
               测试用例{{index}}
               <template #action>
-                <t-badge :count="questionExample.inputExampleUploadSuccess?'✔':''" color="#00A870" :offset="[10, 20]">
-                  <UploadButton @on-success="(url) => onInputExampleUploadSuccess(url,index)" value="上传输入"/>
-                </t-badge>
-                <t-badge :count="questionExample.outputExampleUploadSuccess?'✔':''" color="#00A870" :offset="[10, 20]">
-                  <UploadButton @on-success="(url) => onOutputExampleUploadSuccess(url,index)" value="上传输出" style="margin-left: 16px"/>
-                </t-badge>
+                <div style="display: inline-block" v-if="!questionExample.inputExampleUploadSuccess || !questionExample.outputExampleUploadSuccess">
+                  <t-badge :count="questionExample.inputExampleUploadSuccess?'✔':''" color="#00A870" :offset="[22, 20]">
+                    <t-button style="margin-right: 1em" @click="onExampleBtnUploadClick(index,`in`)">上传输入</t-button>
+                    <!--                  <UploadButton @on-success="(url) => onInputExampleUploadSuccess(url,index)" value="上传输入"/>-->
+                  </t-badge>
+                  <t-badge :count="questionExample.outputExampleUploadSuccess?'✔':''" color="#00A870" :offset="[10, 20]">
+                    <t-button @click="onExampleBtnUploadClick(index,`out`)">上传输出</t-button>
+                    <!--                  <UploadButton @on-success="(url) => onOutputExampleUploadSuccess(url,index)" value="上传输出" style="margin-left: 16px"/>-->
+                  </t-badge>
+                </div>
+                <div style="display: inline-block" v-else>
+                  <t-button @click="showExample(index)" theme="success">查看用例</t-button>
+                </div>
                 <t-button :disabled="question.questionExampleList.length === 1" @click="onRemoveTestExample(index)" theme="danger" hover="color" style="margin-left: 16px"> 删除用例 </t-button>
               </template>
             </t-list-item>
@@ -64,24 +71,45 @@
           </t-list>
       </div>
     </div>
-    <t-button @click="save" size="large" style="margin-top: 5em;margin-left: 4em;width: 90%" theme="primary">确定添加</t-button>
+    <t-button @click="save" size="large" style="margin-top: 5em;margin-left: 4em;width: 90%" theme="primary">保存</t-button>
   </div>
+  <ExampleDialog :visible="exampleDialog.visitable" @on-success="onConfirmUploadExample" @on-close="exampleDialog.visitable = false"/>
+  <ShowExampleDialog :input-url="showExampleDialog.inputUrl"
+                     :output-url="showExampleDialog.outputUrl"
+                     :visitable="showExampleDialog.visitable"
+                     @on-close="showExampleDialog.visitable = false"/>
 </template>
 
 <script>
 import {HelpCircleIcon} from "tdesign-icons-vue-next";
 import MyEditor from "@/page/component/editor/MyEditor";
-import UploadButton from "@/page/component/upload/UploadButton";
+// import UploadButton from "@/page/component/upload/UploadButton";
 import {deleteProgramExample, getQuestionProgramById, saveQuestionProgram} from "@/api/question";
 import {PROGRAM_EXAMPLE_TYPE} from "@/common/question";
 import {result} from "@/common/request.result";
 import {MessagePlugin} from "tdesign-vue-next";
+import ExampleDialog from "@/page/question/component/dialog/ExampleDialog";
+import {uploadText} from "@/api/file_upload.";
+import ShowExampleDialog from "@/page/contest/component/ShowExampleDialog";
+import {getUrlText} from "@/api/url_text";
 
 export default {
   name: "ProgrammingQuestionContent",
-  components: {UploadButton, MyEditor, HelpCircleIcon},
+  // components: {UploadButton, MyEditor, HelpCircleIcon},
+  components: {ShowExampleDialog, ExampleDialog, MyEditor, HelpCircleIcon},
   data() {
     return {
+      exampleDialog:{
+        visitable: false,
+        index: null,
+        type: null,
+        text: null
+      },
+      showExampleDialog: {
+        inputUrl: null,
+        outputUrl: null,
+        visitable: false
+      },
       question: {
         load: false,
         score: 5,
@@ -105,6 +133,36 @@ export default {
     }
   },
   methods: {
+    async showExample(index) {
+      await getUrlText(this.question.questionExampleList[index].inputExampleUrl.replace('contest-filesys', '127.0.0.1:8080')).then(resp => {
+        this.showExampleDialog.inputUrl = resp.data
+      })
+      await getUrlText(this.question.questionExampleList[index].outputExampleUrl.replace('contest-filesys', '127.0.0.1:8080')).then(resp => {
+        this.showExampleDialog.outputUrl = resp.data
+      })
+      this.showExampleDialog.visitable = true
+    },
+    onConfirmUploadExample: async function (text) {
+      this.exampleDialog.visitable = false
+      let url = ''
+      await uploadText(text, this.exampleDialog.type + this.exampleDialog.index).then(res => {
+        url = res.replace("127.0.0.1:8080",'contest-filesys')
+      }).catch(async () => {
+        await MessagePlugin.error('上传失败！')
+      })
+      if(this.exampleDialog.type === 'in'){
+        this.onInputExampleUploadSuccess(url,this.exampleDialog.index)
+        await MessagePlugin.success('上传成功！')
+      }else{
+        this.onOutputExampleUploadSuccess(url,this.exampleDialog.index)
+        await MessagePlugin.success("上传成功")
+      }
+    },
+    onExampleBtnUploadClick: function (index,type) {
+      this.exampleDialog.visitable = true
+      this.exampleDialog.index = index
+      this.exampleDialog.type = type
+    },
     onAddTestExample: function () {
       this.question.questionExampleList.push({
         inputExampleUrl: '',

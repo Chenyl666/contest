@@ -20,9 +20,9 @@
         <t-link @click="importQuestion(row)" style="margin-left: 2em" theme="primary">
           {{nullString(row.questionRepoId)?'导入题库':'查看题库'}}
         </t-link>
-        <t-link @click="deleteContestDetail(row)" style="margin-left: 2em" theme="danger">
-          撤销竞赛
-        </t-link>
+<!--        <t-link @click="deleteContestDetail(row)" style="margin-left: 2em" theme="danger">-->
+<!--          撤销竞赛-->
+<!--        </t-link>-->
       </template>
     </t-table>
   </div>
@@ -35,7 +35,7 @@
 import {onMounted, reactive, ref} from 'vue';
 import {CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon,StarFilledIcon} from 'tdesign-icons-vue-next';
 import {getContestDetail, getContestTypeByContestId, importContestQuestion} from "@/api/contest";
-import {getTimeStr} from "@/util/date.util";
+import {getTimeStrOfChina} from "@/util/date.util";
 import ConfirmDialog from '@/page/component/dialog/ConfirmDialog'
 import router from "@/router/router";
 import {result} from "@/common/request.result";
@@ -60,15 +60,15 @@ let state = reactive({
 
 let data = reactive([]);
 const statusNameListMap = {
-  CHECKING: { label: '审核中', theme: 'primary', icon: <ErrorCircleFilledIcon /> },
+  CHECKING: { label: '正在审核', theme: 'primary', icon: <ErrorCircleFilledIcon /> },
   PASSABLE: { label: '审核通过', theme: 'success', icon: <CheckCircleFilledIcon /> },
-  ENROLLING: { label: '报名中', theme: 'primary', icon: <ErrorCircleFilledIcon /> },
-  WAIT_CONTEST: { label: '待开始', theme: 'primary', icon: <StarFilledIcon /> },
-  CONTESTING: { label: '比赛中', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
-  CONTEST_END: { label: '已结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
+  ENROLLING: { label: '正在报名', theme: 'primary', icon: <ErrorCircleFilledIcon /> },
+  ENROLL_END: { label: '等待开始', theme: 'primary', icon: <StarFilledIcon /> },
+  CONTESTING: { label: '正在比赛', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
+  CONTEST_END: { label: '比赛结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
+  RESULT: { label: '比赛结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
+  PUBLISH: { label: '比赛结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
   FAIL: { label: '审核失败', theme: 'danger', icon: <CloseCircleFilledIcon /> },
-  RESULT: { label: '已结束', theme: 'default', icon: <CloseCircleFilledIcon /> },
-  PUBLISH: { label: '已结束', theme: 'default', icon: <CloseCircleFilledIcon /> }
 };
 
 const columns = ref([
@@ -97,8 +97,8 @@ const columns = ref([
     foot: '-',
     align: 'center',
     cell: (h, {row}) => {
-      let enrollStartTime = getTimeStr(row.enrollStartTime);
-      let enrollEndTime = getTimeStr(row.enrollEndTime)
+      let enrollStartTime = getTimeStrOfChina(row.enrollStartTime);
+      let enrollEndTime = getTimeStrOfChina(row.enrollEndTime)
       return enrollStartTime + '~' + enrollEndTime
     }
   },
@@ -109,8 +109,8 @@ const columns = ref([
     ellipsis: true,
     align: 'center',
     cell: (h, {row}) => {
-      let contestStartTime = getTimeStr(row.contestStartTime);
-      let contestEndTime = getTimeStr(row.contestEndTime)
+      let contestStartTime = getTimeStrOfChina(row.contestStartTime);
+      let contestEndTime = getTimeStrOfChina(row.contestEndTime)
       return contestStartTime + '~' + contestEndTime
     }
   },
@@ -118,11 +118,11 @@ const columns = ref([
   { colKey: 'operation', title: '操作', width: 120, foot: '-',align: 'center', },
 ]);
 
-const deleteContestDetail = (row) => {
-  dialog.deleteItemDialog.selectContestId = row.contestId
-  dialog.deleteItemDialog.content = '确定要撤销竞赛“' + row.contestSubject + '”吗？'
-  dialog.deleteItemDialog.visitable = true
-}
+// const deleteContestDetail = (row) => {
+//   dialog.deleteItemDialog.selectContestId = row.contestId
+//   dialog.deleteItemDialog.content = '确定要撤销竞赛“' + row.contestSubject + '”吗？'
+//   dialog.deleteItemDialog.visitable = true
+// }
 
 const onConfirmDeleteItem = () => {
   dialog.deleteItemDialog.visitable = false

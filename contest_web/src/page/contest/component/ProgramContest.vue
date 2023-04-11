@@ -37,7 +37,8 @@
                  @on-close="onRunCodeDialogClose"
                  :running="runCodeDialog.running"
                  :status="runCodeDialog.status"
-                 :sum-score="runCodeDialog.sumScore"/>
+                 :sum-score="runCodeDialog.sumScore"
+                 :error-message="runCodeDialog.errorMessage"/>
 </template>
 
 <script>
@@ -88,12 +89,22 @@ export default {
         sumScore: 0,
         status: 1,
         error: false,
-      }
+        errorMessage: ''
+      },
+      cTemplate: `#include<stdio.h>\nint main(){\n\treturn 0;\n}`,
+      javaTemplate: `public class Main{\n\tpublic static void main(String[] args){\n\t\t\n\t}\n}`
     }
   },
   methods: {
     onLanguageChange: function (value) {
       this.aceEditor.setOption('mode', languageType[value])
+      if(languageType[value] === 'ace/mode/java'){
+        this.aceEditor.setOption('value',this.javaTemplate)
+        this.code = this.javaTemplate
+      }else if(languageType[value] === 'ace/mode/c_cpp'){
+        this.aceEditor.setOption('value',this.cTemplate)
+        this.code = this.cTemplate
+      }
     },
     onCodeChange: function () {
       this.code = this.aceEditor.getSession().getValue()
@@ -110,6 +121,7 @@ export default {
       ).then(resp => {
         if (resp.data.resultCode === result.code.FAIL) {
           this.runCodeDialog.error = true
+          this.runCodeDialog.errorMessage = resp.data.message
         } else {
           this.runCodeDialog.data = resp.data.data
           let d = this.runCodeDialog.data
@@ -158,10 +170,11 @@ export default {
       tabSize: 4,
       enableSnippets: true,
       enableLiveAutocompletion: true,
-      enableBasicAutocompletion: true
+      enableBasicAutocompletion: true,
+      value: this.cTemplate
     })
     this.aceEditor.getSession().on('change', this.onCodeChange)
-    console.log(this.currentQuestion.currentPaperAns)
+    this.code = this.cTemplate
   }
   // {
   //   answerId: '',

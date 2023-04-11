@@ -1,6 +1,7 @@
 package com.contest.service.impl;
 
 import com.contest.config.filesys.FileSystemEnvInfo;
+import com.contest.dto.filesys.FileTextDto;
 import com.contest.dto.filesys.FileUploadDto;
 import com.contest.dto.filesys.FileUploadRequest;
 import com.contest.dto.filesys.SimpleFileUploadDto;
@@ -225,6 +226,74 @@ public class UploadServiceImpl implements UploadService{
         resultModel.setResultFlag(ResultFlag.SUCCESS);
         resultModel.setData(buildInlineFileDownloadUrl(fileId));
         return resultModel;
+    }
+
+    /**
+     * 上传文本
+     * */
+    @Override
+    @Transactional
+    public ResultModel<String> uploadText(FileTextDto fileTextDto, UserDto userDto) {
+        String fileMd5 = Md5Utils.getTextMd5(fileTextDto.getText());
+        FileInstanceEntity fileInstanceInDb = fileInstanceMapper.selectById(fileMd5);
+        long fileId = snowMaker.nextId();
+        if(fileTextDto.isTimeLimit()){
+            fileTimeoutService.addTimeoutFile(
+                    FileTimeoutEntity
+                            .builder()
+                            .fileId(fileId)
+                            .timeout(System.currentTimeMillis() + 1000*3600*24)
+                            .createdDate(new Date())
+                            .build()
+            );
+        }
+        FileReferenceEntity fileReferenceEntity = FileReferenceEntity
+                .builder()
+                .fileMd5(fileMd5)
+                .fileId(fileId)
+                .isPublic(fileTextDto.isPublicPerm())
+                .fileName(fileTextDto.getFileName())
+                .createdBy(userDto.getUserId())
+                .createdDate(new Date())
+                .updatedBy(userDto.getUserId())
+                .updatedDate(new Date())
+                .build();
+        if(fileInstanceInDb != null){
+            fileInstanceMapper.incrReferenceNum(fileMd5);
+            fileReferenceMapper.insert(fileReferenceEntity);
+            return ResultModel.buildSuccessResultModel(null,buildInlineFileDownloadUrl(fileId));
+        }
+        lockMd5(fileMd5);
+        try{
+            fileInstanceInDb = fileInstanceMapper.selectById(fileMd5);
+            fileReferenceMapper.insert(fileReferenceEntity);
+            if(fileInstanceInDb != null){
+                fileInstanceMapper.incrReferenceNum(fileMd5);
+                return ResultModel.buildSuccessResultModel(null,buildInlineFileDownloadUrl(fileId));
+            }
+            String filePath = fileSystemEnvInfo.buildFilePath(fileReferenceEntity.getFileMd5());
+            File targetFile = new File(filePath);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(targetFile));
+            writer.write(fileTextDto.getText());
+            writer.close();
+            FileInstanceEntity fileInstanceEntity = FileInstanceEntity
+                    .builder()
+                    .fileMd5(fileMd5)
+                    .fileSize(targetFile.length())
+                    .filePath(targetFile.getPath())
+                    .referenceNum(0)
+                    .createdBy(userDto.getUserId())
+                    .createdDate(new Date())
+                    .updatedBy(userDto.getUserId())
+                    .updatedDate(new Date())
+                    .build();
+            fileInstanceMapper.insert(fileInstanceEntity);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            unlockMd5(fileMd5);
+        }
+        return ResultModel.buildSuccessResultModel(null,buildInlineFileDownloadUrl(fileId));
     }
 
     /**
