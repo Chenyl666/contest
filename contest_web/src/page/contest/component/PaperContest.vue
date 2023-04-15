@@ -58,6 +58,7 @@
 
 import {QUESTION_TYPE} from "@/common/question";
 import MyEditor from "@/page/component/editor/MyEditor";
+import {StringUtil} from "@/util/string.util";
 
 export default {
   name: "PaperContest",
@@ -115,6 +116,9 @@ export default {
       this.$emit('on-supply-change',this.supplementQuestion.ans)
     },
     onAnswerQuestionChange(content){
+      if(StringUtil.parseFromHtml(content) === ''){
+        content = ''
+      }
       this.$emit('on-answer-change',content)
     },
     toNextQuestion(){
@@ -139,10 +143,17 @@ export default {
       this.singleOptionQuestion.ans = this.currentQuestion.currentPaperAns.answerContent
     }
     if(QUESTION_TYPE.JUDGE_QUESTION === this.currentQuestion.currentPaperAns.questionDetail.questionType){
-      this.judgeQuestion.ans = this.currentQuestion.currentPaperAns.answerContent === "true"
+      if(this.currentQuestion.currentPaperAns.answerContent === "true"){
+        this.judgeQuestion.ans = true
+      }else if(this.currentQuestion.currentPaperAns.answerContent === "false"){
+        this.judgeQuestion.ans = false
+      }else{
+        this.judgeQuestion.ans = null
+      }
     }
     if(QUESTION_TYPE.ANSWER_QUESTION === this.currentQuestion.currentPaperAns.questionDetail.questionType){
-      this.answerQuestion.ans = this.currentQuestion.currentPaperAns.answerContent
+      let content = StringUtil.parseFromHtml(this.currentQuestion.currentPaperAns.answerContent);
+      this.answerQuestion.ans = StringUtil.isEmpty(content)?null:this.currentQuestion.currentPaperAns.answerContent
       this.answerQuestion.key = (this.answerQuestion.key+1)%50
     }
   }

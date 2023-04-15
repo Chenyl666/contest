@@ -43,7 +43,6 @@ public class OnlineServiceImpl implements OnlineService {
             return ResultModel.buildFailResultModel(null,null);
         }
         List<UserDto> userDtoList = remoteInvokeRes.getData();
-        System.out.println(userDtoList);
         Map<String, UserDto> userDtoMap = userDtoList.stream().collect(Collectors.toMap(
                 UserDto::getUserId,
                 userDto -> userDto

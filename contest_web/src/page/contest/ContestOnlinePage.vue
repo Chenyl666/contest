@@ -232,9 +232,18 @@ export default {
             }
           }
         })
-        let key = Object.keys(this.contest.questionList)[0];
-        this.contest.current.currentPaperAns = this.contest.questionList[key][0]
-        this.contest.current.currentIndex = 0
+
+        let keys = Object.keys(this.contest.questionList)
+        for(let i=0;i<keys.length;i++){
+          if(this.contest.questionList[keys[i]].length !== 0){
+            this.contest.current.currentPaperAns = this.contest.questionList[keys[i]][0]
+          }
+        }
+
+        // let key = Object.keys(this.contest.questionList)[0];
+        // this.contest.current.currentPaperAns = this.contest.questionList[key][0]
+        // this.contest.current.currentIndex = 0
+
         break
       }
       case 2: {

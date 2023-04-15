@@ -1,6 +1,6 @@
 <template>
   <div style="width: 95em;margin-top: -0.7em">
-    <img style="width: 100%;display: block" src="../../assets/blue2.jpg" alt="">
+    <img style="width: 96em;display: block" src="../../assets/blue2.jpg" alt="">
     <t-space style="border: solid white 3px;border-radius: 50%;z-index: 1;cursor: pointer;position: absolute;margin-top: -4em;margin-left: 43.8em" :size="40">
       <t-avatar shape="circle" :image="user.userPic" size="110px" :hide-on-load-failed="false"/>
     </t-space>

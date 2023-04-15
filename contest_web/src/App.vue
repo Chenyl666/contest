@@ -98,8 +98,8 @@ export default {
       request.post('/login/auth/token').then(resp => {
         if(resp.data['resultCode'] === result.code.SUCCESS){
           saveToken(resp.data['data'])
-          // router.push('/main')
-          router.push('/contest/online/page/439819269673324544')
+          router.push('/main')
+          // router.push('/contest/online/page/439837465587486720')
           // router.push('/question/repo/detail/439824695693414401')
         }else{
           router.push("/login")

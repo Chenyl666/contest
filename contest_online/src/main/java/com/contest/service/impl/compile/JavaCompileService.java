@@ -85,6 +85,7 @@ public class JavaCompileService extends ProgramCompileService {
         float score = 0;
         List<ProgramResult> programResultList = new ArrayList<>();
         for (int i = 0; i < exampleCount; i++) {
+            cleanCacheFile(contestCodeDto);
             String inputPath = buildInputPath(contestCodeDto.getQuestionId(), i);
             String outputPath = buildOutputPath(contestCodeDto.getQuestionId(), i);
             String command = getScriptCommand(
@@ -320,6 +321,24 @@ public class JavaCompileService extends ProgramCompileService {
             stringBuilder.append(buf,0,len);
         }
         return stringBuilder.toString();
+    }
+
+    private void cleanCacheFile(ContestCodeDto contestCodeDto){
+        FileUtils.deleteFile(this.answerPath
+                .replace("[!1!]",contestCodeDto.getQuestionId().toString())
+                .replace("[!2!]",contestCodeDto.getAnswerId().toString())
+                .concat("\\customer.out")
+        );
+        FileUtils.deleteFile(this.answerPath
+                .replace("[!1!]",contestCodeDto.getQuestionId().toString())
+                .replace("[!2!]",contestCodeDto.getAnswerId().toString())
+                .concat("\\compiler_error.out")
+        );
+        FileUtils.deleteFile(this.answerPath
+                .replace("[!1!]",contestCodeDto.getQuestionId().toString())
+                .replace("[!2!]",contestCodeDto.getAnswerId().toString())
+                .concat("\\runtime_error.out")
+        );
     }
 
 }

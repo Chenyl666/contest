@@ -289,7 +289,7 @@ public class UploadServiceImpl implements UploadService{
                     .build();
             fileInstanceMapper.insert(fileInstanceEntity);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } finally {
             unlockMd5(fileMd5);
         }

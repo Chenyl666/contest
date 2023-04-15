@@ -229,6 +229,8 @@ const exportResult = () => {
     exportResultByContestId(formData.contestDetail.contestId).then(resp => {
       if(resp.data.resultCode === result.code.SUCCESS){
         reload()
+      }else{
+        MessagePlugin.error(resp.data.message)
       }
     })
   }

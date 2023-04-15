@@ -40,7 +40,7 @@
         <h3 style="color: black" v-if="questionIndexList.length !== 0">{{ questionTypeMap[key] }}</h3>
         <t-tag @click="onQuestionSelected({currentPaperAns: questionIndex,currentIndex: index})"
                :key="index" class="tg" v-for="(questionIndex,index) in questionIndexList"
-               :class="{complete: questionIndex.answerContent !== null}">
+               :class="{complete: questionIndex.answerContent !== null && questionIndex.answerContent !== ''}">
           {{ index + 1 }}
         </t-tag>
       </div>

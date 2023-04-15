@@ -96,6 +96,7 @@ public class EnrollServiceImpl implements EnrollService {
                     }
             ));
             contestDetailDtoList = buildContestDetailDtoList(contestDetailEntityList,contestPriseDistributeMap);
+            contestDetailDtoList = contestDetailDtoList.stream().sorted(ContestDetailDto.comparator()).collect(Collectors.toList());
         }else{
             contestDetailDtoList = new ArrayList<>();
         }

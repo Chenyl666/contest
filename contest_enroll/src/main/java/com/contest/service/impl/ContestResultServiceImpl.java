@@ -102,6 +102,9 @@ public class ContestResultServiceImpl implements ContestResultService {
     @Override
     public ResultModel<List<ContestResultDto>> getContestResultListByContestId(Long contestId) {
         List<ContestResultEntity> contestResultEntityList = contestResultMapper.getContestResultEntity(contestId);
+        for (int i = 0; i < contestResultEntityList.size(); i++) {
+            contestResultEntityList.get(i).setRank(i+1);
+        }
         List<String> userIdList = contestResultEntityList.stream().map(ContestResultEntity::getUserId).collect(Collectors.toList());
         String idListJsonStr = URLEncoder.encode(JSON.toJSONString(userIdList), "UTF-8");
         ResultModel<List<UserDto>> result = userService.getUserDtoListByUserIdList(idListJsonStr);
@@ -146,6 +149,9 @@ public class ContestResultServiceImpl implements ContestResultService {
         }
         UserDetailDto userDetailDto = userDetail.getData();
         List<ContestResultEntity> contestResultEntityList = contestResultMapper.getContestResultEntity(contestId);
+        for (int i = 0; i < contestResultEntityList.size(); i++) {
+            contestResultEntityList.get(i).setRank(i+1);
+        }
         List<ContestResultEntity> list = contestResultEntityList.stream().filter(
                 contestResultEntity -> contestResultEntity.getUserId().equals(userDetailDto.getUserId())
         ).collect(Collectors.toList());

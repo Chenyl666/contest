@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -79,5 +80,29 @@ public class ContestDetailDto {
         contestDetailEntity.setUsePercent(usePercent);
         contestDetailEntity.setOrganizeUnit(organizeUnit);
         return contestDetailEntity;
+    }
+
+    public static Comparator<ContestDetailDto> comparator(){
+        return new Comparator<ContestDetailDto>() {
+            @Override
+            public int compare(ContestDetailDto c1, ContestDetailDto c2) {
+                if(ContestStatus.CONTESTING.equals(c1.getContestStatus())){
+                    return -1;
+                }
+                if (ContestStatus.ENROLLING.equals(c1.getContestStatus())){
+                    return -1;
+                }
+                if(ContestStatus.CONTEST_END.equals(c1.getContestStatus())){
+                    return 1;
+                }
+                if(ContestStatus.RESULT.equals(c1.getContestStatus())){
+                    return 1;
+                }
+                if(ContestStatus.PUBLISH.equals(c1.getContestStatus())){
+                    return 1;
+                }
+                return 0;
+            }
+        };
     }
 }

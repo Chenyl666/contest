@@ -20,7 +20,6 @@ public class SmtpMailSender {
     String emailSender;
 
     public void sendSimpleEmail(String subject,String text,String receiver){
-        System.out.println("send email to: " + receiver);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,true);

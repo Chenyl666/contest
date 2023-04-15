@@ -49,7 +49,7 @@
         <t-list-item>
           <t-list>
             <t-list-item style="display: inline-block;width: 5em">竞赛名次：</t-list-item>
-            <t-list-item style="display: inline-block">4</t-list-item>
+            <t-list-item style="display: inline-block">{{contestUserResult.rank}}</t-list-item>
           </t-list>
         </t-list-item>
       </t-list>

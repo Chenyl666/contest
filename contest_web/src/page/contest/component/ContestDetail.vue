@@ -152,6 +152,7 @@ import {store} from "@/store";
 import ContestManagement from "@/page/contest/component/ContestManagement";
 import ContestNotify from "@/page/contest/component/ContestNotify";
 import ContestResultOfUser from "@/page/contest/component/ContestResultOfUser";
+import {globalConfig} from "@/global.config";
 
 const load = (contestId,_this) => {
   _this.contestId = contestId
@@ -284,30 +285,36 @@ export default {
       })
     },
     enrollContest: async function () {
-      let pass = false
-      await getUserDetail().then(resp => {
-        if(resp.data.resultCode === result.code.SUCCESS){
-          if(resp.data.data.identify === null || resp.data.data.identify === ''){
-            MessagePlugin.info('请先进行实名认证！')
-            pass = false
-            setTimeout(() => {
-              router.push('/usr/detail')
-            },3000)
-          }else{
-            pass = true
-          }
-        }
-      })
-      if(pass){
-        await createEnrollPaymentOrder(this.$route.params.contestId).then(resp => {
+      if(confirm("确定要报名吗？")){
+        let pass = false
+        await getUserDetail().then(resp => {
           if(resp.data.resultCode === result.code.SUCCESS){
-            window.open(resp.data.data)
-          }else{
-            MessagePlugin.info(resp.data.data)
+            if(resp.data.data.identify === null || resp.data.data.identify === ''){
+              MessagePlugin.info('请先进行实名认证！')
+              pass = false
+              setTimeout(() => {
+                router.push('/usr/detail')
+              },3000)
+            }else{
+              pass = true
+            }
           }
-        }).catch(() => {
-          MessagePlugin.error('系统繁忙!')
         })
+        if(pass){
+          await createEnrollPaymentOrder(this.$route.params.contestId).then(resp => {
+            if(resp.data.resultCode === result.code.SUCCESS){
+              window.open(resp.data.data)
+            }
+            if(resp.data.resultCode === result.code.CONTINUE){
+              window.open(globalConfig.requestConfig.baseURL.concat("/contest/pay/page/success"))
+            }
+            if(resp.data.resultCode === result.code.FAIL){
+              MessagePlugin.error('不在报名时间范围内！')
+            }
+          }).catch(() => {
+            MessagePlugin.error('系统繁忙!')
+          })
+        }
       }
     }
   },

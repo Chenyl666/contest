@@ -10,6 +10,9 @@ export class StringUtil{
         return str.substr(0,number) + '...'
     }
     static parseFromHtml(html){
+        if(html === null){
+            return null
+        }
         return html.replace(this.rex, '');
     }
 }

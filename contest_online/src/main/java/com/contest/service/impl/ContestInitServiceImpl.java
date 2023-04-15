@@ -83,10 +83,13 @@ public class ContestInitServiceImpl implements ContestInitService {
                 new QueryWrapper<ContestDetailEntity>().eq("contest_id", contestId));
         checkProgramExampleLoad(contestDetailEntity);
         Long questionRepoId = contestDetailEntity.getQuestionRepoId();
+        if(questionRepoId == null){
+            return ResultModel.buildFailResultModel("系统繁忙！");
+        }
         ResultModel<List<QuestionIndexDto>> remoteInvokeResult =
                 questionService.getQuestionsByRepoId(questionRepoId);
         if(!ResultFlag.SUCCESS.equals(remoteInvokeResult.getResultFlag())){
-            return ResultModel.buildFailResultModel();
+            return ResultModel.buildFailResultModel("系统繁忙！");
         }
         List<QuestionIndexDto> answerList = remoteInvokeResult.getData();
         List<ContestAnswerEntity> contestAnswerEntityList = new LinkedList<>();
@@ -179,8 +182,6 @@ public class ContestInitServiceImpl implements ContestInitService {
                 }
             }
             QuestionProgramDto questionProgramDto = r.getData();
-            System.out.println(questionProgramDto == null);
-            System.out.println(JSON.toJSONString(questionProgramDto));
             Map<Integer, List<ProgramExampleDto>> exampleMap = buildProgramExampleMap(questionProgramDto);
             for (Integer number : exampleMap.keySet()) {
                 List<ProgramExampleDto> programExampleList = exampleMap.get(number);

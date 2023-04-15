@@ -97,7 +97,37 @@ public class FileUtils {
         InputStream in2 = new BufferedInputStream(Files.newInputStream(Paths.get(filePath2)));
         String md51 = Md5Utils.getFileMd5(in1);
         String md52 = Md5Utils.getFileMd5(in2);
-        return md51.equals(md52);
+        in1.close();
+        in2.close();
+        if(!md51.equals(md52)){
+            BufferedReader reader1 = new BufferedReader(Files.newBufferedReader(Paths.get(filePath1)));
+            BufferedReader reader2 = new BufferedReader(Files.newBufferedReader(Paths.get(filePath2)));
+            StringBuilder stringBuilder1 = new StringBuilder();
+            StringBuilder stringBuilder2 = new StringBuilder();
+            char[] buf1 = new char[1024];
+            char[] buf2 = new char[1024];
+            int len;
+            while((len = reader1.read(buf1))!=-1){
+                stringBuilder1.append(buf1,0,len);
+            }
+            while((len = reader2.read(buf2))!=-1){
+                stringBuilder2.append(buf2,0,len);
+            }
+            reader1.close();
+            reader2.close();
+            String s1 = stringBuilder1.toString().replace("\r","");
+            String s2 = stringBuilder2.toString().replace("\r","");
+            System.out.println(s1);
+            System.out.println(s2);
+            for (char c : s1.toCharArray()) {
+                System.out.print((int)c + " ");
+            }
+            System.out.println();
+            for (char c : s2.toCharArray()) {
+                System.out.print((int)c + " ");
+            }
+            return s1.equals(s2);
+        }
+        return true;
     }
-
 }

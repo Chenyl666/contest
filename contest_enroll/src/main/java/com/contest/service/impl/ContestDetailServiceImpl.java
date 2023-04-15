@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,6 +101,7 @@ public class ContestDetailServiceImpl extends ServiceImpl<ContestDetailMapper, C
     public ResultModel<List<ContestDetailDto>> getOrganizerContestDetailList(UserDto userDto) {
         List<ContestDetailEntity> contestDetailEntityList = baseMapper.getContestDetailEntityListByOrganizerUserId(userDto.getUserId());
         List<ContestDetailDto> contestDetailDtoList = contestDetailEntityList.stream().map(contestDetailEntity -> contestDetailEntity.entity2Dto(null)).collect(Collectors.toList());
+        contestDetailDtoList = contestDetailDtoList.stream().sorted(ContestDetailDto.comparator()).collect(Collectors.toList());
         return ResultModel.buildSuccessResultModel(null,contestDetailDtoList);
     }
 

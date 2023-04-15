@@ -14,6 +14,7 @@ import com.contest.entity.contest.ContestEnrollEntity;
 import com.contest.entity.notify.NotifyMessageEntity;
 import com.contest.enu.ContestStatus;
 import com.contest.mapper.ContestEnrollMapper;
+import com.contest.result.ResultFlag;
 import com.contest.result.ResultModel;
 import com.contest.service.ContestDetailService;
 import com.contest.service.EnrollPaymentService;
@@ -70,13 +71,14 @@ public class EnrollPaymentServiceImpl implements EnrollPaymentService {
     @Transactional
     @Override
     public ResultModel<String> createQrCode(Long contestId, UserDto userDto) {
+        ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestId);
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
-        //在公共参数中设置回跳和通知地址
+        // 在公共参数中设置回跳和通知地址
         request.setReturnUrl(RETURN_URL);
         request.setNotifyUrl(NOTIFY_URL);
-        ContestDetailEntity contestDetailEntity = contestDetailService.getById(contestId);
+        // 不在报名时间内或竞赛不存在
         if (contestDetailEntity == null) {
-            return ResultModel.buildFailResultModel("当前时间不在报名时间内！");
+            return ResultModel.buildFailResultModel("当前竞赛不存在！");
         }
         boolean enrollTimeout = !DateUtils.dateRangeCompare(
                 contestDetailEntity.getEnrollStartTime(),
@@ -86,6 +88,7 @@ public class EnrollPaymentServiceImpl implements EnrollPaymentService {
         if (enrollTimeout) {
             return ResultModel.buildFailResultModel(null, "当前时间不在报名时间内！");
         }
+        // 消除重复记录
         Optional<ContestEnrollEntity> contestEnrollOptional = Optional.ofNullable(contestEnrollMapper.selectOne(
                 new QueryWrapper<ContestEnrollEntity>()
                         .eq("contest_id", contestId)
@@ -104,6 +107,14 @@ public class EnrollPaymentServiceImpl implements EnrollPaymentService {
                 .updatedDate(new Date())
                 .build();
         contestEnrollMapper.insert(contestEnrollEntity);
+        if(Float.parseFloat(contestDetailEntity.getContestPrice()) == 0f){
+            successInvoke(contestEnrollEntity.getEnrollId().toString());
+            return ResultModel
+                    .<String>builder()
+                    .resultFlag(ResultFlag.CONTINUE)
+                    .resultCode(ResultFlag.CONTINUE.code)
+                    .build();
+        }
         //商户订单号，商户网站订单系统中唯一订单号，必填
         String outTradeNo = Long.toString(contestEnrollEntity.getEnrollId());
         //付款金额，必填

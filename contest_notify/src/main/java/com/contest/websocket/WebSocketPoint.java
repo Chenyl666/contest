@@ -112,7 +112,6 @@ public class WebSocketPoint implements Serializable, WebsocketApi {
     public void onMessage(String message,Session session){
         WebSocketRequest webSocketRequest = JSON.parseObject(message, WebSocketRequest.class);
         Method handler = handlerMapping.get(webSocketRequest.getRequest());
-        System.out.println(handler.getName());
         handler.invoke(this.webSocketHandler,this,JSON.toJSONString(webSocketRequest.getData()));
     }
 

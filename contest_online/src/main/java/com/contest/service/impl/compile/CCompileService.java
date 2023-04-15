@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class CCompileService extends ProgramCompileService {
-    @Value("${compiler.windows.c}")
+    @Value("${compiler.windows.prefix}")
     private String compilerPath;
 
     @Value("${compiler.windows.input}")
@@ -89,9 +89,13 @@ public class CCompileService extends ProgramCompileService {
         for (int i = 0; i < exampleCount; i++) {
             String inputPath = buildInputPath(contestCodeDto.getQuestionId(),i);
             String outputPath = buildOutputPath(contestCodeDto.getQuestionId(),i);
-            String command = getScriptCommand(codeFilePath, exeFilePath, inputPath, customerOutPath);
+            String command = getScriptCommand(
+                    contestCodeDto.getQuestionId().toString(),
+                    contestCodeDto.getAnswerId().toString(),
+                    inputPath
+            );
             Runtime runtime = Runtime.getRuntime();
-            Process process = runtime.exec(command);
+            Process process = runtime.exec(command,null,new File(this.compilerPath));
             boolean normalTerminate = process.waitFor(questionProgramDto.getTimeLimit(), TimeUnit.MILLISECONDS);
             if(!normalTerminate){
                 killTimeoutThread(contestCodeDto.getAnswerId());
@@ -102,6 +106,10 @@ public class CCompileService extends ProgramCompileService {
                                 .replace("[!2!]",contestCodeDto.getAnswerId().toString())
                                 .concat("\\customer.out")
                 );
+                String compileErrorMessage = getOutputText(contestCodeDto,"compiler_error.out");
+                if (compileErrorMessage != null) {
+                    return ResultModel.buildFailResultModel(compileErrorMessage, null);
+                }
                 continue;
             }
             if(getExecFileSize(exeFilePath) > questionProgramDto.getMemoryLimit() * 1024 * 1024){
@@ -115,18 +123,37 @@ public class CCompileService extends ProgramCompileService {
                 continue;
             }
             if(FileUtils.fileEquals(outputPath, customerOutPath)){
-                programResultList.add(ProgramResult.buildAllPass(i,5f));
+                String inputText = getInputText(contestCodeDto.getQuestionId(), i);
+                String outputText = getOutputText(contestCodeDto, "customer.out");
+                programResultList.add(ProgramResult.buildAllPass(i,5f,inputText,outputText));
                 score += 5;
             }else{
-                File customerOutFile = new File(this.answerPath
-                        .replace("[!1!]",contestCodeDto.getQuestionId().toString())
-                        .replace("[!2!]",contestCodeDto.getAnswerId().toString())
-                        .concat("\\customer.out")
-                );
-                if(customerOutFile.length() == 0){
-                    return ResultModel.buildFailResultModel("编译错误",null);
+                String runtimeErrorMessage = getOutputText(contestCodeDto, "runtime_error.out");
+                String compilerErrorMessage = getOutputText(contestCodeDto, "compiler_error.out");
+                if (compilerErrorMessage != null) {
+                    return ResultModel.buildFailResultModel(compilerErrorMessage, null);
                 }
-                programResultList.add(ProgramResult.buildError(i));
+
+//                File customerOutFile = new File(this.answerPath
+//                        .replace("[!1!]",contestCodeDto.getQuestionId().toString())
+//                        .replace("[!2!]",contestCodeDto.getAnswerId().toString())
+//                        .concat("\\customer.out")
+//                );
+//                if(customerOutFile.length() == 0){
+//                    return ResultModel.buildFailResultModel("编译错误",null);
+//                }
+                if (runtimeErrorMessage != null) {
+                    FileUtils.deleteFile(
+                            this.answerPath
+                                    .replace("[!1!]", contestCodeDto.getQuestionId().toString())
+                                    .replace("[!2!]", contestCodeDto.getAnswerId().toString())
+                                    .concat("\\runtime_error.out")
+                    );
+                    return ResultModel.buildFailResultModel(runtimeErrorMessage, null);
+                }
+                String inputText = getInputText(contestCodeDto.getQuestionId(), i);
+                String outputText = getOutputText(contestCodeDto, "customer.out");
+                programResultList.add(ProgramResult.buildError(i,inputText,outputText));
             }
             FileUtils.deleteFile(
                     this.answerPath
@@ -135,7 +162,7 @@ public class CCompileService extends ProgramCompileService {
                             .concat("\\customer.out")
             );
         }
-        clearCacheFile(contestCodeDto.getQuestionId(),contestCodeDto.getAnswerId());
+//        clearCacheFile(contestCodeDto.getQuestionId(),contestCodeDto.getAnswerId());
         // 保存较大的分数
         ContestAnswerEntity contestAnswerEntity = contestAnswerMapper.selectById(contestCodeDto.getAnswerId());
         Float sumScore = contestAnswerEntity.getScore();
@@ -150,12 +177,11 @@ public class CCompileService extends ProgramCompileService {
         FileUtils.writeFile(new File(filePath),content);
     }
 
-    public String getScriptCommand(String p1,String p2,String p3,String p4){
+    public String getScriptCommand(String p1,String p2,String p3){
         return this.runningScript
                 .concat(" ").concat(p1)
                 .concat(" ").concat(p2)
-                .concat(" ").concat(p3)
-                .concat(" ").concat(p4);
+                .concat(" ").concat(p3);
     }
 
     public String buildCodeFileDir(Long questionId,Long answerId){
