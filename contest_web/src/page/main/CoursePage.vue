@@ -13,7 +13,7 @@
         <br>
         <div style="display: inline;margin-left: 2.5em;color: #AAAAAA;font-size: 14px">
           <div style="display: inline-block;margin-right: 2em;font-weight: bold">竞赛级别</div>
-          <div style="display: inline-block">{{contestDetail.contestLevel}}</div>
+          <div style="display: inline-block">{{getLevelMap(contestDetail.contestLevel)}}</div>
         </div>
         <br>
         <div style="display: inline;margin-left: 2.5em;color: #AAAAAA;font-size: 14px">
@@ -40,6 +40,15 @@
 import SwiperFrame from "@/page/component/swiper/SwiperFrame";
 import {getHotContestDetailList} from "@/api/contest";
 import {getTimeStr} from "@/util/date.util";
+
+const levelMap = {
+  COLLEGE: '校级',
+  CITY: '市级',
+  PROVINCE: '省级',
+  NATIONAL: '国家级',
+  INTERNATIONAL: '国际级',
+  OTHER: '其它'
+}
 
 export default {
   name: "CoursePage",
@@ -77,6 +86,9 @@ export default {
     },
     toDetail(index){
       this.$router.push('/contest/detail/'.concat(this.contestDetailList[index].contestId))
+    },
+    getLevelMap(level){
+      return levelMap[level]
     }
   },
   mounted() {

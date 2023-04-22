@@ -14,7 +14,7 @@
         <t-select v-model="formData.option" placeholder="请输入题库类型">
           <t-option key="PROGRAMMING" label="编程题库" value="PROGRAMMING" />
           <t-option key="PAPER" label="试卷题库" value="PAPER"></t-option>
-          <t-option key="PROJECT" label="项目题库" value="PROJECT" />
+<!--          <t-option key="PROJECT" label="项目题库" value="PROJECT" />-->
         </t-select>
       </t-form-item>
     </template>

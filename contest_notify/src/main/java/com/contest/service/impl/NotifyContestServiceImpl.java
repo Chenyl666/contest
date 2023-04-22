@@ -52,14 +52,16 @@ public class NotifyContestServiceImpl extends ServiceImpl<NotifyContestMapper, N
         }
         List<ContestEnrollDto> contestEnrollDtoList = remoteInvokeResult.getData();
         List<String> userIdList = contestEnrollDtoList.stream().map(ContestEnrollDto::getUserId).collect(Collectors.toList());
-        List<UserEntity> userEntityList = userMapper.selectList(
-                new QueryWrapper<UserEntity>().in("user_id", userIdList)
-        );
-        userEntityList.forEach(userEntity -> {
-            notifyMessageProvider.asyncSendNotifyMessage(
-                    buildNotifyMessageEntity(notifyContestEntity, userEntity.getUserId())
+        if(userIdList.size() != 0){
+            List<UserEntity> userEntityList = userMapper.selectList(
+                    new QueryWrapper<UserEntity>().in("user_id", userIdList)
             );
-        });
+            userEntityList.forEach(userEntity -> {
+                notifyMessageProvider.asyncSendNotifyMessage(
+                        buildNotifyMessageEntity(notifyContestEntity, userEntity.getUserId())
+                );
+            });
+        }
         return ResultModel.buildSuccessResultModel();
     }
 
